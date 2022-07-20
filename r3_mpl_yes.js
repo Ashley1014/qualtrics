@@ -90,7 +90,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // console.log("wtp_lower is", wtp_lower);
         // console.log("wtp_upper is", wtp_upper);
 
-        console.log("testing displayrevised");
+        //console.log("testing displayrevised");
 
         let row = -1;
         const rows = document.getElementsByClassName("ChoiceRow");
