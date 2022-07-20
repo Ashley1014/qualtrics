@@ -37,7 +37,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     // console.log("wtp_lower is", wtp_lower);
     // console.log("wtp_upper is", wtp_upper);
 
-    displayRevised(qid, basenum);
+    //displayRevised(qid, basenum);
+    checkRevised();
     add_button_events();
 
     let nextbutton = document.getElementById("NextButton");
@@ -50,7 +51,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         } else {
             value = 2;
         }
-        checkRevised();
+        //checkRevised();
         calculate_wtp(qid, value);
     };
 
@@ -65,21 +66,19 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
-            let r1_main = parseInt("${e://Field/switchpoint}");
-            let r1_row = parseInt("${e://Field/switch_row_main}");
-            sp_main = Number(sp);
-            row_main = Number(switch_row);
-            let r3_yes_revised = (r3_main!==sp_main) || (r3_main===sp_main && r3_row!==row_main);
-            if (r3_yes_revised) {
-                //console.log("round 3 has been revised");
-                Qualtrics.SurveyEngine.setEmbeddedData("r3_yes_revised", 1);
+            // let r1_main = parseInt("${e://Field/switchpoint}");
+            // let r1_row = parseInt("${e://Field/switch_row_main}");
+            sp = Number(r3_main);
+            if (sp === 3) {
+                switch_row = Number(r3_row);
+            } if (sp === 2) {
+                switch_row = len - 1;
             } else {
-                //console.log("round 3 has not been revised");
-                Qualtrics.SurveyEngine.setEmbeddedData("r3_yes_revised", 0);
+                switch_row = -1;
             }
+            fill_in_table(qid, switch_row, value);
         } else {
-            sp_main = parseInt("${e://Field/switchpoint}");
-            row_main = parseInt("${e://Field/switch_row_main}");
+            displayRevised(qid, basenum);
         }
     }
 
@@ -91,7 +90,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // console.log("wtp_lower is", wtp_lower);
         // console.log("wtp_upper is", wtp_upper);
 
-        let radios = document.getElementsByTagName("input");
+        console.log("testing displayrevised");
+
         let row = -1;
         const rows = document.getElementsByClassName("ChoiceRow");
         let len = rows.length;
