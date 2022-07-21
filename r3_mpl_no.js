@@ -9,7 +9,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-
+    console.log("testing r3 mpl no");
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
     //console.log("first button id is ", first_id);
@@ -324,7 +324,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_led_r3_no", lower_bound_led);
         Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_hal_r3_no", lower_bound_hal);
-        console.log("it's just a dummy test for r3 mpl no");
+        //console.log("it's just a dummy test for r3 mpl no");
         console.log("lower bound led is ", lower_bound_led);
         console.log("lower bound hal is ", lower_bound_hal);
     }

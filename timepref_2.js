@@ -9,6 +9,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing timepref2");
     const qid = this.questionId;
     let basenum;
     add_button_events();
@@ -213,7 +214,7 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
         // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_led", lower_bound_led);
         // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_hal", lower_bound_hal);
-        console.log("it's just a dummy test for timepref2");
+        // console.log("it's just a dummy test for timepref2");
         console.log("lower bound in one year is ", lower_bound_led);
         console.log("lower bound in 15 year is ", lower_bound_hal);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_1yr_timepref2", lower_bound_led);

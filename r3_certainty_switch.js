@@ -7,6 +7,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 
 Qualtrics.SurveyEngine.addOnReady(function()
 {
+    console.log("testing r3_certainty_switch");
     /*Place your JavaScript here to run when the page is fully displayed*/
     //console.log("ready?");
     const switchpoint = parseInt("${e://Field/switchpoint_fmpl_r3}");

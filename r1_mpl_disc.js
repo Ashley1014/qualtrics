@@ -8,6 +8,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing r1_mpl_disc");
     const qid = this.questionId;
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -250,7 +251,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_led_disc_main", lower_bound_led);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_hal_disc_main", lower_bound_hal);
-        console.log("it's just a dummy test for disc mpl");
         console.log("lower bound led is ", lower_bound_led);
         console.log("lower bound hal is ", lower_bound_hal);
     }

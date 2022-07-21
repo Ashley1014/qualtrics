@@ -9,6 +9,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing cost mpl");
     const qid = this.questionId;
     let basenum;
     add_button_events();
@@ -170,7 +171,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound;
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
-        console.log("it's just a dummy test for cost main");
         console.log("lower bound yes is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_cost_yes", lower_bound);
     }

@@ -9,6 +9,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing r1_fmpl_disc");
     const qid = this.questionId;
     //console.log(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_disc}");

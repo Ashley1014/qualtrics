@@ -248,7 +248,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_led", lower_bound_led);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_hal", lower_bound_hal);
-        console.log("it's just a dummy test");
+        console.log("testing r1_mpl_v2");
         console.log("lower bound led is ", lower_bound_led);
         console.log("lower bound hal is ", lower_bound_hal);
     }

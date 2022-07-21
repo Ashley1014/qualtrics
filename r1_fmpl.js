@@ -8,6 +8,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 
 Qualtrics.SurveyEngine.addOnReady(function()
 {
+    console.log("testing R1_fmpl");
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
     //console.log(qid);
@@ -329,7 +330,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let upper_bound_led_cp = Math.max(Number(lower_bound_led), Number(upper_bound_led));
         let lower_bound_hal_cp = Math.min(Number(lower_bound_hal), Number(upper_bound_hal));
         let upper_bound_hal_cp = Math.max(Number(lower_bound_hal), Number(upper_bound_hal));
-        console.log("it's just a dummy test for R1_fmpl");
         console.log("lower bound led is ", lower_bound_led_cp);
         console.log("lower bound hal is ", lower_bound_hal_cp);
         console.log("upper bound led is ", upper_bound_led_cp);

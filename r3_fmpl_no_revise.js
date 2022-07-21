@@ -8,6 +8,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 
 Qualtrics.SurveyEngine.addOnReady(function() {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing r3_fmpl_no_revise");
     const revised_wtp = parseInt("${q://QID514/ChoiceTextEntryValue}");
     //console.log("revised wtp is ", revised_wtp);
     const order = parseInt("${e://Field/display_order}");
@@ -141,8 +142,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      */
     function calculate_wtp(QID, value, basenum) {
         //const rows = document.getElementsByClassName("ChoiceRow");
-        console.log("testing fmpl_no_revise");
-
         let lower_led;
         let lower_hal;
         let upper_led;
