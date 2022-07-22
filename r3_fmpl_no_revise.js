@@ -47,7 +47,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         nextbutton.onclick = function() {
             //alert("next button was clicked");
             findSwitchPoint(qid);
-            calculate_wtp(qid, value, basenum);
+            calculate_wtp(qid, value, basenum, 1);
         };
     }
 
@@ -139,13 +139,17 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param QID
      * @param value the value of LED choices
      * @param basenum
+     * @param incr the increment of price list
      */
-    function calculate_wtp(QID, value, basenum) {
+    function calculate_wtp(QID, value, basenum, incr) {
         //const rows = document.getElementsByClassName("ChoiceRow");
+
         let lower_led;
         let lower_hal;
         let upper_led;
         let upper_hal;
+
+        //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
@@ -177,24 +181,26 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         }
         const ida_lower = QID+"-"+(lower_led+basenum).toString()+"-"+value.toString()+"-label";
         const idb_lower = QID+"-"+(lower_hal+basenum).toString()+"-"+(3-value).toString()+"-label";
-        // console.log("lower bound for led is ", ida_lower);
-        // console.log("lower bound for halogen is ", idb_lower);
+        //console.log("lower bound for led is ", ida_lower);
+        //console.log("lower bound for halogen is ", idb_lower);
 
         let lower_bound_led;
         let lower_bound_hal;
         let upper_bound_led;
         let upper_bound_hal;
-        if (lower_led === 0) {
-            const text_led = document.getElementById(ida_lower).textContent;
-            lower_bound_led = text_led.substring(text_led.indexOf('$') + 1);
-        } if (lower_hal === 0) {
-            const text_hal = document.getElementById(idb_lower).textContent;
-            lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1);
-        }
-        else {
-            lower_bound_led = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_hal = document.getElementById(idb_lower).textContent.substring(1);
-        }
+        // if (lower_led === 0) {
+        //     const text_led = document.getElementById(ida_lower).textContent;
+        //     lower_bound_led = text_led.substring(text_led.indexOf('$') + 1);
+        // } if (lower_hal === 0) {
+        //     const text_hal = document.getElementById(idb_lower).textContent;
+        //     lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1);
+        // }
+        //else {
+        const text_led = document.getElementById(ida_lower).textContent;
+        const text_hal = document.getElementById(idb_lower).textContent;
+        lower_bound_led = text_led.substring(text_led.indexOf('$') + 1);
+        lower_bound_hal = text_hal.substring(text_hal.indexOf('$') + 1);
+        //}
 
         if (Number(sp) === 3) {
             const ida_upper = QID+"-"+(upper_led+basenum).toString()+"-"+value.toString()+"-label";
@@ -203,14 +209,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             upper_bound_hal = document.getElementById(idb_upper).textContent.substring(1);
         }
         else if (Number(sp) === 1) {
-            lower_bound_hal = "1";
-            upper_bound_hal = "1";
-            upper_bound_led = (Number(lower_bound_led) + 5).toString();
+            upper_bound_led = (Number(lower_bound_led) + incr).toString();
+            upper_bound_hal = (Number(lower_bound_hal) - incr).toString();
             //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_led", upper_bound_led);
         } else {
-            lower_bound_led = "1";
-            upper_bound_led = "1";
-            upper_bound_hal = (Number(lower_bound_hal) + 5).toString();
+            upper_bound_hal = (Number(lower_bound_hal) + incr).toString();
+            upper_bound_led = (Number(lower_bound_led) - incr).toString();
             //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_hal", upper_bound_hal);
         }
         // copy of bound fields to store the max/min value of bounds
