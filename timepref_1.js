@@ -52,13 +52,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
         for (let i = 0; i < rows.length; i++) {
             const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
             const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
-            //console.log("choice a id is ", choice_a);
-            //console.log("choice b id is ", choice_b);
             if (i >= Number(row_number) && value === 2) {
                 document.getElementById(choice_a).checked = false;
                 document.getElementById(choice_b).checked = true;
             }
-            if (i < Number(row_number)) {
+            if (i < Number(row_number) && value === 1) {
                 document.getElementById(choice_a).checked = true;
                 document.getElementById(choice_b).checked = false;
             }

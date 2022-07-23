@@ -69,7 +69,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 document.getElementById(choice_a).checked = false;
                 document.getElementById(choice_b).checked = true;
             }
-            if (i < Number(row_number)) {
+            if (i < Number(row_number) && value === 1) {
                 document.getElementById(choice_a).checked = true;
                 document.getElementById(choice_b).checked = false;
             }
