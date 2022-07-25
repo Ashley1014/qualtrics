@@ -10,15 +10,39 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
-    let basenum;
+    let len;
+    let sp;
+    let switch_row;
+    let value;
+
+    let radio1 = document.getElementsByTagName("input");
+    const first_id = radio1[0].id;
+    //console.log("first button id is ", first_id);
+    const arr = first_id.split("~");
+    let basenum = Number(arr[arr.length-2]);
+
+    if (isLedLeft()) {
+        value = 1;
+    } else {
+        value = 2;
+    }
+
     add_button_events();
 
+    let nextbutton = document.getElementById("NextButton");
+
+    nextbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        calculate_wtp(qid, value, 6, 0);
+    };
+
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        const first_id = radio1[0].id;
-        //console.log("first button id is ", first_id);
-        const arr = first_id.split("~");
-        basenum = Number(arr[arr.length-2]);
+        // let radio1 = document.getElementsByTagName("input");
+        // const first_id = radio1[0].id;
+        // //console.log("first button id is ", first_id);
+        // const arr = first_id.split("~");
+        // basenum = Number(arr[arr.length-2]);
         //console.log("base num is ", basenum);
         for(radio in radio1) {
             radio1[radio].onclick = function() {
@@ -63,31 +87,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
             }
         }
     }
-});
-
-Qualtrics.SurveyEngine.addOnUnload(function()
-{
-    /*Place your JavaScript here to run when the page is unloaded*/
-    const qid = this.questionId;
-    let len;
-    let sp;
-    let switch_row;
-    // let value;
-
-    let radio1 = document.getElementsByTagName("input");
-    const first_id = radio1[0].id;
-    //console.log("first button id is ", first_id);
-    const arr = first_id.split("~");
-    let basenum = Number(arr[arr.length-2]);
-
-    findSwitchPoint(qid);
-    //let num = parseInt("${e://Field/display_order}");
-    // if (isLedLeft()) {
-    //     value = 1;
-    // } else {
-    //     value = 2;
-    // }
-    calculate_wtp(qid);
 
     function findSwitchPoint(qid) {
         const question = document.getElementById(qid);
@@ -162,12 +161,17 @@ Qualtrics.SurveyEngine.addOnUnload(function()
     /***
      *
      * @param QID
+     * @param value
+     * @param incra
+     * @param incrb
      */
-    function calculate_wtp(QID) {
+    function calculate_wtp(QID, value, incra, incrb) {
         //const rows = document.getElementsByClassName("ChoiceRow");
 
         let lower_led;
         let lower_hal;
+        let upper_led;
+        let upper_hal;
 
         //console.log("sp is ", sp.type);
 
@@ -175,27 +179,32 @@ Qualtrics.SurveyEngine.addOnUnload(function()
             //console.log("there is a switch point");
             lower_led = switch_row;
             lower_hal = switch_row;
+            upper_led = switch_row + 1;
+            upper_hal = switch_row + 1;
         } else if (Number(sp) === 1) {
-            if (isLedLeft()) {
-                //console.log("all led chosen, led is left.");
-                lower_led = len - 1;
-                lower_hal = len - 1;
-                //console.log("lower led bound is ", lower_led);
-            } else {
-                //console.log("all led chosen, led is right.");
-                lower_led = 0;
-                lower_hal = 0;
-                //console.log("lower led bound is ", lower_led);
-            }
+            // if (isLedLeft()) {
+            //     //console.log("all led chosen, led is left.");
+            //     lower_led = len - 1;
+            //     lower_hal = len - 1;
+            //     //console.log("lower led bound is ", lower_led);
+            // } else {
+            //     //console.log("all led chosen, led is right.");
+            //     lower_led = 0;
+            //     lower_hal = 0;
+            //     //console.log("lower led bound is ", lower_led);
+            lower_led = len - 1;
+            lower_hal = len - 1;
         } else {
             //console.log("inside else");
-            if (isLedLeft()) {
-                lower_led = 0;
-                lower_hal = 0;
-            } else {
-                lower_led = len - 1;
-                lower_hal = len - 1;
-            }
+            // if (isLedLeft()) {
+            //     lower_led = 0;
+            //     lower_hal = 0;
+            // } else {
+            //     lower_led = len - 1;
+            //     lower_hal = len - 1;
+            // }
+            lower_led = 0;
+            lower_hal = 0;
         }
         const ida_lower = QID+"-"+(lower_led+basenum).toString()+"-1-label";
         const idb_lower = QID+"-"+(lower_hal+basenum).toString()+"-2-label";
@@ -205,20 +214,41 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
         let lower_bound_led;
         let lower_bound_hal;
-        const text_led = document.getElementById(ida_lower).textContent;
-        lower_bound_led = text_led.substring(text_led.indexOf('$') + 1, text_led.indexOf(' '));
-        const text_hal = document.getElementById(idb_lower).textContent;
-        lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1, text_hal.indexOf(' '));
-        // const upper_bound_led = document.getElementById(ida_upper).textContent.substring(1);
-        // const upper_bound_hal = document.getElementById(idb_upper).textContent.substring(1);
-        // lower_bound = Number(lower_bound_led) - Number(lower_bound_hal);
-        // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
-        // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_led", lower_bound_led);
-        // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_hal", lower_bound_hal);
+        let upper_bound_led;
+        let upper_bound_hal;
+        let text_led;
+        let text_hal;
+        text_led = document.getElementById(ida_lower).textContent;
+        lower_bound_led = text_led.substring(text_led.indexOf('$') + 1, text_led.indexOf(' today'));
+        text_hal = document.getElementById(idb_lower).textContent;
+        lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1, text_hal.indexOf(' in'));
+        if (Number(sp) === 3) {
+            const ida_upper = QID+"-"+(upper_led+basenum).toString()+"-1-label";
+            const idb_upper = QID+"-"+(upper_hal+basenum).toString()+"-2-label";
+            text_led = document.getElementById(ida_upper).textContent;
+            text_hal = document.getElementById(idb_upper).textContent;
+            upper_bound_led = text_led.substring(text_led.indexOf('$') + 1, text_led.indexOf(' today'));
+            upper_bound_hal = text_hal.substring(text_hal.indexOf('$') + 1, text_hal.indexOf(' in'));
+        } else if (Number(sp) === 1) {
+            upper_bound_led = (Number(lower_bound_led) + incra).toString();
+            upper_bound_hal = (Number(lower_bound_hal) - incrb).toString();
+        } else {
+            upper_bound_hal = (Number(lower_bound_hal) + incrb).toString();
+            upper_bound_led = (Number(lower_bound_led) - incra).toString();
+        }
         console.log("testing timepref1");
         console.log("lower bound today is ", lower_bound_led);
         console.log("lower bound in one year is ", lower_bound_hal);
+        console.log("upper bound today is ", upper_bound_led);
+        console.log("upper bound in one year is ", upper_bound_hal);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_today_timepref1", lower_bound_led);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_1yr_timepref1", lower_bound_hal);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_today_timepref1", upper_bound_led);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_1yr_timepref1", upper_bound_hal);
     }
+});
+
+Qualtrics.SurveyEngine.addOnUnload(function()
+{
+
 });
