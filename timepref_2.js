@@ -16,13 +16,13 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function add_button_events(){
         let radio1 = document.getElementsByTagName("input");
         const first_id = radio1[0].id;
-        console.log("first button id is ", first_id);
+        //console.log("first button id is ", first_id);
         const arr = first_id.split("~");
         basenum = Number(arr[arr.length-2]);
-        console.log("base num is ", basenum);
+        //console.log("base num is ", basenum);
         for(radio in radio1) {
             radio1[radio].onclick = function() {
-                console.log("button pressed");
+                //console.log("button pressed");
                 update_table(qid, this.value, this.id);
             }
         }
@@ -34,15 +34,15 @@ Qualtrics.SurveyEngine.addOnReady(function()
         const value = Number(button_value);
         const arr = button_id.split("~");
         //const qid = arr[1];
-        console.log("cached?");
-        console.log(qid);
+        //console.log("cached?");
+        //console.log(qid);
         const num = arr[arr.length-1];
         let row = Number(arr[arr.length-2])-basenum;
-        console.log(button_id);
+        //console.log(button_id);
         if (num === 1) {
             row = row+1;
         }
-        console.log(row);
+        //console.log(row);
         fill_in_table(qid, row, value);
     }
 
