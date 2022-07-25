@@ -55,7 +55,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 document.getElementById(choice_a).checked = false;
                 document.getElementById(choice_b).checked = true;
             }
-            if (i < Number(row_number)) {
+            if (i < Number(row_number) && value === 1) {
                 document.getElementById(choice_a).checked = true;
                 document.getElementById(choice_b).checked = false;
             }
@@ -74,7 +74,7 @@ Qualtrics.SurveyEngine.addOnUnload(function()
 
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
-    console.log("first button id is ", first_id);
+    //console.log("first button id is ", first_id);
     const arr = first_id.split("~");
     let basenum = Number(arr[arr.length-2]);
 
@@ -91,13 +91,13 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         const question = document.getElementById(qid);
         const rows = question.getElementsByClassName("ChoiceRow");
         len = rows.length;
-        console.log("len is ", len);
+        //console.log("len is ", len);
         let switch_point;
         //let switch_row;
         let prev_val;
         let curr_val;
         prev_val = findCheckedValue(0);
-        console.log("prev_value is ", prev_val);
+        //console.log("prev_value is ", prev_val);
         for (let i = 1; i < len; ++i) {
             curr_val = findCheckedValue(i);
             // console.log("when i is ", i);
@@ -109,16 +109,16 @@ Qualtrics.SurveyEngine.addOnUnload(function()
                 break;
             }
         }
-        console.log("curr_val is ", curr_val);
+        //console.log("curr_val is ", curr_val);
         if (prev_val === curr_val) {
             // set switch_point to 1 if all LED choices have been selected;
             // set switch_point to 2 if all halogen choices have been selected;
             switch_point = curr_val;
             switch_row = len-1;
         }
-        console.log("your switch point is ", switch_point);
+        //console.log("your switch point is ", switch_point);
         sp = switch_point;
-        console.log("your switch row is ", switch_row);
+        //console.log("your switch row is ", switch_row);
         //Qualtrics.SurveyEngine.setEmbeddedData("switchpoint", switch_point);
         //return switch_row;
     }
@@ -167,26 +167,26 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         let lower_led;
         let lower_hal;
 
-        console.log("sp is ", sp.type);
+        //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
-            console.log("there is a switch point");
+            //console.log("there is a switch point");
             lower_led = switch_row;
             lower_hal = switch_row;
         } else if (Number(sp) === 1) {
             if (isLedLeft()) {
-                console.log("all led chosen, led is left.");
+                //console.log("all led chosen, led is left.");
                 lower_led = len - 1;
                 lower_hal = len - 1;
-                console.log("lower led bound is ", lower_led);
+                //console.log("lower led bound is ", lower_led);
             } else {
-                console.log("all led chosen, led is right.");
+                //console.log("all led chosen, led is right.");
                 lower_led = 0;
                 lower_hal = 0;
-                console.log("lower led bound is ", lower_led);
+                //console.log("lower led bound is ", lower_led);
             }
         } else {
-            console.log("inside else");
+            //console.log("inside else");
             if (isLedLeft()) {
                 lower_led = 0;
                 lower_hal = 0;
@@ -197,8 +197,8 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         }
         const ida_lower = QID+"-"+(lower_led+basenum).toString()+"-1-label";
         const idb_lower = QID+"-"+(lower_hal+basenum).toString()+"-2-label";
-        console.log("lower bound for today is ", ida_lower);
-        console.log("lower bound for one year is ", idb_lower);
+        //console.log("lower bound for today is ", ida_lower);
+        //console.log("lower bound for one year is ", idb_lower);
         // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
         // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
         let lower_bound_led;
@@ -213,7 +213,7 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
         // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_led", lower_bound_led);
         // Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_hal", lower_bound_hal);
-        console.log("it's just a dummy test for timepref2");
+        console.log("testing timepref2");
         console.log("lower bound in one year is ", lower_bound_led);
         console.log("lower bound in 15 year is ", lower_bound_hal);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_1yr_timepref2", lower_bound_led);
