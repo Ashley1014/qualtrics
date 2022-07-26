@@ -9,6 +9,12 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    let condition = "${e://Field/Condition}";
+    console.log("condition is ", condition);
+
+    let price_init = parseInt("${e://Field/price_init}");
+    let price_incr = parseInt("${e://Field/price_incr}");
+
     const qid = this.questionId;
     //console.log(qid);
     let basenum;
@@ -17,7 +23,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     //console.log("first button id is ", first_id);
     const arr = first_id.split("~");
     basenum = Number(arr[arr.length-2]);
-    editLabels(qid, 1, 5);
+    editLabels(qid, price_init, price_incr);
     add_button_events();
     let len;
     let sp;

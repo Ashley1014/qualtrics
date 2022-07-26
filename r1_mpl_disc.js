@@ -9,6 +9,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing r1_mpl_disc");
+
+    let condition = "${e://Field/Condition}";
+    console.log("condition is ", condition);
+
+    let price_init = parseInt("${e://Field/price_init}");
+    let price_incr = parseInt("${e://Field/price_incr}");
+    let disc_rate = parseFloat("${e://Field/disc_rate}");
+
     const qid = this.questionId;
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -21,11 +29,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let switch_row;
     let value;
 
-    editLabels(qid, 1, 5, 0.5);
+    editLabels(qid, price_init, price_incr, disc_rate);
     add_button_events();
     let nextbutton = document.getElementById("NextButton");
     nextbutton.onclick = function() {
-        alert("next button was clicked");
+        //alert("next button was clicked");
         findSwitchPoint(qid);
         if (isLedLeft()) {
             value = 1;
