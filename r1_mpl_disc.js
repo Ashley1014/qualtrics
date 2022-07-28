@@ -13,9 +13,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let condition = "${e://Field/Condition}";
     console.log("condition is ", condition);
 
-    let price_init = parseInt("${e://Field/price_init}");
-    let price_incr = parseInt("${e://Field/price_incr}");
+    let hal_init = parseInt("${e://Field/hal_init}");
+    let hal_incr = parseInt("${e://Field/hal_incr}");
     let disc_rate = parseFloat("${e://Field/disc_rate}");
+    let led_init_ori = parseInt("${e://Field/led_init_ori}");
+    let led_incr_ori = parseInt("${e://Field/led_incr_ori}");
 
     const qid = this.questionId;
     let radio1 = document.getElementsByTagName("input");
@@ -29,7 +31,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let switch_row;
     let value;
 
-    editLabels(qid, price_init, price_incr, disc_rate);
+    editLabels(qid, led_init_ori, led_incr_ori, hal_init, hal_incr, disc_rate);
+
     add_button_events();
     let nextbutton = document.getElementById("NextButton");
     nextbutton.onclick = function() {
@@ -88,11 +91,13 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * Randomizes the header label position and generates choice values according to the main mpl switch
      point, with LED prices being discounted.
      * @param QID - the question id
-     * @param switchpoint - the switch point of the main mpl question if there's any
-     * @param inita - the initial value of choice A options
-     * @param disc_rate - the rate of discount
+     * @param led_init - the initial value of LED ** original ** price
+     * @param led_incr - the increment value of LED ** original ** price
+     * @param hal_init - the initial value of halogen price
+     * @param hal_incr - the increment value of halogen price
+     * @param disc_rate - the rate of discount = final LED price / original LED price
      */
-    function editLabels(QID, inita, incra, disc_rate) {
+    function editLabels(QID, led_init, led_incr, hal_init, hal_incr, disc_rate) {
         const question = document.getElementById(qid);
         const rows = question.getElementsByClassName("ChoiceRow");
         //const rows = document.getElementsByClassName("ChoiceRow");
@@ -105,21 +110,21 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>LED 4-pack</em></u><br /><strong><s>$"+(inita+i*incra).toString()+"</s><span style=\"color:red\"> $" + ((inita+i*incra)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>Halogen 4-pack</em></u><br /><strong>$"+(inita+(len-1-i)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>LED 4-pack</em></u><br /><strong><s>$"+(led_init+i*led_incr).toString()+"</s><span style=\"color:red\"> $" + ((led_init+i*led_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>Halogen 4-pack</em></u><br /><strong>$"+(hal_init+i*hal_incr).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+(inita+i*incra).toString()+"</s><span style=\"color:red\"> $" + ((inita+i*incra)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(inita+(len-1-i)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+(led_init+i*led_incr).toString()+"</s><span style=\"color:red\"> $" + ((led_init+i*led_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(hal_init+i*hal_incr).toString()+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>LED 4-pack</em></u><br /><strong><s>$"+(inita+(len-1-i)*incra).toString()+"</s><span style=\"color:red\"> $" + ((inita+(len-1-i)*incra)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>Halogen 4-pack</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>LED 4-pack</em></u><br /><strong><s>$"+(led_init+i*led_incr).toString()+"</s><span style=\"color:red\"> $" + ((led_init+i*led_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>Halogen 4-pack</em></u><br /><strong>$"+(hal_init+i*hal_incr).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+(inita+(len-1-i)*incra).toString()+"</s><span style=\"color:red\"> $" + ((inita+(len-1-i)*incra)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+(led_init+i*led_incr).toString()+"</s><span style=\"color:red\"> $" + ((led_init+i*led_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(hal_init+i*hal_incr).toString()+"</strong>";
                 }
             }
         }
@@ -242,17 +247,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
         var lower_bound_led;
         var lower_bound_hal;
-        if (lower_led === 0) {
-            const text_led = document.getElementById(ida_lower).textContent;
-            lower_bound_led = text_led.substring(text_led.indexOf('$') + 1);
-        } if (lower_hal === 0) {
-            const text_hal = document.getElementById(idb_lower).textContent;
-            lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1);
-        }
-        else {
-            lower_bound_led = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_hal = document.getElementById(idb_lower).textContent.substring(1);
-        }
+        const text_led = document.getElementById(ida_lower).textContent;
+        lower_bound_led = text_led.substring(text_led.lastIndexOf('$') + 1);
+        const text_hal = document.getElementById(idb_lower).textContent;
+        lower_bound_hal = text_hal.substring(text_hal.lastIndexOf('$') + 1);
+        // lower_bound_led = document.getElementById(ida_lower).textContent.substring(1);
+        // lower_bound_hal = document.getElementById(idb_lower).textContent.substring(1);
         // const upper_bound_led = document.getElementById(ida_upper).textContent.substring(1);
         // const upper_bound_hal = document.getElementById(idb_upper).textContent.substring(1);
         // lower_bound = Number(lower_bound_led) - Number(lower_bound_hal);
