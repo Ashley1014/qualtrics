@@ -147,9 +147,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("your switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint", switch_point);
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r1", switch_point);
         if (Number(sp) === 3) {
-            Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main", switch_row);
+            Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r1", switch_row);
         }
         //return switch_row;
     }
@@ -252,11 +252,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const upper_bound_hal = document.getElementById(idb_upper).textContent.substring(1);
         // lower_bound = Number(lower_bound_led) - Number(lower_bound_hal);
         // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_led", lower_bound_led);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_hal", lower_bound_hal);
-        console.log("testing r1_mpl_v2");
-        console.log("lower bound led is ", lower_bound_led);
-        console.log("lower bound hal is ", lower_bound_hal);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_led);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r1", lower_bound_hal);
+        console.log("testing r1_mpl");
+        console.log("lower bound eff is ", lower_bound_led);
+        console.log("lower bound trad is ", lower_bound_hal);
     }
 });
 

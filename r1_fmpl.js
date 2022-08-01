@@ -12,9 +12,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
     //console.log(qid);
-    const switchpoint = parseInt("${e://Field/switchpoint}");
-    const led = parseInt("${e://Field/lower_bound_main_led}");
-    const hal = parseInt("${e://Field/lower_bound_main_hal}");
+    const switchpoint = parseInt("${e://Field/switchpoint_main_r1}");
+    const led = parseInt("${e://Field/lower_bound_eff_main_r1}");
+    const hal = parseInt("${e://Field/lower_bound_trad_main_r1}");
     let basenum;
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -98,15 +98,15 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function editLabels(QID, switchpoint, led, hal) {
         const rows = document.getElementsByClassName("ChoiceRow");
         const len = rows.length;
-        let sp = parseInt("${e://Field/switchpoint}");
+        let sp = parseInt("${e://Field/switchpoint_main_r1}");
         let ledLeft = isLedLeft();
         let init_led;
         let init_hal;
         let incr_led;
         let incr_hal;
         if (sp === 3) {
-            init_led = parseInt("${e://Field/lower_bound_main_led}");
-            init_hal = parseInt("${e://Field/lower_bound_main_hal}");
+            init_led = parseInt("${e://Field/lower_bound_eff_main_r1}");
+            init_hal = parseInt("${e://Field/lower_bound_trad_main_r1}");
             if (ledLeft) {
                 incr_led = 1;
                 incr_hal = -1;
@@ -117,7 +117,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         // all led being chosen
         else if (sp === 1) {
-            init_led = parseInt("${e://Field/lower_bound_main_led}");
+            init_led = parseInt("${e://Field/lower_bound_eff_main_r1}");
             init_hal = 1;
             // all choice a has been chosen
             if (ledLeft) {
@@ -133,7 +133,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // all hal being chosen
         else {
             init_led = 1;
-            init_hal = parseInt("${e://Field/lower_bound_main_hal}");
+            init_hal = parseInt("${e://Field/lower_bound_trad_main_r1}");
             // all choice b has been chosen
             if (ledLeft) {
                 incr_hal = -5;
@@ -204,8 +204,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("your switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_fmpl", switch_point);
-        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_fmpl", switch_row);
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_fmpl_r1", switch_point);
+        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_fmpl_r1", switch_row);
         //return switch_row;
     }
 
@@ -335,20 +335,20 @@ Qualtrics.SurveyEngine.addOnReady(function()
         console.log("lower bound hal is ", lower_bound_hal);
         console.log("upper bound led is ", upper_bound_led);
         console.log("upper bound hal is ", upper_bound_hal);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_led", upper_bound_led);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_hal", upper_bound_hal);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_led", lower_bound_led);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_hal", lower_bound_hal);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r1", upper_bound_led);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad_r1", upper_bound_hal);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_r1", lower_bound_led);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_r1", lower_bound_hal);
         let lower_bound = Number(lower_bound_led - lower_bound_hal);
         let upper_bound = Number(upper_bound_led - upper_bound_hal);
         let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
         let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
         console.log("upper bound wtp is ", upper_bound_cp);
         console.log("lower bound wtp is ", lower_bound_cp);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp", lower_bound_cp);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp", upper_bound_cp);
-        Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_led", lower_bound_led);
-        Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_hal", lower_bound_hal);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r1", lower_bound_cp);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r1", upper_bound_cp);
+        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_led", lower_bound_led);
+        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_hal", lower_bound_hal);
     }
 
     /**
