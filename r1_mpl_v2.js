@@ -88,8 +88,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function editLabels(QID, inita, incra) {
         let num = parseInt("${e://Field/display_order}");
-        let choice_a = "${e://Field/choice_a}";
-        let choice_b = "${e://Field/choice_b}";
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
         //console.log(num);
         const rows = document.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
@@ -97,8 +97,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + choice_a + " power strip</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + choice_b + " power strip</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
@@ -106,8 +106,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + choice_b + " power strip</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + choice_a + " power strip</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";

@@ -96,8 +96,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param hal - the initial value of choice B options
      */
     function editLabels(QID, switchpoint, led, hal) {
-        let choice_a = "${e://Field/choice_a}";
-        let choice_b = "${e://Field/choice_b}";
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
         const rows = document.getElementsByClassName("ChoiceRow");
         const len = rows.length;
         let sp = parseInt("${e://Field/switchpoint_main_r1}");
@@ -154,8 +154,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + choice_a + " power strip</em></u><br /><strong>$"+(init_led+i*incr_led).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + choice_b + " power strip</em></u><br /><strong>$"+(init_hal+i*incr_hal).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_led+i*incr_led).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_hal+i*incr_hal).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong>$"+(init_led+i*incr_led).toString()+"</strong>";
@@ -163,8 +163,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + choice_b + " power strip</em></u><br /><strong>$"+(init_led+i*incr_led).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + choice_a + " power strip</em></u><br /><strong>$"+(init_hal+i*incr_hal).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_led+i*incr_led).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_hal+i*incr_hal).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong>$"+(init_led+i*incr_led).toString()+"</strong>";
