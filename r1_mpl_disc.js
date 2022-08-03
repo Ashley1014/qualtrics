@@ -8,7 +8,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    console.log("testing r1_mpl_disc");
+    //console.log("testing r1_mpl_disc");
 
     let condition = "${e://Field/Condition}";
     console.log("condition is ", condition);
@@ -18,6 +18,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let disc_rate = parseFloat("${e://Field/disc_rate}");
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
+
+    // console.log("trad init is ", trad_init);
+    // console.log("trad incr is ", trad_incr);
+    // console.log("eff init is ", eff_incr_ori);
+    // console.log("eff incr is ", eff_incr_ori);
 
     const qid = this.questionId;
     let radio1 = document.getElementsByTagName("input");
@@ -165,8 +170,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("your switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_disc", switch_point);
-        //return switch_row;
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r1", switch_point);
+        if (Number(sp) === 3) {
+            Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r1", switch_row);
+        }
     }
 
     function findCheckedValue(index) {
@@ -260,8 +267,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
         // lower_bound = Number(lower_bound_eff) - Number(lower_bound_trad);
         // upper_bound = Number(upper_bound_eff) - Number(upper_bound_trad);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_eff_disc_main", lower_bound_eff);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_trad_disc_main", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_eff);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r1", lower_bound_trad);
+        console.log("testing r1_mpl_disc");
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
     }
