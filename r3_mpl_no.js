@@ -36,7 +36,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let nextbutton = document.getElementById("NextButton");
 
     nextbutton.onclick = function() {
-        alert("next button was clicked");
+        //alert("next button was clicked");
         findSwitchPoint(qid);
         if (iseffLeft()) {
             value = 1;
