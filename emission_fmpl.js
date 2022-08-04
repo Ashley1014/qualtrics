@@ -9,7 +9,6 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    console.log("testing emission fmpl");
     const qid = this.questionId;
     //console.log(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_emission_main}");
@@ -192,6 +191,7 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         let upper_bound;
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
+        console.log("testing emission fmpl");
         console.log("lower bound is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_emissions", lower_bound);
         if (Number(sp) === 1) {

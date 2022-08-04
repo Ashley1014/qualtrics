@@ -1,4 +1,4 @@
-// for R1_cost_mpl
+// for cost_mpl
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -9,7 +9,6 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    console.log("testing cost mpl");
     const qid = this.questionId;
     let basenum;
     add_button_events();
@@ -23,7 +22,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let nextbutton = document.getElementById("NextButton");
 
     nextbutton.onclick = function() {
-        alert("next button was clicked");
+        //alert("next button was clicked");
         findSwitchPoint(qid);
         if (isLedLeft()) {
             value = 1;
@@ -171,6 +170,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound;
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
+        console.log("testing cost mpl");
         console.log("lower bound yes is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_cost_yes", lower_bound);
     }

@@ -1,4 +1,4 @@
-// for R1_emission_mpl
+// for emission_mpl
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -9,7 +9,6 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    console.log("testing emission main");
     const qid = this.questionId;
     let basenum;
     let len;
@@ -23,7 +22,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let nextbutton = document.getElementById("NextButton");
 
     nextbutton.onclick = function() {
-        alert("next button was clicked");
+        //alert("next button was clicked");
         findSwitchPoint(qid);
         if (isLedLeft()) {
             value = 1;
@@ -172,6 +171,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound;
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
+        console.log("testing emission main");
         console.log("lower bound yes is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_emission_yes", lower_bound);
     }

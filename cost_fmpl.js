@@ -9,7 +9,6 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    console.log("testing cost fmpl");
     const qid = this.questionId;
     //console.log(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_cost_main}");
@@ -193,6 +192,7 @@ Qualtrics.SurveyEngine.addOnUnload(function()
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
         //console.log("it's just a dummy test for cost fmpl");
+        console.log("testing cost fmpl");
         console.log("lower bound is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_cost", lower_bound);
         if (Number(sp) === 1) {
