@@ -77,8 +77,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function populateChoices() {
-        let wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
-        let wtp_lower = wtp_upper-1;
+        //let wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
+        //let wtp_lower = wtp_upper-1;
 
         checkRevised();
 
