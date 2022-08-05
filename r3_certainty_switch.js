@@ -7,7 +7,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 
 Qualtrics.SurveyEngine.addOnReady(function()
 {
-    console.log("testing r3_certainty_switch");
+    console.log("testing r1_certainty_switch");
     /*Place your JavaScript here to run when the page is fully displayed*/
     //console.log("ready?");
     const switchpoint = parseInt("${e://Field/switchpoint_fmpl_r3}");
@@ -16,24 +16,19 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const certaintyQs = questions.getElementsByClassName("QuestionOuter");
     let sp;
     if (switchpoint === 3) {
-        certaintyQs[0].style.display = "block";
-        certaintyQs[1].style.display = "block";
-        certaintyQs[2].style.display = "block";
-        certaintyQs[3].style.display = "none";
-        certaintyQs[4].style.display = "none";
-    } else if (switchpoint===1) {
-        certaintyQs[0].style.display = "block";
-        certaintyQs[1].style.display = "none";
-        certaintyQs[2].style.display = "none";
-        certaintyQs[3].style.display = "block";
-        certaintyQs[4].style.display = "none";
+        sp = 1;
     } else {
-        certaintyQs[0].style.display = "block";
-        certaintyQs[1].style.display = "none";
-        certaintyQs[2].style.display = "none";
-        certaintyQs[3].style.display = "none";
-        certaintyQs[4].style.display = "block";
+        sp = switchpoint + 1;
     }
+    for (let i = 0; i <= 3; i++) {
+        //let disp = certaintyQs[i].style.display;
+        if (i === sp) {
+            certaintyQs[i].style.display = "block";
+        } else {
+            certaintyQs[i].style.display = "none";
+        }
+    }
+
 });
 
 Qualtrics.SurveyEngine.addOnUnload(function()

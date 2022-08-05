@@ -1,4 +1,4 @@
-//for R3_mpl_no
+//for R3_mpl_no_disc
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -29,7 +29,13 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
 
-    editLabels(qid, price_init, price_incr);
+    let trad_init = parseInt("${e://Field/trad_init}");
+    let trad_incr = parseInt("${e://Field/trad_incr}");
+    let disc_rate = parseFloat("${e://Field/disc_rate}");
+    let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
+    let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
+
+    editLabels(qid, eff_init_ori, eff_incr_ori, trad_init, trad_incr, disc_rate);
     populateChoices();
     add_button_events();
 
@@ -125,33 +131,47 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
 
-    function editLabels(QID, inita, incra) {
-        let num = parseInt("${e://Field/display_order}");
+    /**
+     * Randomizes the header label position and generates choice values according to the main mpl switch
+     point, with eff prices being discounted.
+     * @param QID - the question id
+     * @param eff_init - the initial value of eff ** original ** price
+     * @param eff_incr - the increment value of eff ** original ** price
+     * @param trad_init - the initial value of tradogen price
+     * @param trad_incr - the increment value of tradogen price
+     * @param disc_rate - the rate of discount = final eff price / original eff price
+     */
+    function editLabels(QID, eff_init, eff_incr, trad_init, trad_incr, disc_rate) {
+        const question = document.getElementById(qid);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        //const rows = document.getElementsByClassName("ChoiceRow");
+        const len = rows.length;
+
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
-        //let num = 0;
+
+        let num = parseInt("${e://Field/display_order}");
         //console.log(num);
-        const rows = document.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
             }
         }
@@ -310,26 +330,18 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
         const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-       // console.log("lower bound for eff is ", ida_lower);
+        // console.log("lower bound for eff is ", ida_lower);
         //console.log("lower bound for tradogen is ", idb_lower);
         var lower_bound_eff;
         var lower_bound_trad;
-        if (lower_eff === 0) {
-            const text_eff = document.getElementById(ida_lower).textContent;
-            lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        } if (lower_trad === 0) {
-            const text_trad = document.getElementById(idb_lower).textContent;
-            lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
-        }
-        else {
-            lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
-        }
-
+        const text_eff = document.getElementById(ida_lower).textContent;
+        lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
+        const text_trad = document.getElementById(idb_lower).textContent;
+        lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$') + 1);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
         //console.log("it's just a dummy test for r3 mpl no");
-        console.log("testing r3 mpl no");
+        console.log("testing r3 mpl no disc");
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
     }

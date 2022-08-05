@@ -118,7 +118,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
                     document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
                 else {
@@ -127,7 +127,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
                     document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
                 }
                 else {

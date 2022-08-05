@@ -29,10 +29,26 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         value = 2;
     }
 
+    let not_revised;
+
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
 
-    if (!notRevised(price_incr, 5, price_init)) {
+    let trad_init = parseInt("${e://Field/trad_init}");
+    let trad_incr = parseInt("${e://Field/trad_incr}");
+    let disc_rate = parseFloat("${e://Field/disc_rate}");
+    let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
+    let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
+
+    let assignment = parseInt("${e://Field/assignment}");
+    if (assignment === 6 || assignment === 16) {
+        not_revised = notRevised_v2(5, eff_init_ori * disc_rate, eff_incr_ori * disc_rate, trad_init, trad_incr );
+    }
+    else {
+        not_revised = notRevised_v1(price_incr, 5, price_init);
+    }
+
+    if (!not_revised) {
         //if (r3_yes_revised === 1) {
         //console.log("has been revised!");
         question.style.display = "none";
@@ -138,8 +154,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         //else {
         const text_eff = document.getElementById(ida_lower).textContent;
         const text_trad = document.getElementById(idb_lower).textContent;
-        lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        lower_bound_trad = text_trad.substring(text_trad.indexOf('$') + 1);
+        lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
+        lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$') + 1);
         //}
 
         if (Number(sp) === 3) {
@@ -181,12 +197,13 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     }
 
     /**
+     * check whether or not revised for non-discount versions
      * return true if not been revised, return false if has been revised.
      * @param interval the intervals of the price lists, must be a positive number
      * @param decision_num number of decisions in ** main mpl **
      * @param init_val
      */
-    function notRevised(interval, decision_num, init_val) {
+    function notRevised_v1(interval, decision_num, init_val) {
         // eff is on the left
         let upper_bound_wtp = interval * (decision_num - 1);
         let lower_bound_wtp = -interval * (decision_num - 1);
@@ -212,6 +229,46 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 notRevised = revised_wtp >= init_wtp && revised_wtp <= init_wtp + 2 * interval;
             } else {
                 notRevised = revised_wtp >= init_wtp - 2 * interval && revised_wtp <= init_wtp;
+            }
+        }
+        return notRevised;
+    }
+
+    /**
+     * check whether or not revised for discount versions
+     * return true if not been revised, return false if has been revised.
+     * @param decision_num the number of decisions
+     * @param eff_init_val the initial value of efficient price list
+     * @param incr_eff the increment of efficient price list
+     * @param trad_init_val the initial value of traditional price list
+     * @param incr_trad the increment of traditional price list
+     */
+    function notRevised_v2(decision_num, eff_init_val, incr_eff, trad_init_val, incr_trad) {
+        // eff is on the left
+        let upper_bound_wtp = Math.max(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
+        let lower_bound_wtp = Math.min(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
+        let notRevised;
+        let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
+        let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
+        let init_wtp = init_eff - init_trad;
+        // want to check whether the revised_wtp is within the range
+        if (revised_wtp < lower_bound_wtp) {
+            if (iseffLeft()) {
+                return init_eff <= eff_init_val;
+            } else {
+                return init_trad >= init_trad + incr_trad * (decision_num-1);
+            }
+        } else if (revised_wtp > upper_bound_wtp) {
+            if (iseffLeft()) {
+                return init_eff >= eff_init_val + incr_eff * (decision_num-1);
+            } else {
+                return init_trad <= init_trad;
+            }
+        } else {
+            if (iseffLeft()) {
+                notRevised = revised_wtp >= init_wtp && revised_wtp <= init_wtp + incr_eff - incr_trad;
+            } else {
+                notRevised = revised_wtp >= (init_wtp + incr_eff - incr_trad) && revised_wtp <= init_wtp;
             }
         }
         return notRevised;
@@ -335,13 +392,13 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             const idb_upper = qid + "-" + (i + basenum + 1).toString() + "-" + trad_value.toString() +"-label";
             //console.log("idb_upper is ", idb_upper);
             let eff_text_lower = document.getElementById(ida_lower).textContent;
-            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
+            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.lastIndexOf("$")+1));
             let eff_text_upper = document.getElementById(ida_upper).textContent;
-            let eff_num_upper = Number(eff_text_upper.substring(eff_text_upper.indexOf("$")+1));
+            let eff_num_upper = Number(eff_text_upper.substring(eff_text_upper.lastIndexOf("$")+1));
             let trad_text_lower = document.getElementById(idb_lower).textContent;
-            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
+            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.lastIndexOf("$")+1));
             let trad_text_upper = document.getElementById(idb_upper).textContent;
-            let trad_num_upper = Number(trad_text_upper.substring(trad_text_upper.indexOf("$")+1));
+            let trad_num_upper = Number(trad_text_upper.substring(trad_text_upper.lastIndexOf("$")+1));
             lower_bound = Math.min((eff_num_lower - trad_num_lower), (eff_num_upper - trad_num_upper));
             upper_bound = Math.max((eff_num_lower - trad_num_lower), (eff_num_upper - trad_num_upper));
             //console.log("lower bound is ", lower_bound);
@@ -360,9 +417,9 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             const ida_lower = qid + "-" + (len-1 + basenum).toString() + "-" + eff_value.toString() +"-label";
             const idb_lower = qid + "-" + (len-1 + basenum).toString() + "-" + trad_value.toString() +"-label";
             let eff_text_lower = document.getElementById(ida_lower).textContent;
-            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
+            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.lastIndexOf("$")+1));
             let trad_text_lower = document.getElementById(idb_lower).textContent;
-            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
+            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.lastIndexOf("$")+1));
             let min_wtp = eff_num_lower - trad_num_lower;
             if (wtp_lower < min_wtp) {
                 row = len - 1;
