@@ -13,8 +13,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const qid = this.questionId;
     //console.log(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_main_r2}");
-    const eff = parseInt("${e://Field/lower_bound_eff_main_r2}");
-    const trad = parseInt("${e://Field/lower_bound_trad_main_r2}");
+    let price_init = parseInt("${e://Field/price_init}");
+    let price_incr = parseInt("${e://Field/price_incr}");
+    const eff = parseFloat("${e://Field/fmpl_eff_init_r2}");
+    const trad = parseFloat("${e://Field/fmpl_trad_init_r2}");
+    let fmpl_eff_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+    let fmpl_trad_incr = parseFloat("${e://Field/trad_fmpl_incr}");
     let basenum;
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -24,7 +28,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     //console.log("switch point is ", switchpoint);
     //console.log("eff price is ", eff);
     //console.log("trad price is ", trad);
-    editLabels(qid, switchpoint, eff, trad);
+    editLabels(qid, switchpoint, eff, trad, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
     add_button_events();
 
     let len;
@@ -94,8 +98,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param switchpoint - the switch point of the main mpl question if there's any
      * @param eff - the initial value of choice A options
      * @param trad - the initial value of choice B options
+     * @param price_init
+     * @param price_incr
+     * @param fmpl_eff_incr
+     * @param fmpl_trad_incr
      */
-    function editLabels(QID, switchpoint, eff, trad) {
+    function editLabels(QID, switchpoint, eff, trad, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr ) {
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
         const rows = document.getElementsByClassName("ChoiceRow");
@@ -107,43 +115,38 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let incr_eff;
         let incr_trad;
         if (sp === 3) {
-            init_eff = parseInt("${e://Field/lower_bound_eff_main_r2}");
-            init_trad = parseInt("${e://Field/lower_bound_trad_main_r2}");
-            if (effLeft) {
-                incr_eff = 1;
-                incr_trad = -1;
-            } else {
-                incr_eff = -1;
-                incr_trad = 1;
-            }
+            init_eff = eff;
+            init_trad = trad;
+            incr_eff = fmpl_eff_incr;
+            incr_trad = fmpl_trad_incr;
         }
         // all eff being chosen
         else if (sp === 1) {
-            init_eff = parseInt("${e://Field/lower_bound_eff_main_r2}");
-            init_trad = 1;
+            init_eff = eff;
+            init_trad = price_init;
             // all choice a has been chosen
             if (effLeft) {
-                incr_eff = 5;
+                incr_eff = price_incr;
                 incr_trad = 0;
             }
             // all choice b has been chosen
             else {
-                incr_eff = -5;
+                incr_eff = -price_incr;
                 incr_trad = 0;
             }
         }
         // all trad being chosen
         else {
-            init_eff = 1;
-            init_trad = parseInt("${e://Field/lower_bound_trad_main_r2}");
+            init_eff = price_init;
+            init_trad = trad;
             // all choice b has been chosen
             if (effLeft) {
-                incr_trad = -5;
+                incr_trad = -price_incr;
                 incr_eff = 0;
             }
             // all choice a has been chosen
             else {
-                incr_trad = 5;
+                incr_trad = price_incr;
                 incr_eff = 0;
             }
         }

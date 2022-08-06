@@ -34,7 +34,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     nextbutton.onclick = function() {
         //alert("next button was clicked");
         findSwitchPoint(qid);
-        if (isLedLeft()) {
+        if (iseffLeft()) {
             value = 1;
         } else {
             value = 2;
@@ -141,8 +141,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         //console.log("curr_val is ", curr_val);
         if (prev_val === curr_val) {
-            // set switch_point to 1 if all LED choices have been selected;
-            // set switch_point to 2 if all halogen choices have been selected;
+            // set switch_point to 1 if all eff choices have been selected;
+            // set switch_point to 2 if all tradogen choices have been selected;
             switch_point = findSwitchPoint_h(curr_val);
             switch_row = len-1;
         }
@@ -172,12 +172,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      * returns the type of switch point given by the value of switch point.
      * @param value the value of selected choices.
-     * @returns {number} - 1 if all LED choices have been selected, 2 if all halogen choices have been selected.
+     * @returns {number} - 1 if all eff choices have been selected, 2 if all tradogen choices have been selected.
      */
     function findSwitchPoint_h(value) {
         let switch_point;
         // let num = parseInt("${e://Field/display_order}");
-        if (isLedLeft()) {
+        if (iseffLeft()) {
             switch_point = value;
         } else {
             switch_point = 3-value;
@@ -185,7 +185,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return switch_point;
     }
 
-    function isLedLeft() {
+    function iseffLeft() {
         let num = parseInt("${e://Field/display_order}");
         return num === 0;
     }
@@ -193,72 +193,77 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      *
      * @param QID
-     * @param value the value of LED choices
+     * @param value the value of eff choices
      */
     function calculate_wtp(QID, value) {
         let lower_bound;
         let upper_bound;
+
+        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
         //const rows = document.getElementsByClassName("ChoiceRow");
 
-        let lower_led;
-        let lower_hal;
+        let lower_eff;
+        let lower_trad;
 
         //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
-            lower_led = switch_row;
-            lower_hal = switch_row;
+            lower_eff = switch_row;
+            lower_trad = switch_row;
         } else if (Number(sp) === 1) {
-            if (isLedLeft()) {
-                //console.log("all led chosen, led is left.");
-                lower_led = len - 1;
-                lower_hal = len - 1;
-                //console.log("lower led bound is ", lower_led);
+            if (iseffLeft()) {
+                //console.log("all eff chosen, eff is left.");
+                lower_eff = len - 1;
+                lower_trad = len - 1;
+                //console.log("lower eff bound is ", lower_eff);
             } else {
-                //console.log("all led chosen, led is right.");
-                lower_led = 0;
-                lower_hal = 0;
-                //console.log("lower led bound is ", lower_led);
+                //console.log("all eff chosen, eff is right.");
+                lower_eff = 0;
+                lower_trad = 0;
+                //console.log("lower eff bound is ", lower_eff);
             }
         } else {
             //console.log("inside else");
-            if (isLedLeft()) {
-                lower_led = 0;
-                lower_hal = 0;
+            if (iseffLeft()) {
+                lower_eff = 0;
+                lower_trad = 0;
             } else {
-                lower_led = len - 1;
-                lower_hal = len - 1;
+                lower_eff = len - 1;
+                lower_trad = len - 1;
             }
         }
-        const ida_lower = QID+"-"+(lower_led+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_hal+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for led is ", ida_lower);
-        //console.log("lower bound for halogen is ", idb_lower);
+        const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
+        const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
+        //console.log("lower bound for eff is ", ida_lower);
+        //console.log("lower bound for tradogen is ", idb_lower);
         // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
         // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
-        var lower_bound_led;
-        var lower_bound_hal;
-        if (lower_led === 0) {
-            const text_led = document.getElementById(ida_lower).textContent;
-            lower_bound_led = text_led.substring(text_led.indexOf('$') + 1);
-        } if (lower_hal === 0) {
-            const text_hal = document.getElementById(idb_lower).textContent;
-            lower_bound_hal = text_hal.substring(text_hal.indexOf('$')+1);
+        var lower_bound_eff;
+        var lower_bound_trad;
+        if (lower_eff === 0) {
+            const text_eff = document.getElementById(ida_lower).textContent;
+            lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
+        } if (lower_trad === 0) {
+            const text_trad = document.getElementById(idb_lower).textContent;
+            lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
         }
         else {
-            lower_bound_led = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_hal = document.getElementById(idb_lower).textContent.substring(1);
+            lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
+            lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
         }
-        // const upper_bound_led = document.getElementById(ida_upper).textContent.substring(1);
-        // const upper_bound_hal = document.getElementById(idb_upper).textContent.substring(1);
-        // lower_bound = Number(lower_bound_led) - Number(lower_bound_hal);
-        // upper_bound = Number(upper_bound_led) - Number(upper_bound_hal);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r2", lower_bound_led);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r2", lower_bound_hal);
+        // const upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
+        // const upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
+        // lower_bound = Number(lower_bound_eff) - Number(lower_bound_trad);
+        // upper_bound = Number(upper_bound_eff) - Number(upper_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r2", lower_bound_eff);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r2", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r2", Number(lower_bound_eff) + eff_fmpl_incr);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r2", Number(lower_bound_trad) + trad_fmpl_incr);
         console.log("testing r2_mpl");
-        console.log("lower bound eff is ", lower_bound_led);
-        console.log("lower bound trad is ", lower_bound_hal);
+        console.log("lower bound eff is ", lower_bound_eff);
+        console.log("lower bound trad is ", lower_bound_trad);
     }
 });
 
