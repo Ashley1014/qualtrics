@@ -248,6 +248,13 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
     function getBoundByRow(QID, row, value) {
         let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
         let text = document.getElementById(id).textContent;
@@ -262,8 +269,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param trad_incr
      */
     function calculate_wtp(QID, value, eff_incr, trad_incr) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-
         let lower_eff;
         let lower_trad;
         let upper_eff;
@@ -273,8 +278,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound_trad;
         let upper_bound_eff;
         let upper_bound_trad;
-
-        //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
@@ -340,8 +343,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r1", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r1", upper_bound_cp);
-        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_eff", lower_bound_eff);
-        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_trad", lower_bound_trad);
     }
 
     /**

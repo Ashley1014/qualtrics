@@ -45,7 +45,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         } else {
             value = 2;
         }
-        calculate_wtp(qid, value, 1);
+        calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr);
     };
 
     function add_button_events(){
@@ -248,22 +248,36 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
-
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row, value) {
+        let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
+        let text = document.getElementById(id).textContent;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+    
     /***
      *
      * @param QID
      * @param value the value of eff choices
-     * @param incr the increment of price list
+     * @param eff_incr the increment of price list
+     * @param trad_incr
      */
-    function calculate_wtp(QID, value, incr) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-
+    function calculate_wtp(QID, value, eff_incr, trad_incr) {
         let lower_eff;
         let lower_trad;
         let upper_eff;
         let upper_trad;
 
-        //console.log("sp is ", sp.type);
+        let lower_bound_eff;
+        let lower_bound_trad;
+        let upper_bound_eff;
+        let upper_bound_trad;
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
@@ -271,65 +285,47 @@ Qualtrics.SurveyEngine.addOnReady(function()
             lower_trad = switch_row;
             upper_eff = switch_row + 1;
             upper_trad = switch_row + 1;
+            lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+            lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+            upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+            upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
         } else if (Number(sp) === 1) {
             if (iseffLeft()) {
                 //console.log("all eff chosen, eff is left.");
                 lower_eff = len - 1;
                 lower_trad = len - 1;
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                upper_bound_eff = Number(lower_bound_eff) + eff_incr;
+                upper_bound_trad = Number(lower_bound_trad) + trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
             } else {
                 //console.log("all eff chosen, eff is right.");
-                lower_eff = 0;
-                lower_trad = 0;
+                upper_eff = 0;
+                upper_trad = 0;
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                lower_bound_eff = Number(upper_bound_eff) - eff_incr;
+                lower_bound_trad = Number(upper_bound_trad) - trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
             }
         } else {
             //console.log("inside else");
             if (iseffLeft()) {
-                lower_eff = 0;
-                lower_trad = 0;
+                upper_eff = 0;
+                upper_trad = 0;
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                lower_bound_eff = Number(upper_bound_eff) - eff_incr;
+                lower_bound_trad = Number(upper_bound_trad) - trad_incr;
             } else {
                 lower_eff = len - 1;
                 lower_trad = len - 1;
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                upper_bound_eff = Number(lower_bound_eff) + eff_incr;
+                upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
-        }
-        const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for eff is ", ida_lower);
-        //console.log("lower bound for tradogen is ", idb_lower);
-
-        let lower_bound_eff;
-        let lower_bound_trad;
-        let upper_bound_eff;
-        let upper_bound_trad;
-        // if (lower_eff === 0) {
-        //     const text_eff = document.getElementById(ida_lower).textContent;
-        //     lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        // } if (lower_trad === 0) {
-        //     const text_trad = document.getElementById(idb_lower).textContent;
-        //     lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
-        // }
-        //else {
-        const text_eff = document.getElementById(ida_lower).textContent;
-        const text_trad = document.getElementById(idb_lower).textContent;
-        lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        lower_bound_trad = text_trad.substring(text_trad.indexOf('$') + 1);
-        //}
-
-        if (Number(sp) === 3) {
-            const ida_upper = QID+"-"+(upper_eff+basenum).toString()+"-"+value.toString()+"-label";
-            const idb_upper = QID+"-"+(upper_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-            upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
-            upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
-        }
-        else if (Number(sp) === 1) {
-            upper_bound_eff = (Number(lower_bound_eff) + incr).toString();
-            upper_bound_trad = (Number(lower_bound_trad) - incr).toString();
-            //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff", upper_bound_eff);
-        } else {
-            upper_bound_trad = (Number(lower_bound_trad) + incr).toString();
-            upper_bound_eff = (Number(lower_bound_eff) - incr).toString();
-            //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad", upper_bound_trad);
         }
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
@@ -347,8 +343,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r2", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r2", upper_bound_cp);
-        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_eff", lower_bound_eff);
-        // Qualtrics.SurveyEngine.setEmbeddedData("initial_list_value_trad", lower_bound_trad);
     }
 
     /**
