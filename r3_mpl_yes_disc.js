@@ -58,13 +58,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * if not, check whether the round3 choices have been revised.
      */
     function checkRevised() {
-        let r3_main = "${e://Field/switchpoint_main_r3}";
-        let r3_row = "${e://Field/switch_row_main_r3}";
+        let r3_main = "${e://Field/switchpoint_main_r3_yes}";
+        let r3_row = "${e://Field/switch_row_main_r3_yes}";
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
-            // let r1_main = parseInt("${e://Field/switchpoint}");
-            // let r1_row = parseInt("${e://Field/switch_row_main}");
             sp = Number(r3_main);
             if (sp === 3) {
                 switch_row = Number(r3_row);
@@ -273,8 +271,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("your switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r3", switch_point);
-        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r3", switch_row);
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r3_yes", switch_point);
+        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r3_yes", switch_row);
         //return switch_row;
     }
 
@@ -322,6 +320,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let lower_eff;
         let lower_trad;
+        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
 
         //console.log("sp is ", sp.type);
 
@@ -353,17 +353,27 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
         const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        // console.log("lower bound for eff is ", ida_lower);
-        // console.log("lower bound for tradogen is ", idb_lower);
+        //console.log("lower bound for eff is ", ida_lower);
+        //console.log("lower bound for tradogen is ", idb_lower);
+        // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
+        // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
         var lower_bound_eff;
         var lower_bound_trad;
         const text_eff = document.getElementById(ida_lower).textContent;
         lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
         const text_trad = document.getElementById(idb_lower).textContent;
         lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$') + 1);
-        console.log("testing r3 mpl yes disc");
+        // lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
+        // lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
+        // const upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
+        // const upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
+        // lower_bound = Number(lower_bound_eff) - Number(lower_bound_trad);
+        // upper_bound = Number(upper_bound_eff) - Number(upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r3", Number(lower_bound_eff) + eff_fmpl_incr);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r3", Number(lower_bound_trad) + trad_fmpl_incr);
+        console.log("testing r3_mpl_disc");
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
     }

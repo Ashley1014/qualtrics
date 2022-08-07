@@ -220,6 +220,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let lower_eff;
         let lower_trad;
+        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
 
         //console.log("sp is ", sp.type);
 
@@ -269,6 +271,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // upper_bound = Number(upper_bound_eff) - Number(upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r1", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r1", Number(lower_bound_eff) + eff_fmpl_incr);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r1", Number(lower_bound_trad) + trad_fmpl_incr);
         console.log("testing r1_mpl_disc");
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);

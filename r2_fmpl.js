@@ -91,66 +91,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
 
-    /**
-     * Randomizes the header label position and generates choice values according to the main mpl switch
-     point.
-     * @param QID - the question id
-     * @param switchpoint - the switch point of the main mpl question if there's any
-     * @param eff - the initial value of choice A options
-     * @param trad - the initial value of choice B options
-     * @param price_init
-     * @param price_incr
-     * @param fmpl_eff_incr
-     * @param fmpl_trad_incr
-     */
-    function editLabels(QID, switchpoint, eff, trad, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr ) {
+    function displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad) {
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
-        const rows = document.getElementsByClassName("ChoiceRow");
-        const len = rows.length;
-        let sp = parseInt("${e://Field/switchpoint_main_r2}");
-        let effLeft = iseffLeft();
-        let init_eff;
-        let init_trad;
-        let incr_eff;
-        let incr_trad;
-        if (sp === 3) {
-            init_eff = eff;
-            init_trad = trad;
-            incr_eff = fmpl_eff_incr;
-            incr_trad = fmpl_trad_incr;
-        }
-        // all eff being chosen
-        else if (sp === 1) {
-            init_eff = eff;
-            init_trad = price_init;
-            // all choice a has been chosen
-            if (effLeft) {
-                incr_eff = price_incr;
-                incr_trad = 0;
-            }
-            // all choice b has been chosen
-            else {
-                incr_eff = -price_incr;
-                incr_trad = 0;
-            }
-        }
-        // all trad being chosen
-        else {
-            init_eff = price_init;
-            init_trad = trad;
-            // all choice b has been chosen
-            if (effLeft) {
-                incr_trad = -price_incr;
-                incr_eff = 0;
-            }
-            // all choice a has been chosen
-            else {
-                incr_trad = price_incr;
-                incr_eff = 0;
-            }
-        }
         let num = parseInt("${e://Field/display_order}");
+        const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
@@ -174,6 +119,108 @@ Qualtrics.SurveyEngine.addOnReady(function()
                     document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
                 }
             }
+        }
+    }
+
+    function displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate) {
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
+        let num = parseInt("${e://Field/display_order}");
+        const rows = document.getElementsByClassName("ChoiceRow");
+        //console.log(num);
+        for (let i = 0; i < rows.length; i++) {
+            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
+            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+            const eff_disc = init_eff + i * incr_eff;
+            const eff_original = eff_disc / disc_rate;
+            if (num === 0) {
+                if (i === 0) {
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            } else {
+                if (i === 0) {
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Randomizes the header label position and generates choice values according to the main mpl switch
+     point.
+     * @param QID - the question id
+     * @param switchpoint - the switch point of the main mpl question if there's any
+     * @param eff - the initial value of choice A options
+     * @param trad - the initial value of choice B options
+     * @param price_init
+     * @param price_incr
+     * @param fmpl_eff_incr
+     * @param fmpl_trad_incr
+     */
+    function editLabels(QID, switchpoint, eff, trad, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
+        // let eff_caps = "${e://Field/efficient_allcaps}";
+        // let trad_caps = "${e://Field/traditional_allcaps}";
+        // const rows = document.getElementsByClassName("ChoiceRow");
+        // const len = rows.length;
+        let sp = parseInt("${e://Field/switchpoint_main_r2}");
+        let effLeft = iseffLeft();
+        let init_eff;
+        let init_trad;
+        let incr_eff;
+        let incr_trad;
+        if (sp === 3) {
+            init_eff = parseFloat("${e://Field/fmpl_eff_init_r2}");
+            init_trad = parseFloat("${e://Field/fmpl_trad_init_r2}");
+            incr_eff = fmpl_eff_incr;
+            incr_trad = fmpl_trad_incr;
+        }
+        // all eff being chosen
+        else if (sp === 1) {
+            init_eff = parseFloat("${e://Field/fmpl_eff_init_r2}");
+            init_trad = price_init;
+            // all choice a has been chosen
+            if (effLeft) {
+                incr_eff = price_incr;
+                incr_trad = 0;
+            }
+            // all choice b has been chosen
+            else {
+                incr_eff = -price_incr;
+                incr_trad = 0;
+            }
+        }
+        // all trad being chosen
+        else {
+            init_eff = price_init;
+            init_trad = parseFloat("${e://Field/fmpl_trad_init_r2}");
+            // all choice b has been chosen
+            if (effLeft) {
+                incr_trad = -price_incr;
+                incr_eff = 0;
+            }
+            // all choice a has been chosen
+            else {
+                incr_trad = price_incr;
+                incr_eff = 0;
+            }
+        }
+        let assignment = parseInt("${e://Field/assignment}");
+        if (assignment === 6 || assignment === 16) {
+            let disc_rate = parseFloat("${e://Field/disc_rate}");
+            displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate);
+        } else {
+            displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad);
         }
     }
 

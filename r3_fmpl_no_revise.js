@@ -236,6 +236,71 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r3", upper_bound_cp);
     }
 
+    function displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad, basenum) {
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
+        let num = parseInt("${e://Field/display_order}");
+        const rows = question.getElementsByClassName("ChoiceRow");
+        //console.log(num);
+        for (let i = 0; i < rows.length; i++) {
+            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
+            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+            if (num === 0) {
+                if (i === 0) {
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(ida).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            } else {
+                if (i === 0) {
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(idb).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            }
+        }
+    }
+
+    function displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate, basenum) {
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
+        let num = parseInt("${e://Field/display_order}");
+        const rows = question.getElementsByClassName("ChoiceRow");
+        //console.log(num);
+        for (let i = 0; i < rows.length; i++) {
+            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
+            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+            const eff_disc = init_eff + i * incr_eff;
+            const eff_original = eff_disc / disc_rate;
+            if (num === 0) {
+                if (i === 0) {
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            } else {
+                if (i === 0) {
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+                else {
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                }
+            }
+        }
+    }
+
+
     /**
      * Randomizes the header label position and generates choice values according to the main mpl switch
      point.
@@ -255,9 +320,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let init_trad;
         let incr_eff;
         let incr_trad;
-
-        let eff_caps = "${e://Field/efficient_allcaps}";
-        let trad_caps = "${e://Field/traditional_allcaps}";
 
         if (sp === 3) {
             init_eff = eff;
@@ -295,30 +357,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 incr_eff = 0;
             }
         }
-        let num = parseInt("${e://Field/display_order}");
-        //console.log(num);
-        for (let i = 0; i < rows.length; i++) {
-            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            if (num === 0) {
-                if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
-                }
-            } else {
-                if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
-                }
-            }
+        let assignment = parseInt("${e://Field/assignment}");
+        if (assignment === 6 || assignment === 16) {
+            let disc_rate = parseFloat("${e://Field/disc_rate}");
+            displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate, basenum);
+        } else {
+            displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad, basenum);
         }
     }
 
