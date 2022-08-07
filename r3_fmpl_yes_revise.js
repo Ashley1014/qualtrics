@@ -15,8 +15,10 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     const qid = this.questionId;
     const question = document.getElementById(qid);
 
-    const eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
-    const trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
+    const eff = parseFloat("${e://Field/fmpl_eff_init_r3}");
+    const trad = parseFloat("${e://Field/fmpl_trad_init_r3}");
+    let fmpl_eff_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+    let fmpl_trad_incr = parseFloat("${e://Field/trad_fmpl_incr}");
     const switchpoint = parseInt("${e://Field/switchpoint_main_r3}");
 
     let radio1 = question.getElementsByTagName("input");
@@ -61,7 +63,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     } else {
         // fmpls[0].style.display = "none";
         //let qid = arr[1];
-        editLabels(qid, switchpoint, eff, trad, basenum);
+        editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
         add_button_events();
         //displayRevised(qid, basenum);
 
@@ -70,7 +72,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         nextbutton.onclick = function() {
             //alert("next button was clicked");
             findSwitchPoint(qid);
-            calculate_wtp(qid, value, basenum, 1);
+            calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr);
         };
     }
 
@@ -90,22 +92,36 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         return str;
     }
 
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row, value) {
+        let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
+        let text = document.getElementById(id).textContent;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+
     /***
      *
      * @param QID
      * @param value the value of eff choices
-     * @param basenum
-     * @param incr the increment of price list
+     * @param eff_incr the increment of price list
+     * @param trad_incr
      */
-    function calculate_wtp(QID, value, basenum, incr) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-
+    function calculate_wtp(QID, value, eff_incr, trad_incr) {
         let lower_eff;
         let lower_trad;
         let upper_eff;
         let upper_trad;
 
-        //console.log("sp is ", sp.type);
+        let lower_bound_eff;
+        let lower_bound_trad;
+        let upper_bound_eff;
+        let upper_bound_trad;
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
@@ -113,71 +129,48 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             lower_trad = switch_row;
             upper_eff = switch_row + 1;
             upper_trad = switch_row + 1;
+            lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+            lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+            upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+            upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
         } else if (Number(sp) === 1) {
             if (iseffLeft()) {
                 //console.log("all eff chosen, eff is left.");
                 lower_eff = len - 1;
                 lower_trad = len - 1;
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                upper_bound_eff = Number(lower_bound_eff) + eff_incr;
+                upper_bound_trad = Number(lower_bound_trad) + trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
             } else {
                 //console.log("all eff chosen, eff is right.");
-                lower_eff = 0;
-                lower_trad = 0;
+                upper_eff = 0;
+                upper_trad = 0;
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                lower_bound_eff = Number(upper_bound_eff) - eff_incr;
+                lower_bound_trad = Number(upper_bound_trad) - trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
             }
         } else {
             //console.log("inside else");
             if (iseffLeft()) {
-                lower_eff = 0;
-                lower_trad = 0;
+                upper_eff = 0;
+                upper_trad = 0;
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                lower_bound_eff = Number(upper_bound_eff) - eff_incr;
+                lower_bound_trad = Number(upper_bound_trad) - trad_incr;
             } else {
                 lower_eff = len - 1;
                 lower_trad = len - 1;
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                upper_bound_eff = Number(lower_bound_eff) + eff_incr;
+                upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
-        const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for eff is ", ida_lower);
-        //console.log("lower bound for tradogen is ", idb_lower);
-
-        let lower_bound_eff;
-        let lower_bound_trad;
-        let upper_bound_eff;
-        let upper_bound_trad;
-        // if (lower_eff === 0) {
-        //     const text_eff = document.getElementById(ida_lower).textContent;
-        //     lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
-        // } if (lower_trad === 0) {
-        //     const text_trad = document.getElementById(idb_lower).textContent;
-        //     lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$')+1);
-        // }
-        //else {
-        const text_eff = document.getElementById(ida_lower).textContent;
-        const text_trad = document.getElementById(idb_lower).textContent;
-        lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
-        lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$') + 1);
-        //}
-
-        if (Number(sp) === 3) {
-            const ida_upper = QID+"-"+(upper_eff+basenum).toString()+"-"+value.toString()+"-label";
-            const idb_upper = QID+"-"+(upper_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-            upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
-            upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
-        }
-        else if (Number(sp) === 1) {
-            upper_bound_eff = (Number(lower_bound_eff) + incr).toString();
-            upper_bound_trad = (Number(lower_bound_trad) - incr).toString();
-            //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff", upper_bound_eff);
-        } else {
-            upper_bound_trad = (Number(lower_bound_trad) + incr).toString();
-            upper_bound_eff = (Number(lower_bound_eff) - incr).toString();
-            //Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad", upper_bound_trad);
-        }
-        // copy of bound fields to store the max/min value of bounds
-        let lower_bound_eff_cp = Math.min(Number(lower_bound_eff), Number(upper_bound_eff));
-        let upper_bound_eff_cp = Math.max(Number(lower_bound_eff), Number(upper_bound_eff));
-        let lower_bound_trad_cp = Math.min(Number(lower_bound_trad), Number(upper_bound_trad));
-        let upper_bound_trad_cp = Math.max(Number(lower_bound_trad), Number(upper_bound_trad));
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
         console.log("upper bound eff is ", upper_bound_eff);
@@ -325,12 +318,13 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * Randomizes the header label position and generates choice values according to the main mpl switch
      point.
      * @param QID - the question id
-     * @param switchpoint - the switch point of the main mpl question if there's any
-     * @param price_init - the initial value of choice A options
-     * @param price_incr - the initial value of choice B options
      * @param basenum
+     * @param price_init
+     * @param price_incr
+     * @param fmpl_eff_incr
+     * @param fmpl_trad_incr
      */
-    function editLabels(QID, switchpoint, price_init, price_incr, basenum) {
+    function editLabels(QID, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
         const rows = question.getElementsByClassName("ChoiceRow");
         const len = rows.length;
         let sp = parseInt("${e://Field/switchpoint_main_r3}");
@@ -340,19 +334,14 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let incr_eff;
         let incr_trad;
         if (sp === 3) {
-            init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
-            init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
-            if (effLeft) {
-                incr_eff = 1;
-                incr_trad = -1;
-            } else {
-                incr_eff = -1;
-                incr_trad = 1;
-            }
+            init_eff = eff;
+            init_trad = trad;
+            incr_eff = fmpl_eff_incr;
+            incr_trad = fmpl_trad_incr;
         }
         // all eff being chosen
         else if (sp === 1) {
-            init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
+            init_eff = eff;
             init_trad = price_init;
             // all choice a has been chosen
             if (effLeft) {
@@ -368,7 +357,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         // all trad being chosen
         else {
             init_eff = price_init;
-            init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
+            init_trad = trad;
             // all choice b has been chosen
             if (effLeft) {
                 incr_trad = -price_incr;

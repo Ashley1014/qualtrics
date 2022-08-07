@@ -280,6 +280,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_eff;
         let lower_trad;
 
+        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
+
         //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
@@ -328,6 +331,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r3", Number(lower_bound_eff) + eff_fmpl_incr);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r3", Number(lower_bound_trad) + trad_fmpl_incr);
         //console.log("it's just a dummy test for r3 mpl no");
         console.log("testing r3 mpl no");
         console.log("lower bound eff is ", lower_bound_eff);

@@ -9,6 +9,7 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    console.log("testing r3 mpl yes");
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
     //console.log("first button id is ", first_id);
@@ -292,6 +293,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+
+
     /***
      *
      * @param QID
@@ -302,6 +305,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let lower_eff;
         let lower_trad;
+
+        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
+        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
 
         //console.log("sp is ", sp.type);
 
@@ -348,9 +354,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
             lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
             lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
         }
-        console.log("testing r3 mpl yes");
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r3", Number(lower_bound_eff) + eff_fmpl_incr);
+        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r3", Number(lower_bound_trad) + trad_fmpl_incr);
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
     }
