@@ -285,7 +285,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     function editLabels(QID, basenum,price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
         const rows = question.getElementsByClassName("ChoiceRow");
         const len = rows.length;
-        let sp = parseInt("${e://Field/switchpoint_main_r3}");
+        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
         let effLeft = iseffLeft();
         let init_eff;
         let init_trad;

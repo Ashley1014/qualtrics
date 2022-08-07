@@ -19,7 +19,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     const trad = parseFloat("${e://Field/fmpl_trad_init_r3}");
     let fmpl_eff_incr = parseFloat("${e://Field/eff_fmpl_incr}");
     let fmpl_trad_incr = parseFloat("${e://Field/trad_fmpl_incr}");
-    const switchpoint = parseInt("${e://Field/switchpoint_main_r3}");
+    const switchpoint = parseInt("${e://Field/switchpoint_main_r3_yes}");
 
     let radio1 = question.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -327,7 +327,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     function editLabels(QID, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
         const rows = question.getElementsByClassName("ChoiceRow");
         const len = rows.length;
-        let sp = parseInt("${e://Field/switchpoint_main_r3}");
+        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
         let effLeft = iseffLeft();
         let init_eff;
         let init_trad;

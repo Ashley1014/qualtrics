@@ -53,8 +53,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * if not, check whether the round3 choices have been revised.
      */
     function checkRevised() {
-        let r3_main = "${e://Field/switchpoint_main_r3}";
-        let r3_row = "${e://Field/switch_row_main_r3}";
+        let r3_main = "${e://Field/switchpoint_main_r3_yes}";
+        let r3_row = "${e://Field/switch_row_main_r3_yes}";
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
@@ -254,8 +254,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         //console.log("your switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r3", switch_point);
-        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r3", switch_row);
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_main_r3_yes", switch_point);
+        Qualtrics.SurveyEngine.setEmbeddedData("switch_row_main_r3_yes", switch_row);
         //return switch_row;
     }
 
