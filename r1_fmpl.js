@@ -12,13 +12,18 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
     //console.log(qid);
+
+    const toFloat = (field, decimal) => {
+        return +parseFloat(field).toFixed(decimal);
+    }
+    
     const switchpoint = parseInt("${e://Field/switchpoint_main_r1}");
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
-    const eff = parseFloat("${e://Field/fmpl_eff_init_r1}");
-    const trad = parseFloat("${e://Field/fmpl_trad_init_r1}");
-    let fmpl_eff_incr = parseFloat("${e://Field/eff_fmpl_incr}");
-    let fmpl_trad_incr = parseFloat("${e://Field/trad_fmpl_incr}");
+    const eff = toFloat("${e://Field/fmpl_eff_init_r1}", 2);
+    const trad = toFloat("${e://Field/fmpl_trad_init_r1}", 2);
+    let fmpl_eff_incr = toFloat("${e://Field/eff_fmpl_incr}", 2);
+    let fmpl_trad_incr = toFloat("${e://Field/trad_fmpl_incr}", 2);
     let basenum;
     let radio1 = document.getElementsByTagName("input");
     const first_id = radio1[0].id;
@@ -180,14 +185,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let incr_eff;
         let incr_trad;
         if (sp === 3) {
-            init_eff = parseFloat("${e://Field/fmpl_eff_init_r1}");
-            init_trad = parseFloat("${e://Field/fmpl_trad_init_r1}");
+            init_eff = toFloat("${e://Field/fmpl_eff_init_r1}", 2);
+            init_trad = toFloat("${e://Field/fmpl_trad_init_r1}", 2);
             incr_eff = fmpl_eff_incr;
             incr_trad = fmpl_trad_incr;
         }
         // all eff being chosen
         else if (sp === 1) {
-            init_eff = parseFloat("${e://Field/fmpl_eff_init_r1}");
+            init_eff = toFloat("${e://Field/fmpl_eff_init_r1}", 2);
             init_trad = price_init;
             // all choice a has been chosen
             if (effLeft) {
@@ -203,7 +208,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // all trad being chosen
         else {
             init_eff = price_init;
-            init_trad = parseFloat("${e://Field/fmpl_trad_init_r1}");
+            init_trad = toFloat("${e://Field/fmpl_trad_init_r1}", 2);
             // all choice b has been chosen
             if (effLeft) {
                 incr_trad = -price_incr;
