@@ -189,7 +189,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return text.substring(text.lastIndexOf('$') + 1, text.indexOf(field));
     }
 
-
     /***
      *
      * @param QID

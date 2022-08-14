@@ -99,7 +99,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function editLabels(QID, inita, incra) {
-        let num = parseInt("${e://Field/display_order}");
+        let num = parseInt("${e://Field/display_order_pads}");
         let white_caps = "WHITE WRITING PAD";
         let yellow_caps = "YELLOW WRITING PAD";
         //console.log(num);
@@ -188,7 +188,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
      */
     function findSwitchPoint_h(value) {
         let switch_point;
-        // let num = parseInt("${e://Field/display_order}");
+        // let num = parseInt("${e://Field/display_order_pads}");
         if (iswhiteLeft()) {
             switch_point = value;
         } else {
@@ -198,7 +198,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function iswhiteLeft() {
-        let num = parseInt("${e://Field/display_order}");
+        let num = parseInt("${e://Field/display_order_pads}");
         return num === 0;
     }
 
@@ -208,9 +208,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param value the value of white choices
      */
     function calculate_wtp(QID, value) {
-        let lower_bound;
-        let upper_bound;
-
         //const rows = document.getElementsByClassName("ChoiceRow");
 
         let lower_white;

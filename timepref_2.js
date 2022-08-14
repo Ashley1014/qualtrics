@@ -64,23 +64,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         fill_in_table(qid, row, value);
     }
 
-    // function fill_in_table(QID, row_number, value) {
-    //     const rows = document.getElementsByClassName("ChoiceRow");
-    //     console.log("len is ", rows.length);
-    //     for (let i = 0; i < rows.length; i++) {
-    //         const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-    //         const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
-    //         if (i >= Number(row_number) && value === 2) {
-    //             document.getElementById(choice_a).checked = false;
-    //             document.getElementById(choice_b).checked = true;
-    //         }
-    //         if (i < Number(row_number) && value === 1) {
-    //             document.getElementById(choice_a).checked = true;
-    //             document.getElementById(choice_b).checked = false;
-    //         }
-    //     }
-    // }
-
     function getInputByValue(inputs, value) {
         for (let i in inputs) {
             let input = inputs[i];
