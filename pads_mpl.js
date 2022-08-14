@@ -102,7 +102,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let num = parseInt("${e://Field/display_order_pads}");
         let white_caps = "WHITE WRITING PAD";
         let yellow_caps = "YELLOW WRITING PAD";
-        //console.log(num);
+        let initb;
+        let incrb;
+        inita = parseInt("${e://Field/pads_white_mpl_init}");
+        initb = parseInt("${e://Field/pads_yellow_mpl_init}")
+        incra = parseInt("${e://Field/pads_white_mpl_incr}");
+        incrb = parseInt("${e://Field/pads_yellow_mpl_incr}");
         const rows = document.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
@@ -110,7 +115,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
             if (num === 0) {
                 if (i === 0) {
                     document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;</u><br />" + white_caps + "<br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;</u><br />" + yellow_caps + "<br /><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;</u><br />" + yellow_caps + "<br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
@@ -118,11 +123,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;</u><br />" + white_caps + "<br /><br /><strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;</u><br />" + white_caps + "<br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
                     document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;</u><br />" + yellow_caps + "<br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(inita+(rows.length-i-1)*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
                     document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
                 }
             }
