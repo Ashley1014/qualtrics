@@ -2,8 +2,6 @@
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
-
-
 });
 
 Qualtrics.SurveyEngine.addOnReady(function()
@@ -113,7 +111,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function displayLabels_v1(QID, init_white, incr_white, init_yellow, incr_yellow) {
         let white_caps = "WHITE WRITING PAD";
         let yellow_caps = "YELLOW WRITING PAD";
-        let num = parseInt("${e://Field/display_order}");
+        let num = parseInt("${e://Field/display_order_pads}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
@@ -144,7 +142,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function displayLabels_v2(QID, init_white, incr_white, init_yellow, incr_yellow, disc_rate) {
         let white_caps = "${e://Field/whiteicient_allcaps}";
         let yellow_caps = "${e://Field/yellowitional_allcaps}";
-        let num = parseInt("${e://Field/display_order}");
+        let num = parseInt("${e://Field/display_order_pads}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
@@ -174,6 +172,113 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+    /**
+     * return a dictionary of the initial fmpl prices of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findInit(sp) {
+        let res = {
+            "init_w": null,
+            "init_y": null
+        };
+
+        //@TODO: ** change the white fmpl init price variable when there's a switchpoint and when choice_a is white **
+        let initw_sw_wa = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_swi ) }");
+        //@TODO: ** change the white fmpl init price variable when there's a switchpoint and when choice_b is white **
+        let initw_sw_wb = parseFloat("$e{ ( e://Field/lower_bound_white_main - e://Field/pads_white_fmpl_incr_swi ) }");
+        //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint and when choice_a is yellow **
+        let inity_sw_ya = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_white_fmpl_incr_swi ) }");
+        //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint and when choice_b is yellow **
+        let inity_sw_yb = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - e://Field/pads_white_fmpl_incr_swi ) }");
+        //@TODO: ** change the white fmpl init price variable when all white is selected and when choice_a is white **
+        let initw_allw_wa = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_allw ) }");
+        //@TODO: ** change the white fmpl init price variable when all white is selected and when choice_b is white **
+        let initw_allw_wb = parseFloat("$e{ ( e://Field/lower_bound_white_main + ( e://Field/num_pads_followdecisions * e://Field/pads_white_fmpl_incr_allw ) ) }");
+        //@TODO: ** change the yellow fmpl init price variable when all yellow is selected and when choice_a is yellow **
+        let inity_ally_ya = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - e://Field/pads_yellow_fmpl_incr_ally ) }");
+        //@TODO: ** change the yellow fmpl init price variable when all yellow is selected and when choice_b is yellow **
+        let inity_ally_yb = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - ( e://Field/num_pads_followdecisions * e://Field/pads_yellow_fmpl_incr_ally ) ) }");
+        //@TODO: ** change the white fmpl init price variable when all yellow is selected **
+        let initw_ally = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_ally ) }");
+        //@TODO: ** change the yellow fmpl init price variable when all white is selected **
+        let inity_allw = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_yellow_fmpl_incr_allw ) }");
+
+        if (iswhiteLeft()) {
+            //allw_wa(yb)
+            if (sp === 1) {
+                res["init_w"] = initw_allw_wa;
+                res["init_y"] = inity_allw;
+            }
+            //ally_wa(yb)
+            else if (sp === 2) {
+                res["init_w"] = initw_ally;
+                res["init_y"] = inity_ally_yb;
+            } else {
+                res["init_w"] = initw_sw_wa;
+                res["init_y"] = inity_sw_yb;
+            }
+        } else {
+            //allw_wb(ya)
+            if (sp === 1) {
+                res["init_w"] = initw_allw_wb;
+                res["init_y"] = inity_allw;
+            }
+            //ally_wb(ya)
+            else if (sp === 2) {
+                res["init_w"] = initw_ally;
+                res["init_y"] = inity_ally_ya;
+            } else {
+                res["init_w"] = initw_sw_wb;
+                res["init_y"] = inity_sw_ya;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * return a dictionary of the fmpl price increments of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findIncr(sp) {
+        let res = {
+            "incr_w": null,
+            "incr_y": null
+        }
+        let fmpl_incra_sw = parseFloat("${e://Field/pads_white_fmpl_incr_swi}");
+        let fmpl_incra_alla = parseFloat("${e://Field/pads_white_fmpl_incr_allw}");
+        let fmpl_incra_allb = parseFloat("${e://Field/pads_white_fmpl_incr_ally}");
+        if (iswhiteLeft()) {
+            if (sp === 1) {
+                res["incr_w"] = fmpl_incra_alla;
+                res["incr_y"] = -fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_w"] = fmpl_incra_allb;
+                res["incr_y"] = -fmpl_incra_alla;
+            } else {
+                res["incr_w"] = fmpl_incra_sw;
+                res["incr_y"] = -fmpl_incra_sw;
+            }
+            Qualtrics.SurveyEngine.setEmbeddedData("pads_white_fmpl_incr_allw", fmpl_incra_alla);
+            Qualtrics.SurveyEngine.setEmbeddedData("pads_white_fmpl_incr_ally", fmpl_incra_allb);
+            Qualtrics.SurveyEngine.setEmbeddedData("pads_yellow_fmpl_incr_allw", -fmpl_incra_allb);
+            Qualtrics.SurveyEngine.setEmbeddedData("pads_yellow_fmpl_incr_ally", -fmpl_incra_alla);
+        } else {
+            if (sp === 1) {
+                res["incr_w"] = -fmpl_incra_alla;
+                res["incr_y"] = fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_w"] = -fmpl_incra_allb;
+                res["incr_y"] = fmpl_incra_alla;
+            } else {
+                res["incr_w"] = -fmpl_incra_sw;
+                res["incr_y"] = fmpl_incra_sw;
+            }
+        }
+        return res;
+    }
+
 
     /**
      * Randomizes the header label position and generates choice values according to the main mpl switch
@@ -194,50 +299,23 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const rows = document.getElementsByClassName("ChoiceRow");
         // const len = rows.length;
         let sp = parseInt("${e://Field/switchpoint_main_pads}");
-        let whiteLeft = iswhiteLeft();
         let init_white;
         let init_yellow;
         let incr_white;
         let incr_yellow;
-        if (sp === 3) {
-            init_white = white;
-            init_yellow = yellow;
-            incr_white = fmpl_white_incr;
-            incr_yellow = fmpl_yellow_incr;
-        }
-        // all white being chosen
-        else if (sp === 1) {
-            init_white = parseInt("${e://Field/lower_bound_white_main}") + price_incr;
-            init_yellow = price_init;
-            // all choice a has been chosen
-            if (whiteLeft) {
-                incr_white = price_incr;
-                incr_yellow = 0;
-            }
-            // all choice b has been chosen
-            else {
-                init_white += (num_dec - 1) * price_incr;
-                incr_white = -price_incr;
-                incr_yellow = 0;
-            }
-        }
-        // all yellow being chosen
-        else {
-            init_white = price_init;
-            init_yellow = parseInt("${e://Field/lower_bound_yellow_main}") + price_incr;
-            // all choice b has been chosen
-            if (whiteLeft) {
-                init_yellow += (num_dec - 1) * price_incr;
-                incr_yellow = -price_incr;
-                incr_white = 0;
-            }
-            // all choice a has been chosen
-            else {
-                incr_yellow = price_incr;
-                incr_white = 0;
-            }
-        }
-        //let assignment = parseInt("${e://Field/assignment}");
+
+        // if (sp === 3) {
+        //     //@TODO: ** change the white fmpl init price variable when there's a switchpoint **
+        //     init_white = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_swi ) }");
+        //     //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint **
+        //     init_yellow = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_yellow_fmpl_incr_swi ) }");
+        //     incr_white = parseFloat("${e://Field/pads_white_fmpl_incr_swi}");
+        //     incr_yellow = parseFloat("${e://Field/pads_yellow_fmpl_incr_swi}");
+        // } else {
+        init_white = findInit(sp)["init_w"];
+        init_yellow = findInit(sp)["init_y"];
+        incr_white = findIncr(sp)["incr_w"];
+        incr_yellow = findIncr(sp)["incr_y"];
         displayLabels_v1(QID, init_white, incr_white, init_yellow, incr_yellow);
     }
 
@@ -298,7 +376,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
      */
     function findSwitchPoint_h(value) {
         let switch_point;
-        // let num = parseInt("${e://Field/display_order}");
+        // let num = parseInt("${e://Field/display_order_pads}");
         if (iswhiteLeft()) {
             switch_point = value;
         } else {
@@ -308,7 +386,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function iswhiteLeft() {
-        let num = parseInt("${e://Field/display_order}");
+        let num = parseInt("${e://Field/display_order_pads}");
         return num === 0;
     }
 

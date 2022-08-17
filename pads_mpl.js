@@ -9,6 +9,11 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
+    //test embedded variables
+    console.log("num pads decisions is ", parseInt("${e://Field/num_pads_maindecisions}"));
+    console.log("pads white mpl incr is ", parseInt("${e://Field/pads_white_mpl_incr}"));
+    console.log("pads white mpl init is ", parseInt("${e://Field/pads_white_mpl_init}"));
+
     let condition = "${e://Field/Condition}";
     console.log("condition is ", condition);
 
@@ -269,8 +274,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const upper_bound_yellow = document.getElementById(idb_upper).textContent.substring(1);
         // lower_bound = Number(lower_bound_white) - Number(lower_bound_yellow);
         // upper_bound = Number(upper_bound_white) - Number(upper_bound_yellow);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_white_main", lower_bound_white);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_yellow_main", lower_bound_yellow);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_white_main", Number(lower_bound_white));
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_yellow_main", Number(lower_bound_yellow));
         Qualtrics.SurveyEngine.setEmbeddedData("fmpl_white_init", Number(lower_bound_white) + white_fmpl_incr);
         Qualtrics.SurveyEngine.setEmbeddedData("fmpl_yellow_init", Number(lower_bound_yellow) + yellow_fmpl_incr);
         console.log("testing pads_mpl");
