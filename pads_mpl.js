@@ -276,8 +276,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // upper_bound = Number(upper_bound_white) - Number(upper_bound_yellow);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_white_main", Number(lower_bound_white));
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_yellow_main", Number(lower_bound_yellow));
-        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_white_init", Number(lower_bound_white) + white_fmpl_incr);
-        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_yellow_init", Number(lower_bound_yellow) + yellow_fmpl_incr);
         console.log("testing pads_mpl");
         console.log("lower bound white is ", lower_bound_white);
         console.log("lower bound yellow is ", lower_bound_yellow);

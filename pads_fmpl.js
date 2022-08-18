@@ -294,24 +294,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param num_dec
      */
     function editLabels(QID, switchpoint, white, yellow, price_init, price_incr, fmpl_white_incr, fmpl_yellow_incr, num_dec) {
-        // let white_caps = "${e://Field/whiteicient_allcaps}";
-        // let yellow_caps = "${e://Field/yellowitional_allcaps}";
-        // const rows = document.getElementsByClassName("ChoiceRow");
-        // const len = rows.length;
         let sp = parseInt("${e://Field/switchpoint_main_pads}");
         let init_white;
         let init_yellow;
         let incr_white;
         let incr_yellow;
 
-        // if (sp === 3) {
-        //     //@TODO: ** change the white fmpl init price variable when there's a switchpoint **
-        //     init_white = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_swi ) }");
-        //     //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint **
-        //     init_yellow = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_yellow_fmpl_incr_swi ) }");
-        //     incr_white = parseFloat("${e://Field/pads_white_fmpl_incr_swi}");
-        //     incr_yellow = parseFloat("${e://Field/pads_yellow_fmpl_incr_swi}");
-        // } else {
         init_white = findInit(sp)["init_w"];
         init_yellow = findInit(sp)["init_y"];
         incr_white = findIncr(sp)["incr_w"];
@@ -420,6 +408,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound_yellow;
         let upper_bound_white;
         let upper_bound_yellow;
+
+        let main_sp = parseInt("${e://Field/switchpoint_main_pads}");
+
+        white_incr = findIncr(main_sp)["incr_w"];
+        yellow_incr = findIncr(main_sp)["incr_y"];
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
