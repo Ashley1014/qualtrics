@@ -103,8 +103,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
-            let eff = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');;
-            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');;
+            let eff = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
 
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
@@ -139,25 +139,26 @@ Qualtrics.SurveyEngine.addOnReady(function()
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            const eff_disc = init_eff + i * incr_eff;
-            const eff_original = eff_disc / disc_rate;
+            const eff_disc = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            const eff_original = (eff_disc / disc_rate).toFixed(2).replace(/\.00$/, '');
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
