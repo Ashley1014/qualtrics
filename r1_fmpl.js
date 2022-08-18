@@ -103,25 +103,28 @@ Qualtrics.SurveyEngine.addOnReady(function()
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
+            let eff = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');;
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');;
+
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+eff+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+eff+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
@@ -162,6 +165,110 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
 
     /**
+     * return a dictionary of the initial fmpl prices of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findInit(sp) {
+        let res = {
+            "init_e": null,
+            "init_t": null
+        };
+
+        //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_a is eff **
+        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r1 + e://Field/fmpl_eff_incr_swi ) }");
+        //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_b is eff **
+        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r1 - e://Field/fmpl_eff_incr_swi ) }");
+        //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_a is trad **
+        let initt_sw_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r1 - e://Field/fmpl_trad_incr_swi ) }");
+        //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_b is trad **
+        let initt_sw_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r1 + e://Field/fmpl_trad_incr_swi ) }");
+        //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_a is eff **
+        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r1 + e://Field/fmpl_eff_incr_alleff ) }");
+        //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_b is eff **
+        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r1 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff ) ) }");
+        //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_a is trad **
+        let initt_alltrad_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r1 - e://Field/fmpl_trad_incr_alltrad ) }");
+        //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_b is trad **
+        let initt_alltrad_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r1 - ( e://Field/num_followdecisions * e://Field/fmpl_trad_incr_alltrad ) ) }");
+        //@TODO: ** change the eff fmpl init price variable when all trad is selected **
+        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r1 + e://Field/fmpl_eff_incr_alltrad ) }");
+        //@TODO: ** change the trad fmpl init price variable when all eff is selected **
+        let initt_alleff = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r1 + e://Field/fmpl_trad_incr_alleff ) }");
+
+        if (iseffLeft()) {
+            //alleff_ea(tb)
+            if (sp === 1) {
+                res["init_e"] = inite_alleff_ea;
+                res["init_t"] = initt_alleff;
+            }
+            //alltrad_ea(tb)
+            else if (sp === 2) {
+                res["init_e"] = inite_alltrad;
+                res["init_t"] = initt_alltrad_tb;
+            } else {
+                res["init_e"] = inite_sw_ea;
+                res["init_t"] = initt_sw_tb;
+            }
+        } else {
+            //alleff_eb(ta)
+            if (sp === 1) {
+                res["init_e"] = inite_alleff_eb;
+                res["init_t"] = initt_alleff;
+            }
+            //alltrad_eb(ta)
+            else if (sp === 2) {
+                res["init_e"] = inite_alltrad;
+                res["init_t"] = initt_alltrad_ta;
+            } else {
+                res["init_e"] = inite_sw_eb;
+                res["init_t"] = initt_sw_ta;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * return a dictionary of the fmpl price increments of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findIncr(sp) {
+        let res = {
+            "incr_e": null,
+            "incr_t": null
+        }
+        let fmpl_incra_sw = parseFloat("${e://Field/fmpl_eff_incr_swi}");
+        let fmpl_incra_alla = parseFloat("${e://Field/fmpl_eff_incr_alleff}");
+        let fmpl_incra_allb = parseFloat("${e://Field/fmpl_eff_incr_alltrad}");
+        if (iseffLeft()) {
+            if (sp === 1) {
+                res["incr_e"] = fmpl_incra_alla;
+                res["incr_t"] = -fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_e"] = fmpl_incra_allb;
+                res["incr_t"] = -fmpl_incra_alla;
+            } else {
+                res["incr_e"] = fmpl_incra_sw;
+                res["incr_t"] = -fmpl_incra_sw;
+            }
+        } else {
+            if (sp === 1) {
+                res["incr_e"] = -fmpl_incra_alla;
+                res["incr_t"] = fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_e"] = -fmpl_incra_allb;
+                res["incr_t"] = fmpl_incra_alla;
+            } else {
+                res["incr_e"] = -fmpl_incra_sw;
+                res["incr_t"] = fmpl_incra_sw;
+            }
+        }
+        return res;
+    }
+
+
+    /**
      * Randomizes the header label position and generates choice values according to the main mpl switch
      point.
      * @param QID - the question id
@@ -179,47 +286,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         // const rows = document.getElementsByClassName("ChoiceRow");
         // const len = rows.length;
         let sp = parseInt("${e://Field/switchpoint_main_r1}");
-        let effLeft = iseffLeft();
         let init_eff;
         let init_trad;
         let incr_eff;
         let incr_trad;
-        if (sp === 3) {
-            init_eff = toFloat("${e://Field/fmpl_eff_init_r1}", 2);
-            init_trad = toFloat("${e://Field/fmpl_trad_init_r1}", 2);
-            incr_eff = fmpl_eff_incr;
-            incr_trad = fmpl_trad_incr;
-        }
-        // all eff being chosen
-        else if (sp === 1) {
-            init_eff = toFloat("${e://Field/fmpl_eff_init_r1}", 2);
-            init_trad = price_init;
-            // all choice a has been chosen
-            if (effLeft) {
-                incr_eff = price_incr;
-                incr_trad = 0;
-            }
-            // all choice b has been chosen
-            else {
-                incr_eff = -price_incr;
-                incr_trad = 0;
-            }
-        }
-        // all trad being chosen
-        else {
-            init_eff = price_init;
-            init_trad = toFloat("${e://Field/fmpl_trad_init_r1}", 2);
-            // all choice b has been chosen
-            if (effLeft) {
-                incr_trad = -price_incr;
-                incr_eff = 0;
-            }
-            // all choice a has been chosen
-            else {
-                incr_trad = price_incr;
-                incr_eff = 0;
-            }
-        }
+
+        init_eff = findInit(sp)["init_e"];
+        init_trad = findInit(sp)["init_t"];
+        incr_eff = findIncr(sp)["incr_e"];
+        incr_trad = findIncr(sp)["incr_t"];
+
         let assignment = parseInt("${e://Field/assignment}");
         if (assignment === 6 || assignment === 16) {
             let disc_rate = parseFloat("${e://Field/disc_rate}");
@@ -330,6 +406,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound_trad;
         let upper_bound_eff;
         let upper_bound_trad;
+
+        let main_sp = parseInt("${e://Field/switchpoint_main_r1}");
+
+        eff_incr = findIncr(main_sp)["incr_e"];
+        trad_incr = findIncr(main_sp)["incr_t"];
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");

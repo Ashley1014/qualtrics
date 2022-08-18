@@ -260,10 +260,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 res["incr_w"] = fmpl_incra_sw;
                 res["incr_y"] = -fmpl_incra_sw;
             }
-            Qualtrics.SurveyEngine.setEmbeddedData("pads_white_fmpl_incr_allw", fmpl_incra_alla);
-            Qualtrics.SurveyEngine.setEmbeddedData("pads_white_fmpl_incr_ally", fmpl_incra_allb);
-            Qualtrics.SurveyEngine.setEmbeddedData("pads_yellow_fmpl_incr_allw", -fmpl_incra_allb);
-            Qualtrics.SurveyEngine.setEmbeddedData("pads_yellow_fmpl_incr_ally", -fmpl_incra_alla);
         } else {
             if (sp === 1) {
                 res["incr_w"] = -fmpl_incra_alla;
