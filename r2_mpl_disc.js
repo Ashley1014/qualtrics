@@ -105,38 +105,57 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function editLabels(QID, eff_init, eff_incr, trad_init, trad_incr, disc_rate) {
         const question = document.getElementById(qid);
         const rows = question.getElementsByClassName("ChoiceRow");
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        const len = rows.length;
 
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
-
         let num = parseInt("${e://Field/display_order}");
-        //console.log(num);
+
+        if (iseffLeft()) {
+            eff_init_ori = parseFloat("${e://Field/mpl_eff_init}")/disc_rate;
+            trad_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_eff_incr}")/disc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_trad_incr}");
+            eff_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr = parseFloat("${e://Field/mpl_eff_incr}");
+        } else {
+            eff_init_ori = parseFloat("${e://Field/mpl_trad_init}")/disc_rate;
+            trad_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_trad_incr}")/disc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_eff_incr}");
+            eff_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr = parseFloat("${e://Field/mpl_trad_incr}");
+        }
+
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+
+            let eff_ori = (eff_init_ori + i * eff_incr_ori).toFixed(2).replace(/\.00$/, '');
+            let eff = (eff_init + i * eff_incr).toFixed(2).replace(/\.00$/, '');
+            let trad = (trad_init + i * trad_incr).toFixed(2).replace(/\.00$/, '');
+
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad.toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
     }
+
 
     function findSwitchPoint(qid) {
         const question = document.getElementById(qid);
