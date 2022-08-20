@@ -76,7 +76,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         nextbutton.onclick = function() {
             //alert("next button was clicked");
             findSwitchPoint(qid);
-            calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr);
+            calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr, basenum);
         };
     }
 
@@ -101,9 +101,10 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param QID the question number
      * @param row the intended row number
      * @param value the value of the intended cell
+     * @param basenum
      * @returns {string} the content string in [row] with [value]
      */
-    function getBoundByRow(QID, row, value) {
+    function getBoundByRow(QID, row, value, basenum) {
         let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
         let text = document.getElementById(id).textContent;
         return text.substring(text.lastIndexOf('$') + 1);
@@ -115,8 +116,9 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param value the value of eff choices
      * @param eff_incr the increment of price list
      * @param trad_incr
+     * @param basenum
      */
-    function calculate_wtp(QID, value, eff_incr, trad_incr) {
+    function calculate_wtp(QID, value, eff_incr, trad_incr, basenum) {
         let lower_eff;
         let lower_trad;
         let upper_eff;
@@ -127,23 +129,28 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let upper_bound_eff;
         let upper_bound_trad;
 
+        let main_sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
+
+        eff_incr = findIncr(main_sp)["incr_e"];
+        trad_incr = findIncr(main_sp)["incr_t"];
+
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
             lower_eff = switch_row;
             lower_trad = switch_row;
             upper_eff = switch_row + 1;
             upper_trad = switch_row + 1;
-            lower_bound_eff = getBoundByRow(QID, lower_eff, value);
-            lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
-            upper_bound_eff = getBoundByRow(QID, upper_eff, value);
-            upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+            lower_bound_eff = getBoundByRow(QID, lower_eff, value, basenum);
+            lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value, basenum);
+            upper_bound_eff = getBoundByRow(QID, upper_eff, value, basenum);
+            upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value, basenum);
         } else if (Number(sp) === 1) {
             if (iseffLeft()) {
                 //console.log("all eff chosen, eff is left.");
                 lower_eff = len - 1;
                 lower_trad = len - 1;
-                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
-                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value, basenum);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value, basenum);
                 upper_bound_eff = Number(lower_bound_eff) + eff_incr;
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
@@ -151,8 +158,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 //console.log("all eff chosen, eff is right.");
                 upper_eff = 0;
                 upper_trad = 0;
-                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
-                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value, basenum);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value, basenum);
                 lower_bound_eff = Number(upper_bound_eff) - eff_incr;
                 lower_bound_trad = Number(upper_bound_trad) - trad_incr;
                 //console.log("lower eff bound is ", lower_eff);
@@ -162,15 +169,15 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             if (iseffLeft()) {
                 upper_eff = 0;
                 upper_trad = 0;
-                upper_bound_eff = getBoundByRow(QID, upper_eff, value);
-                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value);
+                upper_bound_eff = getBoundByRow(QID, upper_eff, value, basenum);
+                upper_bound_trad = getBoundByRow(QID, upper_trad, 3-value, basenum);
                 lower_bound_eff = Number(upper_bound_eff) - eff_incr;
                 lower_bound_trad = Number(upper_bound_trad) - trad_incr;
             } else {
                 lower_eff = len - 1;
                 lower_trad = len - 1;
-                lower_bound_eff = getBoundByRow(QID, lower_eff, value);
-                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+                lower_bound_eff = getBoundByRow(QID, lower_eff, value, basenum);
+                lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value, basenum);
                 upper_bound_eff = Number(lower_bound_eff) + eff_incr;
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
@@ -201,12 +208,17 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param init_val
      */
     function notRevised_v1(interval, decision_num, init_val) {
-        // eff is on the left
+
+        interval = parseInt("${e://Field/mpl_eff_incr}");
+        decision_num = parseInt("${e://Field/num_maindecisions}");
+        init_val = parseInt("${e://Field/mpl_eff_init}");
+
         let upper_bound_wtp = interval * (decision_num - 1);
         let lower_bound_wtp = -interval * (decision_num - 1);
         let notRevised;
-        let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
-        let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
+        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
+        let init_eff = findInit(sp)["init_e"];
+        let init_trad = findInit(sp)["init_t"];
         let init_wtp = init_eff - init_trad;
         // want to check whether the revised_wtp is within the range
         if (revised_wtp < lower_bound_wtp) {
@@ -241,12 +253,20 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param incr_trad the increment of traditional price list
      */
     function notRevised_v2(decision_num, eff_init_val, incr_eff, trad_init_val, incr_trad) {
+
+        decision_num = parseInt("${e://Field/num_maindecisions}");
+        eff_init_val = parseInt("${e://Field/mpl_eff_init}");
+        trad_init_val = parseInt("${e://Field/mpl_trad_init}")
+        incr_eff = parseInt("${e://Field/mpl_eff_incr}");
+        incr_trad = parseInt("${e://Field/mpl_trad_incr}");
+
         // eff is on the left
         let upper_bound_wtp = Math.max(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
         let lower_bound_wtp = Math.min(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
         let notRevised;
-        let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
-        let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
+        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
+        let init_eff = findInit(sp)["init_e"];
+        let init_trad = findInit(sp)["init_t"];
         let init_wtp = init_eff - init_trad;
         // want to check whether the revised_wtp is within the range
         if (revised_wtp < lower_bound_wtp) {
@@ -278,25 +298,28 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         const rows = question.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
+            let eff = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
+
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+eff+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_eff+i*incr_eff).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+eff+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
@@ -311,28 +334,135 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            const eff_disc = init_eff + i * incr_eff;
-            const eff_original = eff_disc / disc_rate;
+            const eff_disc = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            const eff_original = (eff_disc / disc_rate).toFixed(2).replace(/\.00$/, '');
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original).toString()+"</s><span style=\"color:red\"> $" + (eff_disc).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original.toString()+"</s><span style=\"color:red\"> $" + eff_disc.toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_trad+i*incr_trad).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
+    }
+
+
+    /**
+     * return a dictionary of the initial fmpl prices of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findInit(sp) {
+        let res = {
+            "init_e": null,
+            "init_t": null
+        };
+
+        //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_a is eff **
+        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_swi ) }");
+        //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_b is eff **
+        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 - e://Field/fmpl_eff_incr_swi ) }");
+        //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_a is trad **
+        let initt_sw_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_swi ) }");
+        //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_b is trad **
+        let initt_sw_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_swi ) }");
+        //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_a is eff **
+        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alleff ) }");
+        //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_b is eff **
+        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff ) ) }");
+        //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_a is trad **
+        let initt_alltrad_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_alltrad ) }");
+        //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_b is trad **
+        let initt_alltrad_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - ( e://Field/num_followdecisions * e://Field/fmpl_trad_incr_alltrad ) ) }");
+        //@TODO: ** change the eff fmpl init price variable when all trad is selected **
+        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alltrad ) }");
+        //@TODO: ** change the trad fmpl init price variable when all eff is selected **
+        let initt_alleff = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_alleff ) }");
+
+        if (iseffLeft()) {
+            //alleff_ea(tb)
+            if (sp === 1) {
+                res["init_e"] = inite_alleff_ea;
+                res["init_t"] = initt_alleff;
+            }
+            //alltrad_ea(tb)
+            else if (sp === 2) {
+                res["init_e"] = inite_alltrad;
+                res["init_t"] = initt_alltrad_tb;
+            } else {
+                res["init_e"] = inite_sw_ea;
+                res["init_t"] = initt_sw_tb;
+            }
+        } else {
+            //alleff_eb(ta)
+            if (sp === 1) {
+                res["init_e"] = inite_alleff_eb;
+                res["init_t"] = initt_alleff;
+            }
+            //alltrad_eb(ta)
+            else if (sp === 2) {
+                res["init_e"] = inite_alltrad;
+                res["init_t"] = initt_alltrad_ta;
+            } else {
+                res["init_e"] = inite_sw_eb;
+                res["init_t"] = initt_sw_ta;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * return a dictionary of the fmpl price increments of two products.
+     * @param sp{int}
+     * @return res result dictionary
+     */
+    function findIncr(sp) {
+        let res = {
+            "incr_e": null,
+            "incr_t": null
+        }
+
+        let fmpl_incra_sw = parseFloat("${e://Field/fmpl_eff_incr_swi}");
+        let fmpl_incra_alla = parseFloat("${e://Field/fmpl_eff_incr_alleff}");
+        let fmpl_incra_allb = parseFloat("${e://Field/fmpl_eff_incr_alltrad}");
+
+        if (iseffLeft()) {
+            if (sp === 1) {
+                res["incr_e"] = fmpl_incra_alla;
+                res["incr_t"] = -fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_e"] = fmpl_incra_allb;
+                res["incr_t"] = -fmpl_incra_alla;
+            } else {
+                res["incr_e"] = fmpl_incra_sw;
+                res["incr_t"] = -fmpl_incra_sw;
+            }
+        } else {
+            if (sp === 1) {
+                res["incr_e"] = -fmpl_incra_alla;
+                res["incr_t"] = fmpl_incra_allb;
+            } else if (sp === 2) {
+                res["incr_e"] = -fmpl_incra_allb;
+                res["incr_t"] = fmpl_incra_alla;
+            } else {
+                res["incr_e"] = -fmpl_incra_sw;
+                res["incr_t"] = fmpl_incra_sw;
+            }
+        }
+        return res;
     }
 
 
@@ -346,51 +476,18 @@ Qualtrics.SurveyEngine.addOnReady(function() {
      * @param fmpl_eff_incr
      * @param fmpl_trad_incr
      */
-    function editLabels(QID, basenum,price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
-        const rows = question.getElementsByClassName("ChoiceRow");
-        const len = rows.length;
+    function editLabels(QID, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr) {
         let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
-        let effLeft = iseffLeft();
         let init_eff;
         let init_trad;
         let incr_eff;
         let incr_trad;
-        if (sp === 3) {
-            init_eff = eff;
-            init_trad = trad;
-            incr_eff = fmpl_eff_incr;
-            incr_trad = fmpl_trad_incr;
-        }
-        // all eff being chosen
-        else if (sp === 1) {
-            init_eff = eff;
-            init_trad = price_init;
-            // all choice a has been chosen
-            if (effLeft) {
-                incr_eff = price_incr;
-                incr_trad = 0;
-            }
-            // all choice b has been chosen
-            else {
-                incr_eff = -price_incr;
-                incr_trad = 0;
-            }
-        }
-        // all trad being chosen
-        else {
-            init_eff = price_init;
-            init_trad = trad;
-            // all choice b has been chosen
-            if (effLeft) {
-                incr_trad = -price_incr;
-                incr_eff = 0;
-            }
-            // all choice a has been chosen
-            else {
-                incr_trad = price_incr;
-                incr_eff = 0;
-            }
-        }
+
+        init_eff = findInit(sp)["init_e"];
+        init_trad = findInit(sp)["init_t"];
+        incr_eff = findIncr(sp)["incr_e"];
+        incr_trad = findIncr(sp)["incr_t"];
+
         let assignment = parseInt("${e://Field/assignment}");
         if (assignment === 6 || assignment === 16) {
             let disc_rate = parseFloat("${e://Field/disc_rate}");
@@ -414,7 +511,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         //console.log("wtp_lower is", wtp_lower);
         //console.log("wtp_upper is", wtp_upper);
 
-        let radios = document.getElementsByTagName("input");
         let row = -1;
         const rows = question.getElementsByClassName("ChoiceRow");
         let len = rows.length;
