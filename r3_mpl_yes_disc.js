@@ -170,29 +170,50 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
-
         let num = parseInt("${e://Field/display_order}");
+
+        if (iseffLeft()) {
+            eff_init_ori = parseFloat("${e://Field/mpl_eff_init}")/disc_rate;
+            trad_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_eff_incr}")/disc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_trad_incr}");
+            eff_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr = parseFloat("${e://Field/mpl_eff_incr}");
+        } else {
+            eff_init_ori = parseFloat("${e://Field/mpl_trad_init}")/disc_rate;
+            trad_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_trad_incr}")/disc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_eff_incr}");
+            eff_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr = parseFloat("${e://Field/mpl_trad_incr}");
+        }
+
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+
+            let eff_ori = (eff_init_ori + i * eff_incr_ori).toFixed(2).replace(/\.00$/, '');
+            let eff = (eff_init + i * eff_incr).toFixed(2).replace(/\.00$/, '');
+            let trad = (trad_init + i * trad_incr).toFixed(2).replace(/\.00$/, '');
+
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff) +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff)+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(trad)+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff)+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+(eff_init+i*eff_incr).toString()+"</s><span style=\"color:red\"> $" + ((eff_init+i*eff_incr)* disc_rate).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(trad_init+i*trad_incr).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff) +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(trad)+"</strong>";
                 }
             }
         }
@@ -353,22 +374,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
         const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for eff is ", ida_lower);
-        //console.log("lower bound for tradogen is ", idb_lower);
-        // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
-        // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
         var lower_bound_eff;
         var lower_bound_trad;
         const text_eff = document.getElementById(ida_lower).textContent;
         lower_bound_eff = text_eff.substring(text_eff.lastIndexOf('$') + 1);
         const text_trad = document.getElementById(idb_lower).textContent;
         lower_bound_trad = text_trad.substring(text_trad.lastIndexOf('$') + 1);
-        // lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
-        // lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
-        // const upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
-        // const upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
-        // lower_bound = Number(lower_bound_eff) - Number(lower_bound_trad);
-        // upper_bound = Number(upper_bound_eff) - Number(upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r3", Number(lower_bound_eff) + eff_fmpl_incr);

@@ -48,7 +48,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
     let assignment = parseInt("${e://Field/assignment}");
     if (assignment === 6 || assignment === 16) {
-        not_revised = notRevised_v2(5, eff_init_ori * disc_rate, eff_incr_ori * disc_rate, trad_init, trad_incr );
+        not_revised = notRevised_v1(price_incr, 5, price_init );
     }
     else {
         not_revised = notRevised_v1(price_incr, 5, price_init);
@@ -216,9 +216,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let upper_bound_wtp = interval * (decision_num - 1);
         let lower_bound_wtp = -interval * (decision_num - 1);
         let notRevised;
-        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
-        let init_eff = findInit(sp)["init_e"];
-        let init_trad = findInit(sp)["init_t"];
+        let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
+        let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
         let init_wtp = init_eff - init_trad;
         // want to check whether the revised_wtp is within the range
         if (revised_wtp < lower_bound_wtp) {
@@ -261,12 +260,11 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         incr_trad = parseInt("${e://Field/mpl_trad_incr}");
 
         // eff is on the left
-        let upper_bound_wtp = Math.max(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
-        let lower_bound_wtp = Math.min(eff_init_val - trad_init_val, trad_init_val - eff_init_val);
+        let upper_bound_wtp = incr_eff * (decision_num - 1);
+        let lower_bound_wtp = incr_trad * (decision_num - 1);
         let notRevised;
-        let sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
-        let init_eff = findInit(sp)["init_e"];
-        let init_trad = findInit(sp)["init_t"];
+        let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
+        let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
         let init_wtp = init_eff - init_trad;
         // want to check whether the revised_wtp is within the range
         if (revised_wtp < lower_bound_wtp) {
