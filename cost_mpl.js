@@ -89,6 +89,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function editLabels(QID, inita, incra) {
         // let num = parseInt("${e://Field/display_order}");
         // console.log(num);
+        inita = parseInt("${e://Field/cost_mpl_init}");
+        incra = parseInt("${e://Field/cost_mpl_incr}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //const headers = rows.getElementsByClassName("c1");
         for (let i = 0; i < rows.length; i++) {
@@ -171,8 +173,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
         console.log("testing cost mpl");
-        console.log("lower bound yes is ", lower_bound);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_cost_yes", lower_bound);
+        console.log("lower bound cost is ", lower_bound);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_cost", lower_bound);
     }
 });
 

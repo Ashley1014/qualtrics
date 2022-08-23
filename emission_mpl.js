@@ -1,4 +1,4 @@
-// for emission_mpl
+// for emissions_mpl
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -85,6 +85,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function editLabels(QID, inita, incra) {
         // let num = parseInt("${e://Field/display_order}");
         // console.log(num);
+        inita = parseInt("${e://Field/emissions_mpl_init}");
+        incra = parseInt("${e://Field/emissions_mpl_incr}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //const headers = rows.getElementsByClassName("c1");
         for (let i = 0; i < rows.length; i++) {
@@ -124,10 +126,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
             switch_point = curr_val;
             switch_row = len-1;
         }
-        //console.log("your emission switch point is ", switch_point);
+        //console.log("your emissions switch point is ", switch_point);
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
-        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_emission_main", switch_point);
+        Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_emissions_main", switch_point);
         //return switch_row;
     }
 
@@ -171,9 +173,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound;
         const text = document.getElementById(id_lower).textContent;
         lower_bound = text.substring(text.indexOf('$') + 1);
-        console.log("testing emission main");
-        console.log("lower bound yes is ", lower_bound);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_emission_yes", lower_bound);
+        console.log("testing emissions main");
+        console.log("lower bound emissions is ", lower_bound);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_emissions", lower_bound);
     }
 });
 
