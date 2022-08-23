@@ -136,8 +136,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad.toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
@@ -145,8 +145,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";

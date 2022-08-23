@@ -105,8 +105,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong>$"+eff+"</strong>";
@@ -114,8 +114,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+eff+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+trad+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+eff+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong>$"+eff+"</strong>";
@@ -139,8 +139,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
             let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
@@ -148,8 +148,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+(trad)+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";

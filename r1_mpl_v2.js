@@ -103,8 +103,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
@@ -112,8 +112,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
                 }
                 else {
                     document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";

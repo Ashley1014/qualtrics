@@ -1,4 +1,4 @@
-//for R3_mpl_yes
+//for R3_mpl_yes_disc
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -165,8 +165,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function editLabels(QID, eff_init, eff_incr, trad_init, trad_incr, disc_rate) {
         const question = document.getElementById(qid);
         const rows = question.getElementsByClassName("ChoiceRow");
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        const len = rows.length;
 
         let eff_caps = "${e://Field/efficient_allcaps}";
         let trad_caps = "${e://Field/traditional_allcaps}";
@@ -188,7 +186,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
             eff_incr = parseFloat("${e://Field/mpl_trad_incr}");
         }
 
-        //console.log(num);
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
@@ -199,21 +196,21 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff) +"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff)+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(trad)+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + eff_caps + "</em></u><br /><strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff)+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + trad_caps + "</em></u><br /><strong>$"+(trad)+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+(eff_ori)+"</s><span style=\"color:red\"> $" + (eff) +"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(trad)+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_ori+"</s><span style=\"color:red\"> $" + eff +"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
