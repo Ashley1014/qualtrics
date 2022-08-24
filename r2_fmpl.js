@@ -293,8 +293,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         incr_eff = findIncr(sp)["incr_e"];
         incr_trad = findIncr(sp)["incr_t"];
         
-        let assignment = parseInt("${e://Field/assignment}");
-        if (assignment === 6 || assignment === 16) {
+        let assignment = parseInt("${e://Field/condition_no}");
+        if (assignment === 5 || assignment === 6) {
             let disc_rate = parseFloat("${e://Field/disc_rate}");
             displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate);
         } else {

@@ -48,8 +48,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
-    let assignment = parseInt("${e://Field/assignment}");
-    if (assignment === 6 || assignment === 16) {
+    let assignment = parseInt("${e://Field/condition_no}");
+    if (assignment === 5 || assignment === 6) {
         not_revised = notRevised_v1(price_incr, 5, price_init);
     }
     else {
