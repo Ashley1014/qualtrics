@@ -9,7 +9,13 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function() {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing r3_fmpl_yes_revise");
-    const revised_wtp = parseInt("${q://QID763/ChoiceTextEntryValue}");
+    let revised_wtp;
+    let assignment = parseInt("${e://Field/condition_no}");
+    if (assignment === 10) {
+        revised_wtp = parseInt("${q://QID1087/ChoiceTextEntryValue}");
+    } else {
+        revised_wtp = parseInt("${q://QID763/ChoiceTextEntryValue}");
+    }
     //console.log("revised wtp is ", revised_wtp);
     const order = parseInt("${e://Field/display_order}");
     const qid = this.questionId;
@@ -48,7 +54,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
-    let assignment = parseInt("${e://Field/condition_no}");
     if (assignment === 5 || assignment === 6) {
         not_revised = notRevised_v1(price_incr, 5, price_init);
     }

@@ -75,7 +75,13 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayRevised(qid, basenum) {
-        let wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
+        let wtp_upper;
+        let assignment = parseInt("${e://Field/condition_no}");
+        if (assignment === 10) {
+            wtp_upper = parseInt("${q://QID1087/ChoiceTextEntryValue}");
+        } else {
+            wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
+        }
         let wtp_lower = wtp_upper - 1;
         // let wtp_lower = 27;
         // let wtp_upper = 34;
