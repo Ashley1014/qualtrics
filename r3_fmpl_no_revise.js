@@ -324,23 +324,23 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         };
 
         //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_a is eff **
-        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_swi ) }");
+        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_swi / e://Field/reduc_rate ) }");
         //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_b is eff **
-        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 - e://Field/fmpl_eff_incr_swi ) }");
+        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 - e://Field/fmpl_eff_incr_swi / e://Field/reduc_rate ) }");
         //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_a is trad **
         let initt_sw_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_swi ) }");
         //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_b is trad **
         let initt_sw_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_swi ) }");
         //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_a is eff **
-        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alleff ) }");
+        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alleff / e://Field/reduc_rate ) }");
         //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_b is eff **
-        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff ) ) }");
+        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff / e://Field/reduc_rate ) ) }");
         //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_a is trad **
         let initt_alltrad_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_alltrad ) }");
         //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_b is trad **
         let initt_alltrad_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - ( e://Field/num_followdecisions * e://Field/fmpl_trad_incr_alltrad ) ) }");
         //@TODO: ** change the eff fmpl init price variable when all trad is selected **
-        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alltrad ) }");
+        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alltrad / e://Field/reduc_rate ) }");
         //@TODO: ** change the trad fmpl init price variable when all eff is selected **
         let initt_alleff = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_alleff ) }");
 
@@ -386,6 +386,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             "incr_e": null,
             "incr_t": null
         }
+        let assignment = parseInt("${e://Field/condition_no}");
+        let reduc_rate = parseFloat("${e://Field/reduc_rate}");
         let fmpl_incra_sw = parseFloat("${e://Field/fmpl_eff_incr_swi}");
         let fmpl_incra_alla = parseFloat("${e://Field/fmpl_eff_incr_alleff}");
         let fmpl_incra_allb = parseFloat("${e://Field/fmpl_eff_incr_alltrad}");
@@ -411,6 +413,9 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 res["incr_e"] = -fmpl_incra_sw;
                 res["incr_t"] = fmpl_incra_sw;
             }
+        }
+        if (assignment === 7) {
+            res["incr_e"] = res["incr_e"]/reduc_rate;
         }
         return res;
     }

@@ -54,8 +54,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
-    if (assignment === 5 || assignment === 6) {
-        not_revised = notRevised_v1(price_incr, 5, price_init);
+    if (assignment === 7) {
+        not_revised = notRevised_v2();
     }
     else {
         not_revised = notRevised_v1(price_incr, 5, price_init);
@@ -245,23 +245,29 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     /**
      * check whether or not revised for discount versions
      * return true if not been revised, return false if has been revised.
-     * @param decision_num the number of decisions
-     * @param eff_init_val the initial value of efficient price list
-     * @param incr_eff the increment of efficient price list
-     * @param trad_init_val the initial value of traditional price list
-     * @param incr_trad the increment of traditional price list
      */
-    function notRevised_v2(decision_num, eff_init_val, incr_eff, trad_init_val, incr_trad) {
+    function notRevised_v2() {
 
-        decision_num = parseInt("${e://Field/num_maindecisions}");
-        eff_init_val = parseInt("${e://Field/mpl_eff_init}");
-        trad_init_val = parseInt("${e://Field/mpl_trad_init}")
-        incr_eff = parseInt("${e://Field/mpl_eff_incr}");
-        incr_trad = parseInt("${e://Field/mpl_trad_incr}");
+        let decision_num = parseInt("${e://Field/num_maindecisions}");
+        let eff_init_val = parseInt("${e://Field/mpl_eff_init}");
+        let incr_eff = parseInt("${e://Field/mpl_eff_incr}");
+        let incr_trad = parseInt("${e://Field/mpl_trad_incr}")
+        let reduc_rate = parseFloat("${e://Field/reduc_rate}");
 
+        let max_trad = eff_init_val + incr_eff * (decision_num - 1);
+        let max_eff = max_trad / reduc_rate;
+        let min_trad = eff_init_val;
+        let min_eff = eff_init_val/reduc_rate;
+
+        if (iseffLeft()) {
+            incr_eff = incr_eff/reduc_rate;
+        } else {
+            incr_eff = -incr_eff/reduc_rate;
+            incr_trad = -incr_trad;
+        }
         // eff is on the left
-        let upper_bound_wtp = incr_eff * (decision_num - 1);
-        let lower_bound_wtp = incr_trad * (decision_num - 1);
+        let upper_bound_wtp = max_eff - min_trad;
+        let lower_bound_wtp = min_eff - max_trad;
         let notRevised;
         let init_eff = parseInt("${e://Field/lower_bound_eff_main_r3}");
         let init_trad = parseInt("${e://Field/lower_bound_trad_main_r3}");
@@ -405,7 +411,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     }
 
 
-
     /**
      * return a dictionary of the initial fmpl prices of two products.
      * @param sp{int}
@@ -418,23 +423,23 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         };
 
         //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_a is eff **
-        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_swi ) }");
+        let inite_sw_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_swi / e://Field/reduc_rate ) }");
         //@TODO: ** change the eff fmpl init price variable when there's a switchpoint and when choice_b is eff **
-        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 - e://Field/fmpl_eff_incr_swi ) }");
+        let inite_sw_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 - e://Field/fmpl_eff_incr_swi / e://Field/reduc_rate ) }");
         //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_a is trad **
         let initt_sw_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_swi ) }");
         //@TODO: ** change the trad fmpl init price variable when there's a switchpoint and when choice_b is trad **
         let initt_sw_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_swi ) }");
         //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_a is eff **
-        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alleff ) }");
+        let inite_alleff_ea = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alleff / e://Field/reduc_rate ) }");
         //@TODO: ** change the eff fmpl init price variable when all eff is selected and when choice_b is eff **
-        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff ) ) }");
+        let inite_alleff_eb = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + ( e://Field/num_followdecisions * e://Field/fmpl_eff_incr_alleff / e://Field/reduc_rate ) ) }");
         //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_a is trad **
         let initt_alltrad_ta = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - e://Field/fmpl_trad_incr_alltrad ) }");
         //@TODO: ** change the trad fmpl init price variable when all trad is selected and when choice_b is trad **
         let initt_alltrad_tb = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 - ( e://Field/num_followdecisions * e://Field/fmpl_trad_incr_alltrad ) ) }");
         //@TODO: ** change the eff fmpl init price variable when all trad is selected **
-        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alltrad ) }");
+        let inite_alltrad = parseFloat("$e{ ( e://Field/lower_bound_eff_main_r3 + e://Field/fmpl_eff_incr_alltrad / e://Field/reduc_rate ) }");
         //@TODO: ** change the trad fmpl init price variable when all eff is selected **
         let initt_alleff = parseFloat("$e{ ( e://Field/lower_bound_trad_main_r3 + e://Field/fmpl_trad_incr_alleff ) }");
 
@@ -480,11 +485,11 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             "incr_e": null,
             "incr_t": null
         }
-
+        let assignment = parseInt("${e://Field/condition_no}");
+        let reduc_rate = parseFloat("${e://Field/reduc_rate}");
         let fmpl_incra_sw = parseFloat("${e://Field/fmpl_eff_incr_swi}");
         let fmpl_incra_alla = parseFloat("${e://Field/fmpl_eff_incr_alleff}");
         let fmpl_incra_allb = parseFloat("${e://Field/fmpl_eff_incr_alltrad}");
-
         if (iseffLeft()) {
             if (sp === 1) {
                 res["incr_e"] = fmpl_incra_alla;
@@ -508,8 +513,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 res["incr_t"] = fmpl_incra_sw;
             }
         }
+        if (assignment === 7) {
+            res["incr_e"] = res["incr_e"]/reduc_rate;
+        }
         return res;
     }
+
     /**
      * Randomizes the header label position and generates choice values according to the main mpl switch
      point.

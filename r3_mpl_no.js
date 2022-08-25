@@ -29,7 +29,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
 
-    editLabels(qid, price_init, price_incr);
+    let assignment = parseInt("${e://Field/condition_no}");
+
+    if (assignment === 7) {
+        editLabels_v2(qid);
+    } else {
+        editLabels(qid, price_init, price_incr);
+    }
+
     populateChoices();
     add_button_events();
 
@@ -157,6 +164,68 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 else {
                     document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
                     document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
+                }
+            }
+        }
+    }
+
+    /**
+     * Randomizes the header label position and generates choice values according to the main mpl switch
+     point, with eff prices being discounted.
+     * @param QID - the question id
+     */
+    function editLabels_v2(QID) {
+        const question = document.getElementById(qid);
+        const rows = question.getElementsByClassName("ChoiceRow");
+
+        let eff_caps = "${e://Field/efficient_allcaps}";
+        let trad_caps = "${e://Field/traditional_allcaps}";
+        let num = parseInt("${e://Field/display_order}");
+        reduc_rate = parseFloat("${e://Field/reduc_rate}");
+
+        let eff_init_ori;
+        let eff_incr_ori;
+        if (iseffLeft()) {
+            eff_init_ori = parseFloat("${e://Field/mpl_eff_init}") / reduc_rate;
+            trad_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_eff_incr}") / reduc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_trad_incr}");
+            eff_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr = parseFloat("${e://Field/mpl_eff_incr}");
+        } else {
+            eff_init_ori = parseFloat("${e://Field/mpl_trad_init}") / reduc_rate;
+            trad_init = parseFloat("${e://Field/mpl_eff_init}");
+            eff_incr_ori = parseFloat("${e://Field/mpl_trad_incr}") / reduc_rate;
+            trad_incr = parseFloat("${e://Field/mpl_eff_incr}");
+            eff_init = parseFloat("${e://Field/mpl_trad_init}");
+            eff_incr = parseFloat("${e://Field/mpl_trad_incr}");
+        }
+
+        for (let i = 0; i < rows.length; i++) {
+            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
+            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+
+            let eff_ori = (eff_init_ori + i * eff_incr_ori).toFixed(2).replace(/\.00$/, '');
+            let eff = (eff_init + i * eff_incr).toFixed(2).replace(/\.00$/, '');
+            let trad = (trad_init + i * trad_incr).toFixed(2).replace(/\.00$/, '');
+
+            if (num === 0) {
+                if (i === 0) {
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+(eff_ori)+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
+                }
+                else {
+                    document.getElementById(ida).innerHTML="<strong>$"+(eff_ori)+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
+                }
+            } else {
+                if (i === 0) {
+                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><br /><strong>$"+(eff_ori)+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><br /><strong>$"+trad+"</strong>";
+                }
+                else {
+                    document.getElementById(idb).innerHTML="<strong>$"+(eff_ori)+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
                 }
             }
         }
