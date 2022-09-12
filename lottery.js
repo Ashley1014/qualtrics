@@ -226,6 +226,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function getFollowImplement() {
         let sp;
         let switch_row;
+        let row;
         let res = {
             "fmpl_sp": null,
             "dec_selected": null,
@@ -236,13 +237,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         if (round_implement === 1) {
             sp = parseInt("${e://Field/switchpoint_fmpl_r1}");
+            row = parseInt("${e://Field/switch_row_fmpl_r1}");
         } else if (round_implement === 2) {
             sp = parseInt("${e://Field/switchpoint_fmpl_r2}");
+            row = parseInt("${e://Field/switch_row_fmpl_r2}");
         } else {
             sp = parseInt("${e://Field/switchpoint_fmpl_r3}");
+            row = parseInt("${e://Field/switch_row_fmpl_r3}");
         }
         res["fmpl_sp"] = sp;
-        switch_row = findSwitchRow(sp);
+        switch_row = findSwitchRow(sp, row);
         res["switch_row"] = switch_row;
         return res;
     }
