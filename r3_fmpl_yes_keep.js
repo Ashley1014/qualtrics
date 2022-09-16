@@ -75,6 +75,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
         editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
         displayRevised(qid, basenum);
+        add_button_events(basenum);
 
         let nextbutton = document.getElementById("NextButton");
 
@@ -203,6 +204,48 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r3", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r3", upper_bound_cp);
+    }
+
+    function add_button_events(basenum){
+        let radio1 = document.getElementsByTagName("input");
+        for(radio in radio1) {
+            radio1[radio].onclick = function() {
+                //console.log("button pressed");
+                update_table(this.value, this.id, basenum);
+            }
+        }
+    }
+
+    function update_table(button_value, button_id, basenum) {
+        const value = Number(button_value);
+        const arr = button_id.split("~");
+        const qid = arr[1];
+        //console.log(qid);
+        const num = arr[arr.length-1];
+        let row = Number(arr[arr.length-2])-basenum;
+        //console.log(button_id);
+        if (num === 1) {
+            row = row+1;
+        }
+        //console.log(row);
+        fill_in_table(qid, row, value, basenum);
+        //calculate_wtp(qid, row);
+    }
+
+    function fill_in_table(QID, row_number, value, basenum) {
+        const rows = document.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
+            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
+            if (i >= Number(row_number) && value === 2) {
+                document.getElementById(choice_a).checked = false;
+                document.getElementById(choice_b).checked = true;
+            }
+            if (i < Number(row_number) && value === 1) {
+                document.getElementById(choice_a).checked = true;
+                document.getElementById(choice_b).checked = false;
+            }
+        }
     }
 
     /**
