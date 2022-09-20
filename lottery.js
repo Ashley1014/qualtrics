@@ -303,6 +303,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         console.log("price_implement_other is ", price_implement_other);
     }
 
+    function getPureNum(str) {
+        return str.substr(str.indexOf("$") + 1);
+    }
+
 
 });
 

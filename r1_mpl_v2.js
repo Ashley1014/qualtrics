@@ -16,6 +16,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let price_incr = parseInt("${e://Field/price_incr}");
 
     const qid = this.questionId;
+    let question = document.getElementById(qid);
     //console.log(qid);
     let basenum;
     let radio1 = document.getElementsByTagName("input");
@@ -50,7 +51,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
+        let radio1 = question.getElementsByTagName("input");
         for(radio in radio1) {
             radio1[radio].onclick = function() {
                 //console.log("button pressed");
@@ -78,7 +79,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
             const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
@@ -104,7 +105,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         initb = parseInt("${e://Field/mpl_trad_init}");
         incra = parseInt("${e://Field/mpl_eff_incr}");
         incrb = parseInt("${e://Field/mpl_trad_incr}");
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
@@ -234,7 +235,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function findCheckedValue(index) {
         let curr_val;
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         const row = rows[index];
         const radios = row.getElementsByTagName("input");
         for (radio in radios) {
