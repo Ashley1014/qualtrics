@@ -21,6 +21,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let price_incr = parseInt("${e://Field/pads_incr}");
 
     const qid = this.questionId;
+    const question = document.getElementById(qid);
     //console.log(qid);
     let basenum;
     let radio1 = document.getElementsByTagName("input");
@@ -60,7 +61,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
+        let radio1 = question.getElementsByTagName("input");
         for(radio in radio1) {
             radio1[radio].onclick = function() {
                 //console.log("button pressed");
@@ -88,7 +89,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
             const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
@@ -103,7 +104,27 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+    function addHeader(QID) {
+        //let table = document.getElementsByTagName("table")[0];
+        let white_caps = "<strong>LEGAL</strong><br /><img alt='legal' height=\"118\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_eEVGxpLyfhJjRem\" style=\"width: 87px; height: 118px;\" width=\"87\" /><br />";
+        let yellow_caps = "<strong>SMALL</strong><br /><img alt='small' height=\"118\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_eEVGxpLyfhJjRem\" style=\"width: 87px; height: 118px;\" width=\"87\" /><br />";
+        let choice_a;
+        let choice_b;
+        if (iswhiteLeft()) {
+            choice_a = "<u>Choice A</u>:&nbsp;<br />" + white_caps;
+            choice_b = "<u>Choice B</u>:&nbsp;<br />" + yellow_caps;
+        } else {
+            choice_a = "<u>Choice A</u>:&nbsp;<br />" + yellow_caps;
+            choice_b = "<u>Choice B</u>:&nbsp;<br />" + white_caps;
+        }
+
+        let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
+
+        jQuery("#"+QID+" table:first").prepend(row_html);
+    }
+
     function editLabels(QID, inita, incra) {
+        addHeader(QID);
         let num = parseInt("${e://Field/display_order_pads}");
         let white_caps = "WHITE WRITING PADS";
         let yellow_caps = "YELLOW WRITING PADS";
@@ -113,29 +134,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
         initb = parseInt("${e://Field/pads_yellow_mpl_init}")
         incra = parseInt("${e://Field/pads_white_mpl_incr}");
         incrb = parseInt("${e://Field/pads_yellow_mpl_incr}");
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            if (num === 0) {
-                if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br />" + white_caps + "<br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br />" + yellow_caps + "<br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
-                }
-            } else {
-                if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br />" + white_caps + "<br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br />" + yellow_caps + "<br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-                }
-            }
+            document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
+            document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
         }
     }
 
@@ -180,7 +184,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function findCheckedValue(index) {
         let curr_val;
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         const row = rows[index];
         const radios = row.getElementsByTagName("input");
         for (radio in radios) {
