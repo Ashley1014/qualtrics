@@ -106,20 +106,19 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function addHeader(QID) {
         //let table = document.getElementsByTagName("table")[0];
-        let white_caps = "<strong>LEGAL</strong><br /><img alt='legal' height=\"118\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_eEVGxpLyfhJjRem\" style=\"width: 87px; height: 118px;\" width=\"87\" /><br />";
-        let yellow_caps = "<strong>SMALL</strong><br /><img alt='small' height=\"118\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_eEVGxpLyfhJjRem\" style=\"width: 87px; height: 118px;\" width=\"87\" /><br />";
+        let pads_a_choice = "${e://Field/pads_header_a}";
+        let pads_b_choice = "${e://Field/pads_header_b}";
+        let pads_a_img = "${e://Field/image_pads_a}";
+        console.log(pads_a_img);
+        let pads_b_img = "${e://Field/image_pads_b}";
+        console.log(pads_b_img);
+        let a_caps = "<strong>" + pads_a_choice + "</strong><br /><img alt='legal' height=\"120\" src=\"" + pads_a_img + "\"/><br />";
+        let b_caps = "<strong>" + pads_b_choice + "</strong><br /><img alt='small' height=\"120\" src=\"" + pads_b_img + "\"/><br />";
         let choice_a;
         let choice_b;
-        if (iswhiteLeft()) {
-            choice_a = "<u>Choice A</u>:&nbsp;<br />" + white_caps;
-            choice_b = "<u>Choice B</u>:&nbsp;<br />" + yellow_caps;
-        } else {
-            choice_a = "<u>Choice A</u>:&nbsp;<br />" + yellow_caps;
-            choice_b = "<u>Choice B</u>:&nbsp;<br />" + white_caps;
-        }
-
+        choice_a = "<u>Choice A</u>:&nbsp;<br />" + a_caps;
+        choice_b = "<u>Choice B</u>:&nbsp;<br />" + b_caps;
         let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
-
         jQuery("#"+QID+" table:first").prepend(row_html);
     }
 
