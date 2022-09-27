@@ -11,8 +11,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /*Place your JavaScript here to run when the page is fully displayed*/
     //test embedded variables
     console.log("num pads decisions is ", parseInt("${e://Field/num_pads_maindecisions}"));
-    console.log("pads white mpl incr is ", parseInt("${e://Field/pads_white_mpl_incr}"));
-    console.log("pads white mpl init is ", parseInt("${e://Field/pads_white_mpl_init}"));
+    console.log("pads lg mpl incr is ", parseInt("${e://Field/pads_lg_mpl_incr}"));
+    console.log("pads lg mpl init is ", parseInt("${e://Field/pads_lg_mpl_init}"));
 
     let condition = "${e://Field/Condition}";
     console.log("condition is ", condition);
@@ -37,22 +37,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let value;
     let pads_fmpl_incr = parseFloat("${e://Field/pads_fmpl_incr}");
 
-    let white_fmpl_incr;
-    let yellow_fmpl_incr;
+    let lg_fmpl_incr;
+    let sm_fmpl_incr;
 
-    if (iswhiteLeft()) {
-        white_fmpl_incr = pads_fmpl_incr;
-        yellow_fmpl_incr = -pads_fmpl_incr;
+    if (islgLeft()) {
+        lg_fmpl_incr = pads_fmpl_incr;
+        sm_fmpl_incr = -pads_fmpl_incr;
     } else {
-        white_fmpl_incr = -pads_fmpl_incr;
-        yellow_fmpl_incr = pads_fmpl_incr;
+        lg_fmpl_incr = -pads_fmpl_incr;
+        sm_fmpl_incr = pads_fmpl_incr;
     }
 
     let nextbutton = document.getElementById("NextButton");
     nextbutton.onclick = function() {
         //alert("next button was clicked");
         findSwitchPoint(qid);
-        if (iswhiteLeft()) {
+        if (islgLeft()) {
             value = 1;
         } else {
             value = 2;
@@ -126,10 +126,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         addHeader(QID);
         let initb;
         let incrb;
-        inita = parseInt("${e://Field/pads_white_mpl_init}");
-        initb = parseInt("${e://Field/pads_yellow_mpl_init}")
-        incra = parseInt("${e://Field/pads_white_mpl_incr}");
-        incrb = parseInt("${e://Field/pads_yellow_mpl_incr}");
+        inita = parseInt("${e://Field/pads_lg_mpl_init}");
+        initb = parseInt("${e://Field/pads_sm_mpl_init}")
+        incra = parseInt("${e://Field/pads_lg_mpl_incr}");
+        incrb = parseInt("${e://Field/pads_sm_mpl_incr}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
@@ -163,8 +163,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         //console.log("curr_val is ", curr_val);
         if (prev_val === curr_val) {
-            // set switch_point to 1 if all white choices have been selected;
-            // set switch_point to 2 if all yellowogen choices have been selected;
+            // set switch_point to 1 if all lg choices have been selected;
+            // set switch_point to 2 if all smogen choices have been selected;
             switch_point = findSwitchPoint_h(curr_val);
             switch_row = len-1;
         }
@@ -194,12 +194,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      * returns the type of switch point given by the value of switch point.
      * @param value the value of selected choices.
-     * @returns {number} - 1 if all white choices have been selected, 2 if all yellowogen choices have been selected.
+     * @returns {number} - 1 if all lg choices have been selected, 2 if all smogen choices have been selected.
      */
     function findSwitchPoint_h(value) {
         let switch_point;
         // let num = parseInt("${e://Field/display_order_pads}");
-        if (iswhiteLeft()) {
+        if (islgLeft()) {
             switch_point = value;
         } else {
             switch_point = 3-value;
@@ -207,7 +207,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return switch_point;
     }
 
-    function iswhiteLeft() {
+    function islgLeft() {
         let num = parseInt("${e://Field/display_order_pads}");
         return num === 0;
     }
@@ -215,70 +215,70 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      *
      * @param QID
-     * @param value the value of white choices
+     * @param value the value of lg choices
      */
     function calculate_wtp(QID, value) {
         //const rows = document.getElementsByClassName("ChoiceRow");
 
-        let lower_white;
-        let lower_yellow;
+        let lower_lg;
+        let lower_sm;
 
         //console.log("sp is ", sp.type);
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
-            lower_white = switch_row;
-            lower_yellow = switch_row;
+            lower_lg = switch_row;
+            lower_sm = switch_row;
         } else if (Number(sp) === 1) {
-            if (iswhiteLeft()) {
-                //console.log("all white chosen, white is left.");
-                lower_white = len - 1;
-                lower_yellow = len - 1;
-                //console.log("lower white bound is ", lower_white);
+            if (islgLeft()) {
+                //console.log("all lg chosen, lg is left.");
+                lower_lg = len - 1;
+                lower_sm = len - 1;
+                //console.log("lower lg bound is ", lower_lg);
             } else {
-                //console.log("all white chosen, white is right.");
-                lower_white = 0;
-                lower_yellow = 0;
-                //console.log("lower white bound is ", lower_white);
+                //console.log("all lg chosen, lg is right.");
+                lower_lg = 0;
+                lower_sm = 0;
+                //console.log("lower lg bound is ", lower_lg);
             }
         } else {
             //console.log("inside else");
-            if (iswhiteLeft()) {
-                lower_white = 0;
-                lower_yellow = 0;
+            if (islgLeft()) {
+                lower_lg = 0;
+                lower_sm = 0;
             } else {
-                lower_white = len - 1;
-                lower_yellow = len - 1;
+                lower_lg = len - 1;
+                lower_sm = len - 1;
             }
         }
-        const ida_lower = QID+"-"+(lower_white+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_yellow+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for white is ", ida_lower);
-        //console.log("lower bound for yellowogen is ", idb_lower);
+        const ida_lower = QID+"-"+(lower_lg+basenum).toString()+"-"+value.toString()+"-label";
+        const idb_lower = QID+"-"+(lower_sm+basenum).toString()+"-"+(3-value).toString()+"-label";
+        //console.log("lower bound for lg is ", ida_lower);
+        //console.log("lower bound for smogen is ", idb_lower);
         // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
         // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
-        var lower_bound_white;
-        var lower_bound_yellow;
-        if (lower_white === 0) {
-            const text_white = document.getElementById(ida_lower).textContent;
-            lower_bound_white = text_white.substring(text_white.indexOf('$') + 1);
-        } if (lower_yellow === 0) {
-            const text_yellow = document.getElementById(idb_lower).textContent;
-            lower_bound_yellow = text_yellow.substring(text_yellow.indexOf('$')+1);
+        var lower_bound_lg;
+        var lower_bound_sm;
+        if (lower_lg === 0) {
+            const text_lg = document.getElementById(ida_lower).textContent;
+            lower_bound_lg = text_lg.substring(text_lg.indexOf('$') + 1);
+        } if (lower_sm === 0) {
+            const text_sm = document.getElementById(idb_lower).textContent;
+            lower_bound_sm = text_sm.substring(text_sm.indexOf('$')+1);
         }
         else {
-            lower_bound_white = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_yellow = document.getElementById(idb_lower).textContent.substring(1);
+            lower_bound_lg = document.getElementById(ida_lower).textContent.substring(1);
+            lower_bound_sm = document.getElementById(idb_lower).textContent.substring(1);
         }
-        // const upper_bound_white = document.getElementById(ida_upper).textContent.substring(1);
-        // const upper_bound_yellow = document.getElementById(idb_upper).textContent.substring(1);
-        // lower_bound = Number(lower_bound_white) - Number(lower_bound_yellow);
-        // upper_bound = Number(upper_bound_white) - Number(upper_bound_yellow);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_white_main", Number(lower_bound_white));
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_yellow_main", Number(lower_bound_yellow));
+        // const upper_bound_lg = document.getElementById(ida_upper).textContent.substring(1);
+        // const upper_bound_sm = document.getElementById(idb_upper).textContent.substring(1);
+        // lower_bound = Number(lower_bound_lg) - Number(lower_bound_sm);
+        // upper_bound = Number(upper_bound_lg) - Number(upper_bound_sm);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg_main", Number(lower_bound_lg));
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm_main", Number(lower_bound_sm));
         console.log("testing pads_mpl");
-        console.log("lower bound white is ", lower_bound_white);
-        console.log("lower bound yellow is ", lower_bound_yellow);
+        console.log("lower bound lg is ", lower_bound_lg);
+        console.log("lower bound sm is ", lower_bound_sm);
     }
 });
 

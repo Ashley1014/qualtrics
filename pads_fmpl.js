@@ -18,22 +18,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const switchpoint = parseInt("${e://Field/switchpoint_main_pads}");
     let price_init = parseInt("${e://Field/pads_init}");
     let pads_all_incr = parseInt("${e://Field/pads_all_incr}");
-    // const white = parseFloat("${e://Field/fmpl_white_init}").toFixed(2);
-    // const yellow = parseFloat("${e://Field/fmpl_yellow_init}").toFixed(2);
-    const white = toFloat("${e://Field/fmpl_white_init}", 2);
-    const yellow = toFloat("${e://Field/fmpl_yellow_init}", 2);
+    // const lg = parseFloat("${e://Field/fmpl_lg_init}").toFixed(2);
+    // const sm = parseFloat("${e://Field/fmpl_sm_init}").toFixed(2);
+    const lg = toFloat("${e://Field/fmpl_lg_init}", 2);
+    const sm = toFloat("${e://Field/fmpl_sm_init}", 2);
     // let fmpl_incr = parseFloat("${e://Field/pads_fmpl_incr}").toFixed(2);
     let fmpl_incr = toFloat("${e://Field/pads_fmpl_incr}", 2);
 
-    let fmpl_white_incr;
-    let fmpl_yellow_incr;
+    let fmpl_lg_incr;
+    let fmpl_sm_incr;
 
-    if (iswhiteLeft()) {
-        fmpl_white_incr = fmpl_incr;
-        fmpl_yellow_incr = -fmpl_incr;
+    if (islgLeft()) {
+        fmpl_lg_incr = fmpl_incr;
+        fmpl_sm_incr = -fmpl_incr;
     } else {
-        fmpl_white_incr = -fmpl_incr;
-        fmpl_yellow_incr = fmpl_incr;
+        fmpl_lg_incr = -fmpl_incr;
+        fmpl_sm_incr = fmpl_incr;
     }
 
     let basenum;
@@ -43,10 +43,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const arr = first_id.split("~");
     basenum = Number(arr[arr.length-2]);
     //console.log("switch point is ", switchpoint);
-    //console.log("white price is ", white);
-    //console.log("yellow price is ", yellow);
+    //console.log("lg price is ", lg);
+    //console.log("sm price is ", sm);
 
-    editLabels(qid, switchpoint, white, yellow, price_init, pads_all_incr, fmpl_white_incr, fmpl_yellow_incr, 5);
+    editLabels(qid, switchpoint, lg, sm, price_init, pads_all_incr, fmpl_lg_incr, fmpl_sm_incr, 5);
     add_button_events();
 
     let len;
@@ -58,12 +58,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     nextbutton.onclick = function() {
         //alert("next button was clicked");
         findSwitchPoint(qid);
-        if (iswhiteLeft()) {
+        if (islgLeft()) {
             value = 1;
         } else {
             value = 2;
         }
-        calculate_wtp(qid, value, fmpl_white_incr, fmpl_yellow_incr);
+        calculate_wtp(qid, value, fmpl_lg_incr, fmpl_sm_incr);
     };
 
     function add_button_events(){
@@ -108,7 +108,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
-    function displayLabels_v1(QID, init_white, incr_white, init_yellow, incr_yellow) {
+    function displayLabels_v1(QID, init_lg, incr_lg, init_sm, incr_sm) {
         let num = parseInt("${e://Field/display_order_pads}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
@@ -116,43 +116,43 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
-                document.getElementById(ida).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                document.getElementById(idb).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                document.getElementById(ida).innerHTML="<strong>$"+(init_lg+i*incr_lg).toString()+"</strong>";
+                document.getElementById(idb).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
             } else {
-                document.getElementById(idb).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                document.getElementById(ida).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                document.getElementById(idb).innerHTML="<strong>$"+(init_lg+i*incr_lg).toString()+"</strong>";
+                document.getElementById(ida).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
             }
         }
     }
 
-    function displayLabels_v2(QID, init_white, incr_white, init_yellow, incr_yellow, disc_rate) {
-        let white_caps = "${e://Field/whiteicient_allcaps}";
-        let yellow_caps = "${e://Field/yellowitional_allcaps}";
+    function displayLabels_v2(QID, init_lg, incr_lg, init_sm, incr_sm, disc_rate) {
+        let lg_caps = "${e://Field/lgicient_allcaps}";
+        let sm_caps = "${e://Field/smitional_allcaps}";
         let num = parseInt("${e://Field/display_order_pads}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            const white_disc = init_white + i * incr_white;
-            const white_original = white_disc / disc_rate;
+            const lg_disc = init_lg + i * incr_lg;
+            const lg_original = lg_disc / disc_rate;
             if (num === 0) {
                 if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + white_caps + "</em></u><br /><strong><s>$"+(white_original).toString()+"</s><span style=\"color:red\"> $" + (white_disc).toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + yellow_caps + "</em></u><br /><strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + lg_caps + "</em></u><br /><strong><s>$"+(lg_original).toString()+"</s><span style=\"color:red\"> $" + (lg_disc).toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + sm_caps + "</em></u><br /><strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+white_original.toString()+"</s><span style=\"color:red\"> $" + white_disc.toString()+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                    document.getElementById(ida).innerHTML="<strong><s>$"+lg_original.toString()+"</s><span style=\"color:red\"> $" + lg_disc.toString()+"</span></strong>";
+                    document.getElementById(idb).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
                 }
             } else {
                 if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + white_caps + "</em></u><br /><strong><s>$"+(white_original).toString()+"</s><span style=\"color:red\"> $" + (white_disc).toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + yellow_caps + "</em></u><br /><strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<u>Choice B:&nbsp;<em>" + lg_caps + "</em></u><br /><strong><s>$"+(lg_original).toString()+"</s><span style=\"color:red\"> $" + (lg_disc).toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<u>Choice A:&nbsp;<em>" + sm_caps + "</em></u><br /><strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
                 }
                 else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+white_original.toString()+"</s><span style=\"color:red\"> $" + white_disc.toString()+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
+                    document.getElementById(idb).innerHTML="<strong><s>$"+lg_original.toString()+"</s><span style=\"color:red\"> $" + lg_disc.toString()+"</span></strong>";
+                    document.getElementById(ida).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
                 }
             }
         }
@@ -169,28 +169,28 @@ Qualtrics.SurveyEngine.addOnReady(function()
             "init_y": null
         };
 
-        //@TODO: ** change the white fmpl init price variable when there's a switchpoint and when choice_a is white **
-        let initw_sw_wa = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_swi ) }");
-        //@TODO: ** change the white fmpl init price variable when there's a switchpoint and when choice_b is white **
-        let initw_sw_wb = parseFloat("$e{ ( e://Field/lower_bound_white_main - e://Field/pads_white_fmpl_incr_swi ) }");
-        //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint and when choice_a is yellow **
-        let inity_sw_ya = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_white_fmpl_incr_swi ) }");
-        //@TODO: ** change the yellow fmpl init price variable when there's a switchpoint and when choice_b is yellow **
-        let inity_sw_yb = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - e://Field/pads_white_fmpl_incr_swi ) }");
-        //@TODO: ** change the white fmpl init price variable when all white is selected and when choice_a is white **
-        let initw_allw_wa = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_allw ) }");
-        //@TODO: ** change the white fmpl init price variable when all white is selected and when choice_b is white **
-        let initw_allw_wb = parseFloat("$e{ ( e://Field/lower_bound_white_main + ( e://Field/num_pads_followdecisions * e://Field/pads_white_fmpl_incr_allw ) ) }");
-        //@TODO: ** change the yellow fmpl init price variable when all yellow is selected and when choice_a is yellow **
-        let inity_ally_ya = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - e://Field/pads_yellow_fmpl_incr_ally ) }");
-        //@TODO: ** change the yellow fmpl init price variable when all yellow is selected and when choice_b is yellow **
-        let inity_ally_yb = parseFloat("$e{ ( e://Field/lower_bound_yellow_main - ( e://Field/num_pads_followdecisions * e://Field/pads_yellow_fmpl_incr_ally ) ) }");
-        //@TODO: ** change the white fmpl init price variable when all yellow is selected **
-        let initw_ally = parseFloat("$e{ ( e://Field/lower_bound_white_main + e://Field/pads_white_fmpl_incr_ally ) }");
-        //@TODO: ** change the yellow fmpl init price variable when all white is selected **
-        let inity_allw = parseFloat("$e{ ( e://Field/lower_bound_yellow_main + e://Field/pads_yellow_fmpl_incr_allw ) }");
+        //@TODO: ** change the lg fmpl init price variable when there's a switchpoint and when choice_a is lg **
+        let initw_sw_wa = parseFloat("$e{ ( e://Field/lower_bound_lg_main + e://Field/pads_lg_fmpl_incr_swi ) }");
+        //@TODO: ** change the lg fmpl init price variable when there's a switchpoint and when choice_b is lg **
+        let initw_sw_wb = parseFloat("$e{ ( e://Field/lower_bound_lg_main - e://Field/pads_lg_fmpl_incr_swi ) }");
+        //@TODO: ** change the sm fmpl init price variable when there's a switchpoint and when choice_a is sm **
+        let inity_sw_ya = parseFloat("$e{ ( e://Field/lower_bound_sm_main + e://Field/pads_lg_fmpl_incr_swi ) }");
+        //@TODO: ** change the sm fmpl init price variable when there's a switchpoint and when choice_b is sm **
+        let inity_sw_yb = parseFloat("$e{ ( e://Field/lower_bound_sm_main - e://Field/pads_lg_fmpl_incr_swi ) }");
+        //@TODO: ** change the lg fmpl init price variable when all lg is selected and when choice_a is lg **
+        let initw_allw_wa = parseFloat("$e{ ( e://Field/lower_bound_lg_main + e://Field/pads_lg_fmpl_incr_allw ) }");
+        //@TODO: ** change the lg fmpl init price variable when all lg is selected and when choice_b is lg **
+        let initw_allw_wb = parseFloat("$e{ ( e://Field/lower_bound_lg_main + ( e://Field/num_pads_followdecisions * e://Field/pads_lg_fmpl_incr_allw ) ) }");
+        //@TODO: ** change the sm fmpl init price variable when all sm is selected and when choice_a is sm **
+        let inity_ally_ya = parseFloat("$e{ ( e://Field/lower_bound_sm_main - e://Field/pads_sm_fmpl_incr_ally ) }");
+        //@TODO: ** change the sm fmpl init price variable when all sm is selected and when choice_b is sm **
+        let inity_ally_yb = parseFloat("$e{ ( e://Field/lower_bound_sm_main - ( e://Field/num_pads_followdecisions * e://Field/pads_sm_fmpl_incr_ally ) ) }");
+        //@TODO: ** change the lg fmpl init price variable when all sm is selected **
+        let initw_ally = parseFloat("$e{ ( e://Field/lower_bound_lg_main + e://Field/pads_lg_fmpl_incr_ally ) }");
+        //@TODO: ** change the sm fmpl init price variable when all lg is selected **
+        let inity_allw = parseFloat("$e{ ( e://Field/lower_bound_sm_main + e://Field/pads_sm_fmpl_incr_allw ) }");
 
-        if (iswhiteLeft()) {
+        if (islgLeft()) {
             //allw_wa(yb)
             if (sp === 1) {
                 res["init_w"] = initw_allw_wa;
@@ -232,10 +232,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
             "incr_w": null,
             "incr_y": null
         }
-        let fmpl_incra_sw = parseFloat("${e://Field/pads_white_fmpl_incr_swi}");
-        let fmpl_incra_alla = parseFloat("${e://Field/pads_white_fmpl_incr_allw}");
-        let fmpl_incra_allb = parseFloat("${e://Field/pads_white_fmpl_incr_ally}");
-        if (iswhiteLeft()) {
+        let fmpl_incra_sw = parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
+        let fmpl_incra_alla = parseFloat("${e://Field/pads_lg_fmpl_incr_allw}");
+        let fmpl_incra_allb = parseFloat("${e://Field/pads_lg_fmpl_incr_ally}");
+        if (islgLeft()) {
             if (sp === 1) {
                 res["incr_w"] = fmpl_incra_alla;
                 res["incr_y"] = -fmpl_incra_allb;
@@ -285,27 +285,27 @@ Qualtrics.SurveyEngine.addOnReady(function()
      point.
      * @param QID - the question id
      * @param switchpoint - the switch point of the main mpl question if there's any
-     * @param white - the initial value of choice A options
-     * @param yellow - the initial value of choice B options
+     * @param lg - the initial value of choice A options
+     * @param sm - the initial value of choice B options
      * @param price_init
      * @param price_incr
-     * @param fmpl_white_incr
-     * @param fmpl_yellow_incr
+     * @param fmpl_lg_incr
+     * @param fmpl_sm_incr
      * @param num_dec
      */
-    function editLabels(QID, switchpoint, white, yellow, price_init, price_incr, fmpl_white_incr, fmpl_yellow_incr, num_dec) {
+    function editLabels(QID, switchpoint, lg, sm, price_init, price_incr, fmpl_lg_incr, fmpl_sm_incr, num_dec) {
         addHeader(QID);
         let sp = parseInt("${e://Field/switchpoint_main_pads}");
-        let init_white;
-        let init_yellow;
-        let incr_white;
-        let incr_yellow;
+        let init_lg;
+        let init_sm;
+        let incr_lg;
+        let incr_sm;
 
-        init_white = findInit(sp)["init_w"];
-        init_yellow = findInit(sp)["init_y"];
-        incr_white = findIncr(sp)["incr_w"];
-        incr_yellow = findIncr(sp)["incr_y"];
-        displayLabels_v1(QID, init_white, incr_white, init_yellow, incr_yellow);
+        init_lg = findInit(sp)["init_w"];
+        init_sm = findInit(sp)["init_y"];
+        incr_lg = findIncr(sp)["incr_w"];
+        incr_sm = findIncr(sp)["incr_y"];
+        displayLabels_v1(QID, init_lg, incr_lg, init_sm, incr_sm);
     }
 
     function findSwitchPoint(qid) {
@@ -332,8 +332,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         //console.log("curr_val is ", curr_val);
         if (prev_val === curr_val) {
-            // set switch_point to 1 if all white choices have been selected;
-            // set switch_point to 2 if all yellowogen choices have been selected;
+            // set switch_point to 1 if all lg choices have been selected;
+            // set switch_point to 2 if all smogen choices have been selected;
             switch_point = findSwitchPoint_h(curr_val);
             switch_row = len-1;
         }
@@ -361,12 +361,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      * returns the type of switch point given by the value of switch point.
      * @param value the value of selected choices.
-     * @returns {number} - 1 if all white choices have been selected, 2 if all yellowogen choices have been selected.
+     * @returns {number} - 1 if all lg choices have been selected, 2 if all smogen choices have been selected.
      */
     function findSwitchPoint_h(value) {
         let switch_point;
         // let num = parseInt("${e://Field/display_order_pads}");
-        if (iswhiteLeft()) {
+        if (islgLeft()) {
             switch_point = value;
         } else {
             switch_point = 3-value;
@@ -374,7 +374,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return switch_point;
     }
 
-    function iswhiteLeft() {
+    function islgLeft() {
         let num = parseInt("${e://Field/display_order_pads}");
         return num === 0;
     }
@@ -395,84 +395,84 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /***
      *
      * @param QID
-     * @param value the value of white choices
-     * @param white_incr the increment of price list
-     * @param yellow_incr
+     * @param value the value of lg choices
+     * @param lg_incr the increment of price list
+     * @param sm_incr
      */
-    function calculate_wtp(QID, value, white_incr, yellow_incr) {
-        let lower_white;
-        let lower_yellow;
-        let upper_white;
-        let upper_yellow;
+    function calculate_wtp(QID, value, lg_incr, sm_incr) {
+        let lower_lg;
+        let lower_sm;
+        let upper_lg;
+        let upper_sm;
 
-        let lower_bound_white;
-        let lower_bound_yellow;
-        let upper_bound_white;
-        let upper_bound_yellow;
+        let lower_bound_lg;
+        let lower_bound_sm;
+        let upper_bound_lg;
+        let upper_bound_sm;
 
         let main_sp = parseInt("${e://Field/switchpoint_main_pads}");
 
-        white_incr = findIncr(main_sp)["incr_w"];
-        yellow_incr = findIncr(main_sp)["incr_y"];
+        lg_incr = findIncr(main_sp)["incr_w"];
+        sm_incr = findIncr(main_sp)["incr_y"];
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
-            lower_white = switch_row;
-            lower_yellow = switch_row;
-            upper_white = switch_row + 1;
-            upper_yellow = switch_row + 1;
-            lower_bound_white = getBoundByRow(QID, lower_white, value);
-            lower_bound_yellow = getBoundByRow(QID, lower_yellow, 3-value);
-            upper_bound_white = getBoundByRow(QID, upper_white, value);
-            upper_bound_yellow = getBoundByRow(QID, upper_yellow, 3-value);
+            lower_lg = switch_row;
+            lower_sm = switch_row;
+            upper_lg = switch_row + 1;
+            upper_sm = switch_row + 1;
+            lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+            lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+            upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+            upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
         } else if (Number(sp) === 1) {
-            if (iswhiteLeft()) {
-                //console.log("all white chosen, white is left.");
-                lower_white = len - 1;
-                lower_yellow = len - 1;
-                lower_bound_white = getBoundByRow(QID, lower_white, value);
-                lower_bound_yellow = getBoundByRow(QID, lower_yellow, 3-value);
-                upper_bound_white = Number(lower_bound_white) + white_incr;
-                upper_bound_yellow = Number(lower_bound_yellow) + yellow_incr;
-                //console.log("lower white bound is ", lower_white);
+            if (islgLeft()) {
+                //console.log("all lg chosen, lg is left.");
+                lower_lg = len - 1;
+                lower_sm = len - 1;
+                lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+                lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+                upper_bound_lg = Number(lower_bound_lg) + lg_incr;
+                upper_bound_sm = Number(lower_bound_sm) + sm_incr;
+                //console.log("lower lg bound is ", lower_lg);
             } else {
-                //console.log("all white chosen, white is right.");
-                upper_white = 0;
-                upper_yellow = 0;
-                upper_bound_white = getBoundByRow(QID, upper_white, value);
-                upper_bound_yellow = getBoundByRow(QID, upper_yellow, 3-value);
-                lower_bound_white = Number(upper_bound_white) - white_incr;
-                lower_bound_yellow = Number(upper_bound_yellow) - yellow_incr;
-                //console.log("lower white bound is ", lower_white);
+                //console.log("all lg chosen, lg is right.");
+                upper_lg = 0;
+                upper_sm = 0;
+                upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+                upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
+                lower_bound_lg = Number(upper_bound_lg) - lg_incr;
+                lower_bound_sm = Number(upper_bound_sm) - sm_incr;
+                //console.log("lower lg bound is ", lower_lg);
             }
         } else {
             //console.log("inside else");
-            if (iswhiteLeft()) {
-                upper_white = 0;
-                upper_yellow = 0;
-                upper_bound_white = getBoundByRow(QID, upper_white, value);
-                upper_bound_yellow = getBoundByRow(QID, upper_yellow, 3-value);
-                lower_bound_white = Number(upper_bound_white) - white_incr;
-                lower_bound_yellow = Number(upper_bound_yellow) - yellow_incr;
+            if (islgLeft()) {
+                upper_lg = 0;
+                upper_sm = 0;
+                upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+                upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
+                lower_bound_lg = Number(upper_bound_lg) - lg_incr;
+                lower_bound_sm = Number(upper_bound_sm) - sm_incr;
             } else {
-                lower_white = len - 1;
-                lower_yellow = len - 1;
-                lower_bound_white = getBoundByRow(QID, lower_white, value);
-                lower_bound_yellow = getBoundByRow(QID, lower_yellow, 3-value);
-                upper_bound_white = Number(lower_bound_white) + white_incr;
-                upper_bound_yellow = Number(lower_bound_yellow) + yellow_incr;
+                lower_lg = len - 1;
+                lower_sm = len - 1;
+                lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+                lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+                upper_bound_lg = Number(lower_bound_lg) + lg_incr;
+                upper_bound_sm = Number(lower_bound_sm) + sm_incr;
             }
         }
-        console.log("lower bound white is ", lower_bound_white);
-        console.log("lower bound yellow is ", lower_bound_yellow);
-        console.log("upper bound white is ", upper_bound_white);
-        console.log("upper bound yellow is ", upper_bound_yellow);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_white", upper_bound_white);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_yellow", upper_bound_yellow);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_white", lower_bound_white);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_yellow", lower_bound_yellow);
-        let lower_bound = Number(lower_bound_white - lower_bound_yellow);
-        let upper_bound = Number(upper_bound_white - upper_bound_yellow);
+        console.log("lower bound lg is ", lower_bound_lg);
+        console.log("lower bound sm is ", lower_bound_sm);
+        console.log("upper bound lg is ", upper_bound_lg);
+        console.log("upper bound sm is ", upper_bound_sm);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_lg", upper_bound_lg);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sm", upper_bound_sm);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg", lower_bound_lg);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm", lower_bound_sm);
+        let lower_bound = Number(lower_bound_lg - lower_bound_sm);
+        let upper_bound = Number(upper_bound_lg - upper_bound_sm);
         let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
         let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
         console.log("upper bound wtp is ", upper_bound_cp);
