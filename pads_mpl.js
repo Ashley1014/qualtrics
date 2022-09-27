@@ -124,9 +124,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function editLabels(QID, inita, incra) {
         addHeader(QID);
-        let num = parseInt("${e://Field/display_order_pads}");
-        let white_caps = "WHITE WRITING PADS";
-        let yellow_caps = "YELLOW WRITING PADS";
         let initb;
         let incrb;
         inita = parseInt("${e://Field/pads_white_mpl_init}");

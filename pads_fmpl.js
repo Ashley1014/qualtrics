@@ -109,8 +109,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayLabels_v1(QID, init_white, incr_white, init_yellow, incr_yellow) {
-        let white_caps = "WHITE WRITING PADS";
-        let yellow_caps = "YELLOW WRITING PADS";
         let num = parseInt("${e://Field/display_order_pads}");
         const rows = document.getElementsByClassName("ChoiceRow");
         //console.log(num);
@@ -118,23 +116,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const ida = QID+"-"+(i+basenum).toString()+"-1-label";
             const idb = QID+"-"+(i+basenum).toString()+"-2-label";
             if (num === 0) {
-                if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br />" + white_caps + "<br /><br /><strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br />" + yellow_caps + "<br /><br /><strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
-                }
+                document.getElementById(ida).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
+                document.getElementById(idb).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
             } else {
-                if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br />" + white_caps + "<br /><br /><strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br />" + yellow_caps + "<br /><br /><strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
-                }
+                document.getElementById(idb).innerHTML="<strong>$"+(init_white+i*incr_white).toString()+"</strong>";
+                document.getElementById(ida).innerHTML="<strong>$"+(init_yellow+i*incr_yellow).toString()+"</strong>";
             }
         }
     }
@@ -275,6 +261,24 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return res;
     }
 
+    function addHeader(QID) {
+        //let table = document.getElementsByTagName("table")[0];
+        let pads_a_choice = "${e://Field/pads_header_a}";
+        let pads_b_choice = "${e://Field/pads_header_b}";
+        let pads_a_img = "${e://Field/image_pads_a}";
+        console.log(pads_a_img);
+        let pads_b_img = "${e://Field/image_pads_b}";
+        console.log(pads_b_img);
+        let a_caps = "<strong>" + pads_a_choice + "</strong><br /><img alt='legal' height=\"120\" src=\"" + pads_a_img + "\"/><br />";
+        let b_caps = "<strong>" + pads_b_choice + "</strong><br /><img alt='small' height=\"120\" src=\"" + pads_b_img + "\"/><br />";
+        let choice_a;
+        let choice_b;
+        choice_a = "<u>Choice A</u>:&nbsp;<br />" + a_caps;
+        choice_b = "<u>Choice B</u>:&nbsp;<br />" + b_caps;
+        let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
+        jQuery("#"+QID+" table:first").prepend(row_html);
+    }
+
 
     /**
      * Randomizes the header label position and generates choice values according to the main mpl switch
@@ -290,6 +294,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param num_dec
      */
     function editLabels(QID, switchpoint, white, yellow, price_init, price_incr, fmpl_white_incr, fmpl_yellow_incr, num_dec) {
+        addHeader(QID);
         let sp = parseInt("${e://Field/switchpoint_main_pads}");
         let init_white;
         let init_yellow;
