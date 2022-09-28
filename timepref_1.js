@@ -20,6 +20,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const arr = first_id.split("~");
     let basenum = Number(arr[arr.length-2]);
 
+    addHeader(qid);
+
     add_button_events();
 
     let nextbutton = document.getElementById("NextButton");
@@ -29,6 +31,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         findSwitchPoint(qid);
         calculate_wtp(qid, 1, -1, 0);
     };
+
+    function addHeader(QID) {
+        //let table = document.getElementsByTagName("table")[0];
+        let choice_a;
+        let choice_b;
+        choice_a = "<u>Option A</u><br />";
+        choice_b = "<u>Option B</u><br />";
+        let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + choice_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
+        jQuery("#"+QID+" table:first").prepend(row_html);
+    }
 
     function add_button_events(){
         // let radio1 = document.getElementsByTagName("input");
