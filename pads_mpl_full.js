@@ -35,6 +35,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         jQuery("#"+QID+" table:first").prepend(row_html);
     }
 
+
     function getInputByValue(inputs, value) {
         for (let i in inputs) {
             let input = inputs[i];
