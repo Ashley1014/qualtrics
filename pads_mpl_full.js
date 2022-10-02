@@ -72,6 +72,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function prepopulate() {
         let wtp_upper = toNumber("${e://Field/upper_bound_wtp_pads}");
         let wtp_lower = toNumber("${e://Field/lower_bound_wtp_pads}");
+        let main_sp = parseInt("${e://Field/switchpoint_main_pads}");
 
         let row_num = -1;
         const rows = question.getElementsByClassName("ChoiceRow");
@@ -117,23 +118,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 break;
             }
         }
-        // if (islgLeft()) {
-        //     if (wtp_upper > upper_bound) {
-        //         row = len - 1;
-        //     }
-        // } else if (!islgLeft()) {
-        //     const ida_lower = qid + "-" + (len-1 + basenum).toString() + "-" + eff_value.toString() +"-label";
-        //     const idb_lower = qid + "-" + (len-1 + basenum).toString() + "-" + trad_value.toString() +"-label";
-        //     let eff_text_lower = document.getElementById(ida_lower).textContent;
-        //     let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
-        //     let trad_text_lower = document.getElementById(idb_lower).textContent;
-        //     let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
-        //     let min_wtp = eff_num_lower - trad_num_lower;
-        //     if (wtp_lower < min_wtp) {
-        //         row = len - 1;
-        //     }
-        // }
-        //console.log("switch point is ", row);
+
+        if ((islgLeft() && main_sp === 1) || (!islgLeft() && main_sp === 2) ) {
+            row_num = len - 1;
+        }
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
@@ -146,6 +134,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 choice_a.checked = false;
                 choice_b.checked = true;
             }
+            choice_a.disable();
+            choice_b.disable();
         }
     }
 
