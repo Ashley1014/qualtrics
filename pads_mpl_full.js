@@ -77,14 +77,15 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+
     function editLabels(QID, inita, incra) {
         addHeader(QID);
         let initb;
         let incrb;
         inita = parseInt("${e://Field/pads_lg_mpl_init}");
         initb = parseInt("${e://Field/pads_sm_mpl_init}")
-        incra = parseInt("${e://Field/pads_lg_mpl_incr}");
-        incrb = parseInt("${e://Field/pads_sm_mpl_incr}");
+        incra = parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
+        incrb = -parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             // const ida = QID+"-"+(i+basenum).toString()+"-1-label";
