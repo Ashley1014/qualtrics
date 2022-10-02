@@ -9,44 +9,12 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
-    //test embedded variables
-    console.log("num pads decisions is ", parseInt("${e://Field/num_pads_maindecisions}"));
-    console.log("pads lg mpl incr is ", parseInt("${e://Field/pads_lg_mpl_incr}"));
-    console.log("pads lg mpl init is ", parseInt("${e://Field/pads_lg_mpl_init}"));
-
-    let condition = "${e://Field/Condition}";
-    console.log("condition is ", condition);
-
-    let price_init = parseInt("${e://Field/pads_init}");
-    let price_incr = parseInt("${e://Field/pads_incr}");
-
+    console.log("testing pads_mpl_full");
     const qid = this.questionId;
     const question = document.getElementById(qid);
-    //console.log(qid);
-    let basenum;
-    let radio1 = document.getElementsByTagName("input");
-    const first_id = radio1[0].id;
-    //console.log("first button id is ", first_id);
-    const arr = first_id.split("~");
-    basenum = Number(arr[arr.length-2]);
-    editLabels(qid, price_init, price_incr);
-    add_button_events();
-    let len;
-    let sp;
-    let switch_row;
-    let value;
-    let pads_fmpl_incr = parseFloat("${e://Field/pads_fmpl_incr}");
 
-    let lg_fmpl_incr;
-    let sm_fmpl_incr;
-
-    if (islgLeft()) {
-        lg_fmpl_incr = pads_fmpl_incr;
-        sm_fmpl_incr = -pads_fmpl_incr;
-    } else {
-        lg_fmpl_incr = -pads_fmpl_incr;
-        sm_fmpl_incr = pads_fmpl_incr;
-    }
+    editLabels(qid);
+    prepopulate();
 
 
     function addHeader(QID) {
@@ -78,14 +46,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
 
-    function editLabels(QID, inita, incra) {
+    function editLabels(QID) {
         addHeader(QID);
-        let initb;
-        let incrb;
-        inita = parseInt("${e://Field/pads_lg_mpl_init}");
-        initb = parseInt("${e://Field/pads_sm_mpl_init}")
-        incra = parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
-        incrb = -parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
+        let inita = parseInt("${e://Field/pads_lg_mpl_init}");
+        let initb = parseInt("${e://Field/pads_sm_mpl_init}")
+        let incra = parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
+        let incrb = -parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             // const ida = QID+"-"+(i+basenum).toString()+"-1-label";
@@ -103,6 +69,97 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+    function prepopulate() {
+        let wtp_upper = toNumber("${e://Field/upper_bound_wtp_pads}");
+        let wtp_lower = toNumber("${e://Field/lower_bound_wtp_pads}");
+
+        let row_num = -1;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        let len = rows.length;
+        let lower_bound;
+        let upper_bound;
+        let lg_lower;
+        let lg_upper;
+        let sm_lower;
+        let sm_upper;
+        for (let i = 0; i < len - 1; i++) {
+            const row_lower = rows[i];
+            const row_upper = rows[i+1];
+            const inputs_lower = row_lower.getElementsByTagName("input");
+            const inputs_upper = row_upper.getElementsByTagName("input");
+            const input_a_lower = getInputByValue(inputs_lower, 1);
+            const input_b_lower = getInputByValue(inputs_lower, 2);
+            const input_a_upper = getInputByValue(inputs_upper, 1);
+            const input_b_upper = getInputByValue(inputs_upper, 2);
+            const label_a_lower = input_a_lower.labels[0].textContent;
+            const label_b_lower = input_b_lower.labels[0].textContent;
+            const label_a_upper = input_a_upper.labels[0].textContent;
+            const label_b_upper = input_b_upper.labels[0].textContent;
+            let num_a_lower = Number(label_a_lower.substring(label_a_lower.indexOf("$")+1));
+            let num_b_lower = Number(label_b_lower.substring(label_b_lower.indexOf("$")+1));
+            let num_a_upper = Number(label_a_upper.substring(label_a_upper.indexOf("$")+1));
+            let num_b_upper = Number(label_b_upper.substring(label_b_upper.indexOf("$")+1));
+            if (islgLeft()) {
+                lg_lower = num_a_lower;
+                lg_upper = num_a_upper;
+                sm_lower = num_b_lower;
+                sm_upper = num_b_upper;
+            } else {
+                lg_lower = num_b_lower;
+                lg_upper = num_b_upper;
+                sm_lower = num_a_lower;
+                sm_upper = num_a_upper;
+            }
+            lower_bound = Math.min((lg_lower - sm_lower), (lg_upper - sm_upper));
+            upper_bound = Math.max((lg_lower - sm_lower), (lg_upper - sm_upper));
+            if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
+                row_num = i;
+                break;
+            }
+        }
+        // if (islgLeft()) {
+        //     if (wtp_upper > upper_bound) {
+        //         row = len - 1;
+        //     }
+        // } else if (!islgLeft()) {
+        //     const ida_lower = qid + "-" + (len-1 + basenum).toString() + "-" + eff_value.toString() +"-label";
+        //     const idb_lower = qid + "-" + (len-1 + basenum).toString() + "-" + trad_value.toString() +"-label";
+        //     let eff_text_lower = document.getElementById(ida_lower).textContent;
+        //     let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
+        //     let trad_text_lower = document.getElementById(idb_lower).textContent;
+        //     let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
+        //     let min_wtp = eff_num_lower - trad_num_lower;
+        //     if (wtp_lower < min_wtp) {
+        //         row = len - 1;
+        //     }
+        // }
+        //console.log("switch point is ", row);
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
+            if (i <= row_num) {
+                choice_a.checked = true;
+                choice_b.checked = false;
+            } else {
+                choice_a.checked = false;
+                choice_b.checked = true;
+            }
+        }
+    }
+
+    /**
+     * convert a wtp string with $ sign to a number
+     * @param wtp string to be converted
+     */
+    function toNumber(wtp) {
+        if (wtp.charAt(0) === '-'){
+            return -Number(wtp.substring(wtp.indexOf("$")+1));
+        } else {
+            return Number(wtp.substring(wtp.indexOf("$")+1));
+        }
+    }
 
     function islgLeft() {
         let num = parseInt("${e://Field/display_order_pads}");
