@@ -51,31 +51,43 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function add_button_events(){
+        const rows = question.getElementsByClassName("ChoiceRow");
         let radio1 = question.getElementsByTagName("input");
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(qid, this.value, this.id);
+        // for(radio in radio1) {
+        //     radio1[radio].onclick = function() {
+        //         //console.log("button pressed");
+        //         update_table(this.value, this.id);
+        //     }
+        // }
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            console.log("row number is ", id_num);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(qid, button_value, button_id) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        //const len = rows.length;
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
-        //const qid = arr[1];
-        //console.log("cached?");
+        const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
+        //calculate_wtp(qid, row);
     }
 
     function fill_in_table(QID, row_number, value) {
