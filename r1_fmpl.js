@@ -58,13 +58,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function add_button_events(){
         const rows = question.getElementsByClassName("ChoiceRow");
-        let radio1 = question.getElementsByTagName("input");
-        // for(radio in radio1) {
-        //     radio1[radio].onclick = function() {
-        //         //console.log("button pressed");
-        //         update_table(this.value, this.id);
-        //     }
-        // }
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const row_header = row.getElementsByClassName("c1")[0];
@@ -417,8 +410,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @returns {string} the content string in [row] with [value]
      */
     function getBoundByRow(QID, row, value) {
-        let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
-        let text = document.getElementById(id).textContent;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
         return text.substring(text.lastIndexOf('$') + 1);
     }
 

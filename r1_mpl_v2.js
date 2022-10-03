@@ -52,20 +52,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function add_button_events(){
         const rows = question.getElementsByClassName("ChoiceRow");
-        let radio1 = question.getElementsByTagName("input");
-        // for(radio in radio1) {
-        //     radio1[radio].onclick = function() {
-        //         //console.log("button pressed");
-        //         update_table(this.value, this.id);
-        //     }
-        // }
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const row_header = row.getElementsByClassName("c1")[0];
             const header_id = row_header.id;
             const char_arr = header_id.split("~");
             const id_num = Number(char_arr[char_arr.length-1]);
-            console.log("row number is ", id_num);
             const inputs = row.getElementsByTagName("input");
             for(let radio of inputs) {
                 radio.onclick = function () {
