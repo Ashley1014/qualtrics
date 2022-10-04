@@ -1,4 +1,4 @@
-// for r1_mpl_full
+// for r2_mpl_full
 Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
@@ -12,7 +12,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     console.log("testing pads_mpl_full");
     const qid = this.questionId;
     const question = document.getElementById(qid);
-    const dec_num = parseInt("${e://Field/lower_bound_main_decno_r1}");
+    const dec_num = parseInt("${e://Field/lower_bound_main_decno_r2}");
     console.log("The main sp dec_num is ", dec_num);
 
     editLabels(qid);
@@ -60,9 +60,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function prepopulate() {
-        let wtp_upper = toNumber("${e://Field/upper_bound_wtp_r1}");
-        let wtp_lower = toNumber("${e://Field/lower_bound_wtp_r1}");
-        let main_sp = parseInt("${e://Field/switchpoint_main_r1}");
+        let wtp_upper = toNumber("${e://Field/upper_bound_wtp_r2}");
+        let wtp_lower = toNumber("${e://Field/lower_bound_wtp_r2}");
+        let main_sp = parseInt("${e://Field/switchpoint_main_r2}");
 
         console.log("main_sp is ", main_sp);
 
