@@ -278,6 +278,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row, value) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+
     /***
      *
      * @param QID
@@ -322,25 +338,27 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 lower_trad = len - 1;
             }
         }
-        const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for eff is ", ida_lower);
-        //console.log("lower bound for tradogen is ", idb_lower);
-        // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
-        // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
-        var lower_bound_eff;
-        var lower_bound_trad;
-        if (lower_eff === 0) {
-            const text_eff = document.getElementById(ida_lower).textContent;
-            lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        } if (lower_trad === 0) {
-            const text_trad = document.getElementById(idb_lower).textContent;
-            lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
-        }
-        else {
-            lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
-        }
+        // const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
+        // const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
+        // //console.log("lower bound for eff is ", ida_lower);
+        // //console.log("lower bound for tradogen is ", idb_lower);
+        // // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
+        // // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
+        // var lower_bound_eff;
+        // var lower_bound_trad;
+        // if (lower_eff === 0) {
+        //     const text_eff = document.getElementById(ida_lower).textContent;
+        //     lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
+        // } if (lower_trad === 0) {
+        //     const text_trad = document.getElementById(idb_lower).textContent;
+        //     lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
+        // }
+        // else {
+        //     lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
+        //     lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
+        // }
+        let lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+        let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
         // const upper_bound_eff = document.getElementById(ida_upper).textContent.substring(1);
         // const upper_bound_trad = document.getElementById(idb_upper).textContent.substring(1);
         // lower_bound = Number(lower_bound_eff) - Number(lower_bound_trad);

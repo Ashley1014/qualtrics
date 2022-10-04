@@ -62,6 +62,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let wtp_lower = toNumber("${e://Field/lower_bound_wtp_r1}");
         let main_sp = parseInt("${e://Field/switchpoint_main_r1}");
 
+        console.log("main_sp is ", main_sp);
+
         let row_num = -1;
         const rows = question.getElementsByClassName("ChoiceRow");
         let len = rows.length;
@@ -71,45 +73,49 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let eff_upper;
         let trad_lower;
         let trad_upper;
-        for (let i = 0; i < len - 1; i++) {
-            const row_lower = rows[i];
-            const row_upper = rows[i+1];
-            const inputs_lower = row_lower.getElementsByTagName("input");
-            const inputs_upper = row_upper.getElementsByTagName("input");
-            const input_a_lower = getInputByValue(inputs_lower, 1);
-            const input_b_lower = getInputByValue(inputs_lower, 2);
-            const input_a_upper = getInputByValue(inputs_upper, 1);
-            const input_b_upper = getInputByValue(inputs_upper, 2);
-            const label_a_lower = input_a_lower.labels[0].textContent;
-            const label_b_lower = input_b_lower.labels[0].textContent;
-            const label_a_upper = input_a_upper.labels[0].textContent;
-            const label_b_upper = input_b_upper.labels[0].textContent;
-            let num_a_lower = Number(label_a_lower.substring(label_a_lower.indexOf("$")+1));
-            let num_b_lower = Number(label_b_lower.substring(label_b_lower.indexOf("$")+1));
-            let num_a_upper = Number(label_a_upper.substring(label_a_upper.indexOf("$")+1));
-            let num_b_upper = Number(label_b_upper.substring(label_b_upper.indexOf("$")+1));
-            if (iseffLeft()) {
-                eff_lower = num_a_lower;
-                eff_upper = num_a_upper;
-                trad_lower = num_b_lower;
-                trad_upper = num_b_upper;
-            } else {
-                eff_lower = num_b_lower;
-                eff_upper = num_b_upper;
-                trad_lower = num_a_lower;
-                trad_upper = num_a_upper;
-            }
-            lower_bound = Math.min((eff_lower - trad_lower), (eff_upper - trad_upper));
-            upper_bound = Math.max((eff_lower - trad_lower), (eff_upper - trad_upper));
-            if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
-                row_num = i;
-                break;
+
+        if (main_sp === 3) {
+            for (let i = 0; i < len - 1; i++) {
+                const row_lower = rows[i];
+                const row_upper = rows[i+1];
+                const inputs_lower = row_lower.getElementsByTagName("input");
+                const inputs_upper = row_upper.getElementsByTagName("input");
+                const input_a_lower = getInputByValue(inputs_lower, 1);
+                const input_b_lower = getInputByValue(inputs_lower, 2);
+                const input_a_upper = getInputByValue(inputs_upper, 1);
+                const input_b_upper = getInputByValue(inputs_upper, 2);
+                const label_a_lower = input_a_lower.labels[0].textContent;
+                const label_b_lower = input_b_lower.labels[0].textContent;
+                const label_a_upper = input_a_upper.labels[0].textContent;
+                const label_b_upper = input_b_upper.labels[0].textContent;
+                let num_a_lower = Number(label_a_lower.substring(label_a_lower.indexOf("$")+1));
+                let num_b_lower = Number(label_b_lower.substring(label_b_lower.indexOf("$")+1));
+                let num_a_upper = Number(label_a_upper.substring(label_a_upper.indexOf("$")+1));
+                let num_b_upper = Number(label_b_upper.substring(label_b_upper.indexOf("$")+1));
+                if (iseffLeft()) {
+                    eff_lower = num_a_lower;
+                    eff_upper = num_a_upper;
+                    trad_lower = num_b_lower;
+                    trad_upper = num_b_upper;
+                } else {
+                    eff_lower = num_b_lower;
+                    eff_upper = num_b_upper;
+                    trad_lower = num_a_lower;
+                    trad_upper = num_a_upper;
+                }
+                lower_bound = Math.min((eff_lower - trad_lower), (eff_upper - trad_upper));
+                upper_bound = Math.max((eff_lower - trad_lower), (eff_upper - trad_upper));
+                if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
+                    row_num = i;
+                    break;
+                }
             }
         }
 
         if ((iseffLeft() && main_sp === 1) || (!iseffLeft() && main_sp === 2) ) {
             row_num = len - 1;
         }
+
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
