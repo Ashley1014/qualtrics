@@ -64,7 +64,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let radio1 = question.getElementsByTagName("input");
         for(radio in radio1) {
             radio1[radio].onclick = function() {
-                //console.log("button pressed");
                 update_table(qid, this.value, this.id);
             }
         }
@@ -212,6 +211,51 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    function getInputByValue(inputs, value) {
+        for (let i in inputs) {
+            let input = inputs[i];
+            //console.log(input.value);
+            if (Number(input.value) === value) {
+                return input;
+            }
+        }
+    }
+
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row, value) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+
+    /**
+     *
+     * @param QID
+     * @param row
+     */
+    function getDecNum(QID, row) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
+
     /***
      *
      * @param QID
@@ -251,29 +295,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 lower_sm = len - 1;
             }
         }
-        const ida_lower = QID+"-"+(lower_lg+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_sm+basenum).toString()+"-"+(3-value).toString()+"-label";
-        //console.log("lower bound for lg is ", ida_lower);
-        //console.log("lower bound for smogen is ", idb_lower);
-        // const ida_upper = QID+"-"+(bound_b+480).toString()+"-1-label";
-        // const idb_upper = QID+"-"+(bound_b+480).toString()+"-2-label";
-        var lower_bound_lg;
-        var lower_bound_sm;
-        if (lower_lg === 0) {
-            const text_lg = document.getElementById(ida_lower).textContent;
-            lower_bound_lg = text_lg.substring(text_lg.indexOf('$') + 1);
-        } if (lower_sm === 0) {
-            const text_sm = document.getElementById(idb_lower).textContent;
-            lower_bound_sm = text_sm.substring(text_sm.indexOf('$')+1);
-        }
-        else {
-            lower_bound_lg = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_sm = document.getElementById(idb_lower).textContent.substring(1);
-        }
-        // const upper_bound_lg = document.getElementById(ida_upper).textContent.substring(1);
-        // const upper_bound_sm = document.getElementById(idb_upper).textContent.substring(1);
-        // lower_bound = Number(lower_bound_lg) - Number(lower_bound_sm);
-        // upper_bound = Number(upper_bound_lg) - Number(upper_bound_sm);
+        let lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+        let lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+        let dec_num = getDecNum(QID, lower_lg);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_pads", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg_main", Number(lower_bound_lg));
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm_main", Number(lower_bound_sm));
         console.log("testing pads_mpl");

@@ -14,6 +14,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
 
     const qid = this.questionId;
+    let question = document.getElementById(qid);
     //console.log(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_main_pads}");
     let price_init = parseInt("${e://Field/pads_init}");
@@ -387,8 +388,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @returns {string} the content string in [row] with [value]
      */
     function getBoundByRow(QID, row, value) {
-        let id = QID+"-"+(row+basenum).toString()+"-"+value.toString()+"-label";
-        let text = document.getElementById(id).textContent;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
         return text.substring(text.lastIndexOf('$') + 1);
     }
 
