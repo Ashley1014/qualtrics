@@ -12,6 +12,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     console.log("testing pads_mpl_full");
     const qid = this.questionId;
     const question = document.getElementById(qid);
+    const dec_num = parseInt("${e://Field/lower_bound_main_decno_r1}");
+    console.log("The main sp dec_num is ", dec_num);
 
     editLabels(qid);
     prepopulate();

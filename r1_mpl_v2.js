@@ -294,6 +294,25 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return text.substring(text.lastIndexOf('$') + 1);
     }
 
+    /**
+     *
+     * @param QID
+     * @param row
+     */
+    function getDecNum(QID, row) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
+
     /***
      *
      * @param QID
@@ -334,6 +353,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         let lower_bound_eff = getBoundByRow(QID, lower_eff, value);
         let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+        let dec_num = getDecNum(QID, lower_eff);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_r1", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r1", lower_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r1", Number(lower_bound_eff) + eff_fmpl_incr);
