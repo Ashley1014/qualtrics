@@ -16,6 +16,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     const arr = first_id.split("~");
     let basenum = Number(arr[arr.length-2]);
     let qid = arr[1];
+    let question = document.getElementById(qid);
     let display_order = parseInt("${e://Field/display_order}");
     let eff_value = 1 + display_order;
     let trad_value = 3 - eff_value;
@@ -76,11 +77,23 @@ Qualtrics.SurveyEngine.addOnReady(function()
             }
             fill_in_table(qid, switch_row, value);
         } else {
-            displayRevised(qid, basenum);
+            prepopulate();
         }
     }
 
-    function displayRevised(qid, basenum) {
+    /**
+     * convert a wtp string with $ sign to a number
+     * @param wtp string to be converted
+     */
+    function toNumber(wtp) {
+        if (wtp.charAt(0) === '-'){
+            return -Number(wtp.substring(wtp.indexOf("$")+1));
+        } else {
+            return Number(wtp.substring(wtp.indexOf("$")+1));
+        }
+    }
+
+    function prepopulate() {
         let wtp_upper;
         let assignment = parseInt("${e://Field/condition_no}");
         if (assignment === 10) {
@@ -89,112 +102,97 @@ Qualtrics.SurveyEngine.addOnReady(function()
             wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
         }
         let wtp_lower = wtp_upper - 1;
-        // let wtp_lower = 27;
-        // let wtp_upper = 34;
-        // console.log("wtp_lower is", wtp_lower);
-        // console.log("wtp_upper is", wtp_upper);
 
-        //console.log("testing displayrevised");
-
-        let row = -1;
-        const rows = document.getElementsByClassName("ChoiceRow");
+        let row_num = -1;
+        const rows = question.getElementsByClassName("ChoiceRow");
         let len = rows.length;
         let lower_bound;
         let upper_bound;
+
         for (let i = 0; i < len - 1; i++) {
-            const ida_lower = qid + "-" + (i + basenum).toString() + "-" + eff_value.toString() +"-label";
-            //console.log("ida_lower is ", ida_lower);
-            const idb_lower = qid + "-" + (i + basenum).toString() + "-" + trad_value.toString() +"-label";
-            //console.log("idb_lower is ", idb_lower);
-            const ida_upper = qid + "-" + (i + basenum + 1).toString() + "-" + eff_value.toString() +"-label";
-            //console.log("ida_upper is ", ida_upper);
-            const idb_upper = qid + "-" + (i + basenum + 1).toString() + "-" + trad_value.toString() +"-label";
-            //console.log("idb_upper is ", idb_upper);
-            let eff_text_lower = document.getElementById(ida_lower).textContent;
-            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
-            let eff_text_upper = document.getElementById(ida_upper).textContent;
-            let eff_num_upper = Number(eff_text_upper.substring(eff_text_upper.indexOf("$")+1));
-            let trad_text_lower = document.getElementById(idb_lower).textContent;
-            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
-            let trad_text_upper = document.getElementById(idb_upper).textContent;
-            let trad_num_upper = Number(trad_text_upper.substring(trad_text_upper.indexOf("$")+1));
-            lower_bound = Math.min((eff_num_lower - trad_num_lower), (eff_num_upper - trad_num_upper));
-            upper_bound = Math.max((eff_num_lower - trad_num_lower), (eff_num_upper - trad_num_upper));
-            // console.log("lower bound is ", lower_bound);
-            // console.log("upper bound is ", upper_bound);
-            // console.log("here");
+            let num_eff_lower = Number(getBoundByRow(qid, i, eff_value));
+            let num_trad_lower = Number(getBoundByRow(qid, i, trad_value));
+            let num_eff_upper = Number(getBoundByRow(qid, i+1, eff_value));
+            let num_trad_upper = Number(getBoundByRow(qid, i+1, trad_value));
+            lower_bound = Math.min((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
+            upper_bound = Math.max((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
             if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
-                row = i;
+                row_num = i;
                 break;
             }
         }
-        if (display_order === 0) {
-            if (wtp_upper > upper_bound) {
-                row = len - 1;
-            }
-        } else if (display_order === 1) {
-            const ida_lower = qid + "-" + (len-1 + basenum).toString() + "-" + eff_value.toString() +"-label";
-            const idb_lower = qid + "-" + (len-1 + basenum).toString() + "-" + trad_value.toString() +"-label";
-            let eff_text_lower = document.getElementById(ida_lower).textContent;
-            let eff_num_lower = Number(eff_text_lower.substring(eff_text_lower.indexOf("$")+1));
-            let trad_text_lower = document.getElementById(idb_lower).textContent;
-            let trad_num_lower = Number(trad_text_lower.substring(trad_text_lower.indexOf("$")+1));
-            let min_wtp = eff_num_lower - trad_num_lower;
+
+        if (iseffLeft()) {
+            row_num = len - 1;
+        }
+
+        else if (!iseffLeft()) {
+            let min_eff = Number(getBoundByRow(qid, len - 1, eff_value));
+            let min_trad = Number(getBoundByRow(qid, len - 1, trad_value));
+            let min_wtp = min_eff - min_trad;
             if (wtp_lower < min_wtp) {
-                row = len - 1;
+                row_num = len - 1;
             }
         }
-        //console.log("switch point is ", row);
+
+        populateChoices_h(rows, row_num);
+    }
+
+    function populateChoices_h(rows, row_num) {
         for (let i = 0; i < rows.length; i++) {
-            if (i <= row) {
-                const choice_a = "QR~" + qid + "~" + (i + basenum).toString() + "~1";
-                const choice_b = "QR~" + qid + "~" + (i + basenum).toString() + "~2";
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
+            if (i <= row_num) {
+                choice_a.checked = true;
+                choice_b.checked = false;
             } else {
-                // rows[i].style.backgroundColor = color_orange;
-                const choice_a = "QR~" + qid + "~" + (i + basenum).toString() + "~1";
-                const choice_b = "QR~" + qid + "~" + (i + basenum).toString() + "~2";
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
+                choice_a.checked = false;
+                choice_b.checked = true;
             }
         }
     }
 
+    function getInputByValue(inputs, value) {
+        for (let i in inputs) {
+            let input = inputs[i];
+            //console.log(input.value);
+            if (Number(input.value) === value) {
+                return input;
+            }
+        }
+    }
+
+    function addHeader(QID) {
+        let a_header = "${e://Field/header_a}";
+        let b_header = "${e://Field/header_b}";
+        let a_img = "${e://Field/image_a}";
+        let b_img = "${e://Field/image_b}";
+        let label_a = "<u>Choice A</u>:<br /><strong>" + a_header + "</strong><br /><img alt='option_a' height=\"80\" src=\"" + a_img + "\"/><br /> <br />";
+        let label_b = "<u>Choice B</u>:<br /><strong>" + b_header + "</strong><br /><img alt='option_b' height=\"80\" src=\"" + b_img + "\"/><br /> <br />";
+        let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + label_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + label_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
+        jQuery("#"+QID+" table:first").prepend(row_html);
+    }
+
     function editLabels(QID, inita, incra) {
-        let num = parseInt("${e://Field/display_order}");
-        let eff_caps = "${e://Field/efficient_allcaps}";
-        let trad_caps = "${e://Field/traditional_allcaps}";
-        //console.log(num);
+        addHeader(QID);
         let initb;
         let incrb;
         inita = parseInt("${e://Field/mpl_eff_init}");
-        initb = parseInt("${e://Field/mpl_trad_init}")
+        initb = parseInt("${e://Field/mpl_trad_init}");
         incra = parseInt("${e://Field/mpl_eff_incr}");
         incrb = parseInt("${e://Field/mpl_trad_incr}");
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            if (num === 0) {
-                if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><img alt='eff' height=\"77\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_3eM0Z9xS5Nz4GXk\" style=\"width: 175px; height: 77px;\" width=\"175\" /><br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><img alt='trad' height=\"80\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_bOy1igCnrZLIX4y\" style=\"width: 150px; height: 80px;\" width=\"150\" /><br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
-                }
-            } else {
-                if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><img alt='eff' height=\"77\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_3eM0Z9xS5Nz4GXk\" style=\"width: 175px; height: 77px;\" width=\"175\" /><br /><br /><strong>$"+(initb+i*incrb).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><img alt='trad' height=\"80\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_bOy1igCnrZLIX4y\" style=\"width: 150px; height: 80px;\" width=\"150\" /><br /><br /><strong>$"+(inita+i*incra).toString()+"</strong>";
-                }
-                else {
-                    document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-                }
-            }
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const input_a = getInputByValue(inputs, 1);
+            const input_b = getInputByValue(inputs, 2);
+            const label_a = input_a.labels[0];
+            const label_b = input_b.labels[0];
+            label_a.innerHTML = "<strong>$"+(inita+i*incra).toString()+"</strong>";
+            label_b.innerHTML = "<strong>$"+(initb+i*incrb).toString()+"</strong>";
         }
     }
 
@@ -261,42 +259,51 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(this.value, this.id);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(button_value, button_id) {
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
         const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
+        //calculate_wtp(qid, row);
     }
 
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
             if (i >= Number(row_number) && value === 2) {
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
+                choice_a.checked = false;
+                choice_b.checked = true;
             }
             if (i < Number(row_number) && value === 1) {
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+                choice_a.checked = true;
+                choice_b.checked = false;
             }
         }
     }
@@ -372,6 +379,40 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @param value the value of the intended cell
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row, value) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+
+    /**
+     *
+     * @param QID
+     * @param row
+     */
+    function getDecNum(QID, row) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
 
 
     /***
@@ -416,23 +457,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 lower_trad = len - 1;
             }
         }
-        const ida_lower = QID+"-"+(lower_eff+basenum).toString()+"-"+value.toString()+"-label";
-        const idb_lower = QID+"-"+(lower_trad+basenum).toString()+"-"+(3-value).toString()+"-label";
-        // console.log("lower bound for eff is ", ida_lower);
-        // console.log("lower bound for tradogen is ", idb_lower);
-        var lower_bound_eff;
-        var lower_bound_trad;
-        if (lower_eff === 0) {
-            const text_eff = document.getElementById(ida_lower).textContent;
-            lower_bound_eff = text_eff.substring(text_eff.indexOf('$') + 1);
-        } if (lower_trad === 0) {
-            const text_trad = document.getElementById(idb_lower).textContent;
-            lower_bound_trad = text_trad.substring(text_trad.indexOf('$')+1);
-        }
-        else {
-            lower_bound_eff = document.getElementById(ida_lower).textContent.substring(1);
-            lower_bound_trad = document.getElementById(idb_lower).textContent.substring(1);
-        }
+        let lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+        let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+        let dec_num = getDecNum(QID, lower_eff);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_r3", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r3", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r3", lower_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r3", Number(lower_bound_eff) + eff_fmpl_incr);
