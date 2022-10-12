@@ -122,16 +122,18 @@ Qualtrics.SurveyEngine.addOnReady(function()
             }
         }
 
-        if (iseffLeft()) {
-            row_num = len - 1;
-        }
-
-        else if (!iseffLeft()) {
-            let min_eff = Number(getBoundByRow(qid, len - 1, eff_value));
-            let min_trad = Number(getBoundByRow(qid, len - 1, trad_value));
-            let min_wtp = min_eff - min_trad;
-            if (wtp_lower < min_wtp) {
+        if (row_num === -1) {
+            if (iseffLeft()) {
                 row_num = len - 1;
+            }
+
+            else if (!iseffLeft()) {
+                let min_eff = Number(getBoundByRow(qid, len - 1, eff_value));
+                let min_trad = Number(getBoundByRow(qid, len - 1, trad_value));
+                let min_wtp = min_eff - min_trad;
+                if (wtp_lower < min_wtp) {
+                    row_num = len - 1;
+                }
             }
         }
 
