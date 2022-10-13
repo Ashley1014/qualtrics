@@ -151,7 +151,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
-
+    this.hidePreviousButton();
 });
 
 Qualtrics.SurveyEngine.addOnUnload(function()
