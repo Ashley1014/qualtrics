@@ -380,6 +380,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    function getInputByValue(inputs, value) {
+        for (let i in inputs) {
+            let input = inputs[i];
+            //console.log(input.value);
+            if (Number(input.value) === value) {
+                return input;
+            }
+        }
+    }
+
     /**
      * get the bound by specified value and row number.
      * @param QID the question number
