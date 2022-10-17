@@ -151,6 +151,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate) {
+        addHeader(QID);
         let eff_value = (iseffLeft()) ? 1 : 2;
         const rows = question.getElementsByClassName("ChoiceRow");
         //console.log(num);

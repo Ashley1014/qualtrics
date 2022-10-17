@@ -398,36 +398,24 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     }
 
     function displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate, basenum) {
-        let eff_caps = "${e://Field/efficient_allcaps}";
-        let trad_caps = "${e://Field/traditional_allcaps}";
-        let num = parseInt("${e://Field/display_order}");
+        addHeader(QID);
+        let eff_value = (iseffLeft()) ? 1 : 2;
         const rows = question.getElementsByClassName("ChoiceRow");
         //console.log(num);
         for (let i = 0; i < rows.length; i++) {
-            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const input_eff = getInputByValue(inputs, eff_value);
+            const input_trad = getInputByValue(inputs, 3-eff_value);
+            const label_eff = input_eff.labels[0];
+            const label_trad = input_trad.labels[0];
+
             const eff_disc = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
             const eff_original = (eff_disc / disc_rate).toFixed(2).replace(/\.00$/, '');
             let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
-            if (num === 0) {
-                if (i === 0) {
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><img alt='eff' height=\"77\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_3eM0Z9xS5Nz4GXk\" style=\"width: 175px; height: 77px;\" width=\"175\" /><br /><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><img alt='trad' height=\"80\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_bOy1igCnrZLIX4y\" style=\"width: 150px; height: 80px;\" width=\"150\" /><br /><br /><strong>$"+(trad)+"</strong>";
-                }
-                else {
-                    document.getElementById(ida).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
-                    document.getElementById(idb).innerHTML="<strong>$"+trad+"</strong>";
-                }
-            } else {
-                if (i === 0) {
-                    document.getElementById(idb).innerHTML="<u>Choice B</u>:&nbsp;<br /><strong>" + eff_caps + "</strong><br /><img alt='eff' height=\"77\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_3eM0Z9xS5Nz4GXk\" style=\"width: 175px; height: 77px;\" width=\"175\" /><br /><br /><strong><s>$"+(eff_original)+"</s><span style=\"color:red\"> $" + (eff_disc)+"</span></strong>";
-                    document.getElementById(ida).innerHTML="<u>Choice A</u>:&nbsp;<br /><strong>" + trad_caps + "</strong><br /><img alt='trad' height=\"80\" src=\"https://cornell.ca1.qualtrics.com/CP/Graphic.php?IM=IM_bOy1igCnrZLIX4y\" style=\"width: 150px; height: 80px;\" width=\"150\" /><br /><br /><strong>$"+(trad)+"</strong>";
-                }
-                else {
-                    document.getElementById(idb).innerHTML="<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
-                    document.getElementById(ida).innerHTML="<strong>$"+trad+"</strong>";
-                }
-            }
+
+            label_eff.innerHTML = "<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+            label_trad.innerHTML = "<strong>$"+trad+"</strong>";
         }
     }
 
