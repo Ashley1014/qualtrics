@@ -10,13 +10,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
+    const question = document.getElementById(qid);
     const switchpoint = parseInt("${e://Field/switchpoint_cost_main}");
     const init = parseInt("${e://Field/lower_bound_cost}");
-    let radio1 = document.getElementsByTagName("input");
-    const first_id = radio1[0].id;
-    //console.log("first button id is ", first_id);
-    const arr = first_id.split("~");
-    let basenum = Number(arr[arr.length-2]);
 
     editLabels(qid, switchpoint, init);
     add_button_events();
@@ -33,48 +29,65 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
 
-    function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(this.value, this.id);
+    function add_button_events() {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(button_value, button_id) {
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
         const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
         //calculate_wtp(qid, row);
     }
 
-    function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
-        for (let i = 0; i < rows.length; i++) {
-            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
-            if (i >= Number(row_number) && value === 2) {
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
-            }
-            if (i < Number(row_number) && value === 1) {
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+    function getInputByValue(inputs, value) {
+        for (let i in inputs) {
+            let input = inputs[i];
+            //console.log(input.value);
+            if (Number(input.value) === value) {
+                return input;
             }
         }
     }
 
+    function fill_in_table(QID, row_number, value) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
+            if (i >= Number(row_number) && value === 2) {
+                choice_a.checked = false;
+                choice_b.checked = true;
+            }
+            if (i < Number(row_number) && value === 1) {
+                choice_a.checked = true;
+                choice_b.checked = false;
+            }
+        }
+    }
 
     /**
      * return a dictionary of the initial fmpl prices of two products.
@@ -122,16 +135,45 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param init
      */
     function editLabels(QID, switchpoint, init) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         const len = rows.length;
         let sp = switchpoint;
         init = findInfo(sp)["init"];
         let incr = findInfo(sp)["incr"];
-        for (let i = 0; i < rows.length; i++) {
-            let num = (i + 1).toString();
-            const id_lower = "header~" + QID + "~" + num.toString() + "~mobile";
-            document.getElementById(id_lower).innerHTML = num + ")&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $" + (init + incr * i).toString();
+        for (let i = 0; i < len; i++) {
+            let price = (init + incr * i).toFixed(2).replace(/\.00$/, '');
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const num = convertToRoman(i+1).toString();
+            row_header.innerHTML = num+")&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong> $" + price + "</strong>";
         }
+    }
+
+    function convertToRoman(num) {
+        var roman = {
+            m: 1000,
+            cm: 900,
+            d: 500,
+            cd: 400,
+            c: 100,
+            xc: 90,
+            l: 50,
+            xl: 40,
+            x: 10,
+            ix: 9,
+            v: 5,
+            iv: 4,
+            i: 1
+        };
+        var str = '';
+
+        for (var i of Object.keys(roman)) {
+            var q = Math.floor(num / roman[i]);
+            num -= q * roman[i];
+            str += i.repeat(q);
+        }
+
+        return str;
     }
 
     function findSwitchPoint(qid) {
@@ -188,12 +230,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * get the bound by specified value and row number.
      * @param QID the question number
      * @param row the intended row number
-     * @returns {string} the content string in [row] with [value]
+     * @returns {int} the content number in [row] with [value]
      */
     function getBoundByRow(QID, row) {
-        let id = "header~"+QID+"~"+(row+basenum).toString()+"~mobile";
-        let text = document.getElementById(id).textContent;
-        return text.substring(text.lastIndexOf('$') + 1);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const row_header = row_ele.getElementsByClassName("c1")[0];
+        const text = row_header.innerText;
+        return Number(text.substring(text.lastIndexOf('$') + 1));
     }
 
     /***

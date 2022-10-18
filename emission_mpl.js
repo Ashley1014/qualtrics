@@ -10,6 +10,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
+    const question = document.getElementById(qid);
     let basenum;
     let len;
     let sp;
@@ -33,67 +34,77 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
 
-    function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        const first_id = radio1[0].id;
-        //console.log("first button id is ", first_id);
-        const arr = first_id.split("~");
-        basenum = Number(arr[arr.length-2]);
-        //console.log("base num is ", basenum);
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(qid, this.value, this.id);
+    function add_button_events() {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(qid, button_value, button_id) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        //const len = rows.length;
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
-        //const qid = arr[1];
-        //console.log("cached?");
+        const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
+        //calculate_wtp(qid, row);
+    }
+
+    function getInputByValue(inputs, value) {
+        for (let i in inputs) {
+            let input = inputs[i];
+            //console.log(input.value);
+            if (Number(input.value) === value) {
+                return input;
+            }
+        }
     }
 
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
             if (i >= Number(row_number) && value === 2) {
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
+                choice_a.checked = false;
+                choice_b.checked = true;
             }
             if (i < Number(row_number) && value === 1) {
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+                choice_a.checked = true;
+                choice_b.checked = false;
             }
         }
     }
 
     function editLabels(QID, inita, incra) {
-        // let num = parseInt("${e://Field/display_order}");
-        // console.log(num);
         inita = parseInt("${e://Field/emissions_mpl_init}");
         incra = parseInt("${e://Field/emissions_mpl_incr}");
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         //const headers = rows.getElementsByClassName("c1");
         for (let i = 0; i < rows.length; i++) {
+            let price = (inita + incra * i).toFixed(2).replace(/\.00$/, '');
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
             const num = (i+1).toString();
-            const id = "header~"+qid+"~"+num+"~mobile";
-            //console.log("the header id is ", id);
-            document.getElementById(id).innerHTML = num+")&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $" + (inita + incra * i).toString();
+            row_header.innerHTML = num+")&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong> $" + price + "</strong>";
         }
     }
 
@@ -151,6 +162,20 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    /**
+     * get the bound by specified value and row number.
+     * @param QID the question number
+     * @param row the intended row number
+     * @returns {string} the content string in [row] with [value]
+     */
+    function getBoundByRow(QID, row) {
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const row_header = row_ele.getElementsByClassName("c1")[0];
+        const text = row_header.innerText;
+        return text.substring(text.lastIndexOf('$') + 1);
+    }
+
     /***
      *
      * @param QID
@@ -168,11 +193,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
             //console.log("inside else");
             index = 0;
         }
-        const id_lower = "header~"+QID+"~"+(index+basenum).toString()+"~mobile";
-        //console.log("lower bound for yes is ", id_lower);
-        let lower_bound;
-        const text = document.getElementById(id_lower).textContent;
-        lower_bound = text.substring(text.indexOf('$') + 1);
+        let lower_bound = getBoundByRow(QID, index);
         console.log("testing emissions main");
         console.log("lower bound emissions is ", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_emissions", lower_bound);

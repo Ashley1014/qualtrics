@@ -10,6 +10,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
+    const question = document.getElementById(qid);
     let len;
     let sp;
     let switch_row;
@@ -45,36 +46,35 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
 
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        const first_id = radio1[0].id;
-        //console.log("first button id is ", first_id);
-        const arr = first_id.split("~");
-        basenum = Number(arr[arr.length-2]);
-        //console.log("base num is ", basenum);
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(qid, this.value, this.id);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(qid, button_value, button_id) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        //const len = rows.length;
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
-        //const qid = arr[1];
-        //console.log("cached?");
+        const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
+        //calculate_wtp(qid, row);
     }
 
     function getInputByValue(inputs, value) {
@@ -87,16 +87,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
-        //console.log("len is ", rows.length);
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
             const choice_a = getInputByValue(inputs, 1);
             const choice_b = getInputByValue(inputs, 2);
-            //console.log("choice a id is ", choice_a);
-            //console.log("choice b id is ", choice_b);
             if (i >= Number(row_number) && value === 2) {
                 choice_a.checked = false;
                 choice_b.checked = true;
@@ -159,15 +157,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
 
-    function findLabelForControl(el) {
-        const idVal = el.id;
-        let labels = document.getElementsByTagName('label');
-        for(let i = 0; i < labels.length; i++ ) {
-            if (labels[i].htmlFor === idVal)
-                return labels[i];
-        }
-    }
-
     /**
      * get the bound by specified value and row number.
      * @param QID the question number
@@ -177,12 +166,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @returns {string} the content string in [row] with [value]
      */
     function getBoundByRow(QID, row_num, value, field) {
-        const rows = document.getElementsByClassName("ChoiceRow");
-        const row = rows[row_num];
-        const inputs = row.getElementsByTagName("input");
-        const input = getInputByValue(inputs, value);
-        const label = findLabelForControl(input);
-        let text = label.textContent;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row_num];
+        const inputs = row_ele.getElementsByTagName("input");
+        const input =  getInputByValue(inputs, value);
+        const text = input.labels[0].textContent;
         return text.substring(text.lastIndexOf('$') + 1, text.indexOf(field));
     }
 
