@@ -61,44 +61,51 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function add_button_events(){
-        let radio1 = question.getElementsByTagName("input");
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                update_table(qid, this.value, this.id);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(qid, button_value, button_id) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
-        //const len = rows.length;
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
-        //const qid = arr[1];
-        //console.log("cached?");
+        const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
+        //calculate_wtp(qid, row);
     }
 
     function fill_in_table(QID, row_number, value) {
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
             if (i >= Number(row_number) && value === 2) {
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
+                choice_a.checked = false;
+                choice_b.checked = true;
             }
             if (i < Number(row_number) && value === 1) {
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+                choice_a.checked = true;
+                choice_b.checked = false;
             }
         }
     }
@@ -131,10 +138,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
         incrb = parseInt("${e://Field/pads_sm_mpl_incr}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-            document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const input_a = getInputByValue(inputs, 1);
+            const input_b = getInputByValue(inputs, 2);
+            const label_a = input_a.labels[0];
+            const label_b = input_b.labels[0];
+            label_a.innerHTML = "<strong>$"+(inita+i*incra).toString()+"</strong>";
+            label_b.innerHTML = "<strong>$"+(initb+i*incrb).toString()+"</strong>";
         }
     }
 

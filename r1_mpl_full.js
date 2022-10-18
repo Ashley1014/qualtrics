@@ -10,6 +10,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing pads_mpl_full");
+    this.hidePreviousButton();
+    this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
     const dec_num = parseInt("${e://Field/lower_bound_main_decno_r1}");
@@ -150,6 +152,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function iseffLeft() {
         let num = parseInt("${e://Field/display_order}");
         return num === 0;
+    }
+
+    function displayWTP() {
+
     }
 
 

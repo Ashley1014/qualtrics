@@ -68,60 +68,74 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function add_button_events(){
-        let radio1 = document.getElementsByTagName("input");
-        for(radio in radio1) {
-            radio1[radio].onclick = function() {
-                //console.log("button pressed");
-                update_table(this.value, this.id);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const row_header = row.getElementsByClassName("c1")[0];
+            const header_id = row_header.id;
+            const char_arr = header_id.split("~");
+            const id_num = Number(char_arr[char_arr.length-1]);
+            console.log("row number is ", id_num);
+            const inputs = row.getElementsByTagName("input");
+            for(let radio of inputs) {
+                radio.onclick = function () {
+                    //console.log("button pressed");
+                    update_table(this.value, this.id, id_num);
+                }
             }
         }
     }
 
-    function update_table(button_value, button_id) {
+    function update_table(button_value, button_id, row_num) {
         const value = Number(button_value);
         const arr = button_id.split("~");
         const qid = arr[1];
         //console.log(qid);
-        const num = arr[arr.length-1];
-        let row = Number(arr[arr.length-2])-basenum;
+        const val = arr[arr.length-1];
         //console.log(button_id);
-        if (num === 1) {
-            row = row+1;
+        if (val === 1) {
+            row_num = row_num + 1;
         }
-        //console.log(row);
-        fill_in_table(qid, row, value);
+        fill_in_table(qid, row_num, value);
         //calculate_wtp(qid, row);
     }
 
     function fill_in_table(QID, row_number, value) {
-        const rows = document.getElementsByClassName("ChoiceRow");
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const choice_a = "QR~" + QID + "~"+(i+basenum).toString()+"~1";
-            const choice_b = "QR~" + QID + "~"+(i+basenum).toString()+"~2";
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const choice_a = getInputByValue(inputs, 1);
+            const choice_b = getInputByValue(inputs, 2);
             if (i >= Number(row_number) && value === 2) {
-                document.getElementById(choice_a).checked = false;
-                document.getElementById(choice_b).checked = true;
+                choice_a.checked = false;
+                choice_b.checked = true;
             }
             if (i < Number(row_number) && value === 1) {
-                document.getElementById(choice_a).checked = true;
-                document.getElementById(choice_b).checked = false;
+                choice_a.checked = true;
+                choice_b.checked = false;
             }
         }
     }
 
     function displayLabels_v1(QID, init_lg, incr_lg, init_sm, incr_sm) {
-        let num = parseInt("${e://Field/display_order_pads}");
-        const rows = document.getElementsByClassName("ChoiceRow");
-        //console.log(num);
+        addHeader(QID);
+        const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            if (num === 0) {
-                document.getElementById(ida).innerHTML="<strong>$"+(init_lg+i*incr_lg).toString()+"</strong>";
-                document.getElementById(idb).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
+            let lg = (init_lg + i * incr_lg).toFixed(2).replace(/\.00$/, '');
+            let sm = (init_sm + i * incr_sm).toFixed(2).replace(/\.00$/, '');
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const input_a = getInputByValue(inputs, 1);
+            const input_b = getInputByValue(inputs, 2);
+            const label_a = input_a.labels[0];
+            const label_b = input_b.labels[0];
+            if (islgLeft()) {
+                label_a.innerHTML = "<strong>$" + lg + "</strong>";
+                label_b.innerHTML = "<strong>$" + sm + "</strong>";
             } else {
-                document.getElementById(idb).innerHTML="<strong>$"+(init_lg+i*incr_lg).toString()+"</strong>";
-                document.getElementById(ida).innerHTML="<strong>$"+(init_sm+i*incr_sm).toString()+"</strong>";
+                label_a.innerHTML = "<strong>$" + sm + "</strong>";
+                label_b.innerHTML = "<strong>$" + lg + "</strong>";
             }
         }
     }
@@ -295,7 +309,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param num_dec
      */
     function editLabels(QID, switchpoint, lg, sm, price_init, price_incr, fmpl_lg_incr, fmpl_sm_incr, num_dec) {
-        addHeader(QID);
         let sp = parseInt("${e://Field/switchpoint_main_pads}");
         let init_lg;
         let init_sm;
@@ -487,12 +500,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm", lower_bound_sm);
         let lower_bound = Number(lower_bound_lg - lower_bound_sm);
         let upper_bound = Number(upper_bound_lg - upper_bound_sm);
+        let lower_bound_num = Math.min(lower_bound, upper_bound);
+        let upper_bound_num = Math.max(lower_bound, upper_bound);
         let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
         let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
         console.log("upper bound wtp is ", upper_bound_cp);
         console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads", upper_bound_cp);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads_num", lower_bound_num);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads_num", upper_bound_num);
     }
 
     /**

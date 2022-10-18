@@ -10,11 +10,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing pads_mpl_full");
+    this.hidePreviousButton();
+    this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
 
     editLabels(qid);
     prepopulate();
+    displayWTP();
 
 
     function addHeader(QID) {
@@ -157,6 +160,20 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
+    function displayWTP() {
+        const lower_bound_lg = parseInt("${e://Field/lower_bound_lg}");
+        const lower_bound_sm = parseInt("${e://Field/lower_bound_sm}");
+        const upper_bound_lg = parseInt("${e://Field/upper_bound_lg}");
+        const upper_bound_sm = parseInt("${e://Field/upper_bound_sm}");
+        const lower_bound_wtp = parseInt("${e://Field/lower_bound_wtp_pads_num}");
+        const upper_bound_wtp = parseInt("${e://Field/upper_bound_wtp_pads_num}");
+        console.log("lower bound lg is ", lower_bound_lg);
+        console.log("lower bound sm is ", lower_bound_sm);
+        console.log("upper bound lg is ", upper_bound_lg);
+        console.log("upper bound sm is ", upper_bound_sm);
+        console.log("upper bound wtp is ", upper_bound_wtp);
+        console.log("lower bound wtp is ", lower_bound_wtp);
+    }
 
 });
 
