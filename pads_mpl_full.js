@@ -58,18 +58,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let incrb = -parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            // const ida = QID+"-"+(i+basenum).toString()+"-1-label";
-            // const idb = QID+"-"+(i+basenum).toString()+"-2-label";
-            // document.getElementById(ida).innerHTML="<strong>$"+(inita+i*incra).toString()+"</strong>";
-            // document.getElementById(idb).innerHTML="<strong>$"+(initb+i*incrb).toString()+"</strong>";
+            let choice_a = (inita + i * incra).toFixed(2).replace(/\.00$/, '');
+            let choice_b = (initb + i * incrb).toFixed(2).replace(/\.00$/, '');
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
             const input_a = getInputByValue(inputs, 1);
             const input_b = getInputByValue(inputs, 2);
             const label_a = input_a.labels[0];
             const label_b = input_b.labels[0];
-            label_a.innerHTML = "<strong>$"+(inita+i*incra).toString()+"</strong>";
-            label_b.innerHTML = "<strong>$"+(initb+i*incrb).toString()+"</strong>";
+            label_a.innerHTML = "<strong>$"+(choice_a)+"</strong>";
+            label_b.innerHTML = "<strong>$"+(choice_b)+"</strong>";
         }
     }
 
@@ -161,12 +159,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayWTP() {
-        const lower_bound_lg = parseInt("${e://Field/lower_bound_lg}");
-        const lower_bound_sm = parseInt("${e://Field/lower_bound_sm}");
-        const upper_bound_lg = parseInt("${e://Field/upper_bound_lg}");
-        const upper_bound_sm = parseInt("${e://Field/upper_bound_sm}");
-        const lower_bound_wtp = parseInt("${e://Field/lower_bound_wtp_pads_num}");
-        const upper_bound_wtp = parseInt("${e://Field/upper_bound_wtp_pads_num}");
+        const lower_bound_lg = parseFloat("${e://Field/lower_bound_lg}");
+        const lower_bound_sm = parseFloat("${e://Field/lower_bound_sm}");
+        const upper_bound_lg = parseFloat("${e://Field/upper_bound_lg}");
+        const upper_bound_sm = parseFloat("${e://Field/upper_bound_sm}");
+        const lower_bound_wtp = parseFloat("${e://Field/lower_bound_wtp_pads_num}");
+        const upper_bound_wtp = parseFloat("${e://Field/upper_bound_wtp_pads_num}");
         console.log("lower bound lg is ", lower_bound_lg);
         console.log("lower bound sm is ", lower_bound_sm);
         console.log("upper bound lg is ", upper_bound_lg);

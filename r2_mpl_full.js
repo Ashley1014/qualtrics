@@ -10,6 +10,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing pads_mpl_full");
+    this.hidePreviousButton();
+    this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
     const dec_num = parseInt("${e://Field/lower_bound_main_decno_r2}");
@@ -17,6 +19,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     editLabels(qid);
     prepopulate();
+    displayWTP();
 
 
     function addHeader(QID) {
@@ -48,14 +51,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let incrb = -parseFloat("${e://Field/fmpl_eff_incr_swi}");
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
+            let choice_a = (inita + i * incra).toFixed(2).replace(/\.00$/, '');
+            let choice_b = (initb + i * incrb).toFixed(2).replace(/\.00$/, '');
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
             const input_a = getInputByValue(inputs, 1);
             const input_b = getInputByValue(inputs, 2);
             const label_a = input_a.labels[0];
             const label_b = input_b.labels[0];
-            label_a.innerHTML = "<strong>$"+(inita+i*incra).toString()+"</strong>";
-            label_b.innerHTML = "<strong>$"+(initb+i*incrb).toString()+"</strong>";
+            label_a.innerHTML = "<strong>$"+(choice_a)+"</strong>";
+            label_b.innerHTML = "<strong>$"+(choice_b)+"</strong>";
         }
     }
 
@@ -152,7 +157,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return num === 0;
     }
 
-
+    function displayWTP() {
+        const lower_bound_cost = parseFloat("${e://Field/lower_bound_wtp_cost}");
+        const lower_bound_emissions = parseFloat("${e://Field/lower_bound_wtp_emissions}");
+        const upper_bound_cost = parseFloat("${e://Field/upper_bound_wtp_cost}");
+        const upper_bound_emissions = parseFloat("${e://Field/upper_bound_wtp_emissions}");
+        console.log("lower bound cost wtp is ", lower_bound_cost);
+        console.log("lower bound emissions wtp is ", lower_bound_emissions);
+        console.log("upper bound cost wtp is ", upper_bound_cost);
+        console.log("upper bound emissions wtp is ", upper_bound_emissions);
+    }
 });
 
 Qualtrics.SurveyEngine.addOnUnload(function()

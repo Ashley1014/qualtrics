@@ -245,10 +245,6 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
-        console.log("lower bound eff is ", lower_bound_eff);
-        console.log("lower bound trad is ", lower_bound_trad);
-        console.log("upper bound eff is ", upper_bound_eff);
-        console.log("upper bound trad is ", upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r3", upper_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad_r3", upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_r3", lower_bound_eff);
@@ -257,10 +253,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let upper_bound = Number(upper_bound_eff - upper_bound_trad);
         let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
         let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
-        console.log("upper bound wtp is ", upper_bound_cp);
-        console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r3", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r3", upper_bound_cp);
+        let lower_bound_num = Math.min(lower_bound, upper_bound);
+        let upper_bound_num = Math.max(lower_bound, upper_bound);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r3_num", lower_bound_num);
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r3_num", upper_bound_num);
     }
 
     function addHeader(QID) {

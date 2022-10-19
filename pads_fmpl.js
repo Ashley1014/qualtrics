@@ -490,24 +490,18 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 upper_bound_sm = Number(lower_bound_sm) + sm_incr;
             }
         }
-        console.log("lower bound lg is ", lower_bound_lg);
-        console.log("lower bound sm is ", lower_bound_sm);
-        console.log("upper bound lg is ", upper_bound_lg);
-        console.log("upper bound sm is ", upper_bound_sm);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_lg", upper_bound_lg);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sm", upper_bound_sm);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg", lower_bound_lg);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm", lower_bound_sm);
         let lower_bound = Number(lower_bound_lg - lower_bound_sm);
         let upper_bound = Number(upper_bound_lg - upper_bound_sm);
-        let lower_bound_num = Math.min(lower_bound, upper_bound);
-        let upper_bound_num = Math.max(lower_bound, upper_bound);
         let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
         let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
-        console.log("upper bound wtp is ", upper_bound_cp);
-        console.log("lower bound wtp is ", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads", lower_bound_cp);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads", upper_bound_cp);
+        let lower_bound_num = Math.min(lower_bound, upper_bound);
+        let upper_bound_num = Math.max(lower_bound, upper_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads_num", lower_bound_num);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads_num", upper_bound_num);
     }

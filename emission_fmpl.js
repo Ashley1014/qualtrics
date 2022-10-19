@@ -277,8 +277,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
             upper_bound = getBoundByRow(QID, upper_idx);
             lower_bound = Number(upper_bound) - incr;
         }
-        console.log("lower bound is", lower_bound);
-        console.log("upper bound is ", upper_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_emissions", lower_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_emissions", upper_bound);
     }
