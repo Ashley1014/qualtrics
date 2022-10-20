@@ -301,6 +301,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param sp
      */
     function getDecNum(QID, row, sp) {
+        sp = Number(sp);
         const rows = question.getElementsByClassName("ChoiceRow");
         const row_ele = rows[row];
         const header = row_ele.getElementsByClassName("c1")[0];
