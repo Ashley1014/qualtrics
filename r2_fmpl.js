@@ -57,7 +57,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
             const header_id = row_header.id;
             const char_arr = header_id.split("~");
             const id_num = Number(char_arr[char_arr.length-1]);
-            console.log("row number is ", id_num);
             const inputs = row.getElementsByTagName("input");
             for(let radio of inputs) {
                 radio.onclick = function () {

@@ -298,8 +298,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
      *
      * @param QID
      * @param row
+     * @param sp
      */
-    function getDecNum(QID, row) {
+    function getDecNum(QID, row, sp) {
         const rows = question.getElementsByClassName("ChoiceRow");
         const row_ele = rows[row];
         const header = row_ele.getElementsByClassName("c1")[0];
@@ -309,7 +310,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         if (matches) {
             dec_num = matches[0];
         }
-        console.log("dec_num is ", dec_num);
+        //all b selected
+        if ((sp === 1 && !iseffLeft()) || (sp === 2 && iseffLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
         return Number(dec_num);
     }
 
@@ -319,15 +323,26 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param value the value of eff choices
      */
     function calculate_wtp(QID, value) {
-        let eff_fmpl_incr = parseFloat("${e://Field/eff_fmpl_incr}");
-        let trad_fmpl_incr = parseFloat("${e://Field/trad_fmpl_incr}");
+        let eff_incr;
+        let trad_incr;
+
+        if (iseffLeft()) {
+            eff_incr = parseInt("${e://Field/mpl_eff_incr}");
+            trad_incr = parseInt("${e://Field/mpl_trad_incr}");
+        } else {
+            eff_incr = parseInt("${e://Field/mpl_trad_incr}");
+            trad_incr = parseInt("${e://Field/mpl_eff_incr}");
+        }
 
         let lower_eff;
         let lower_trad;
         let upper_eff;
         let upper_trad;
 
-
+        let lower_bound_eff;
+        let lower_bound_trad;
+        let upper_bound_eff;
+        let upper_bound_trad;
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
@@ -377,18 +392,24 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
-        let lower_bound_eff = getBoundByRow(QID, lower_eff, value);
-        let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
-        let dec_num = getDecNum(QID, lower_eff);
+        // lower_bound_eff = getBoundByRow(QID, lower_eff, value);
+        // let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
+        lower_eff = lower_eff ? lower_eff : upper_eff;
+        let dec_num = getDecNum(QID, lower_eff, sp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_r1", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_main_r1", lower_bound_trad);
-        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_eff_init_r1", Number(lower_bound_eff) + eff_fmpl_incr);
-        Qualtrics.SurveyEngine.setEmbeddedData("fmpl_trad_init_r1", Number(lower_bound_trad) + trad_fmpl_incr);
         console.log("testing r1_mpl");
+        console.log("dec_num is ", dec_num);
         console.log("lower bound eff is ", lower_bound_eff);
         console.log("lower bound trad is ", lower_bound_trad);
+        console.log("upper bound eff is ", upper_bound_eff);
+        console.log("upper bound trad is ", upper_bound_trad);
         if (Number(sp) !== 3) {
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_r1", lower_bound_eff);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r1", upper_bound_eff);
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_trad_r1", lower_bound_trad);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad_r1", upper_bound_trad);
             let lower_bound = Number(lower_bound_eff - lower_bound_trad);
             let upper_bound = Number(upper_bound_eff - upper_bound_trad);
             let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
@@ -399,8 +420,25 @@ Qualtrics.SurveyEngine.addOnReady(function()
             let upper_bound_num = Math.max(lower_bound, upper_bound);
             Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_r1_num", lower_bound_num);
             Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_r1_num", upper_bound_num);
-
+            console.log("lower bound wtp is ", lower_bound_num);
+            console.log("upper bound wtp is ", upper_bound_num);
         }
+    }
+
+    /**
+     * turns a number into a string with dollar sign.
+     * @param num a number
+     */
+    function transNum(num){
+        let str;
+        if (num < 0) {
+            num = Math.abs(num);
+            str = "-$" + num.toString();
+        }
+        else {
+            str = "$" + num.toString();
+        }
+        return str;
     }
 });
 

@@ -14,8 +14,6 @@ Qualtrics.SurveyEngine.addOnReady(function()
     this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
-    const dec_num = parseInt("${e://Field/lower_bound_main_decno_r1}");
-    console.log("The main sp dec_num is ", dec_num);
 
     editLabels(qid);
     prepopulate();
@@ -158,6 +156,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayWTP() {
+        const dec_num_main = parseInt("${e://Field/lower_bound_main_decno_r1}");
+        console.log("The main sp dec_num is ", dec_num_main);
+        const dec_num_fmpl = parseInt("${e://Field/lower_bound_fmpl_decno_r1}");
+        console.log("The fmpl sp dec_num is ", dec_num_fmpl);
         const lower_bound_eff = parseFloat("${e://Field/lower_bound_eff_r1}");
         const lower_bound_trad = parseFloat("${e://Field/lower_bound_trad_r1}");
         const upper_bound_eff = parseFloat("${e://Field/upper_bound_eff_r1}");
