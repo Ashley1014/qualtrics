@@ -311,6 +311,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         if (matches) {
             dec_num = matches[0];
         }
+        //all a selected
+        if ((sp === 1 && iseffLeft()) || (sp === 2 && !iseffLeft())) {
+            dec_num = parseInt("${e://Field/num_totaldecisions_1r}") + 1;
+        }
         //all b selected
         if ((sp === 1 && !iseffLeft()) || (sp === 2 && iseffLeft())) {
             dec_num = Number(dec_num) - 1;
@@ -395,7 +399,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         // lower_bound_eff = getBoundByRow(QID, lower_eff, value);
         // let lower_bound_trad = getBoundByRow(QID, lower_trad, 3-value);
-        lower_eff = lower_eff ? lower_eff : upper_eff;
+        if (Number(sp) !== 3) {
+            lower_eff = lower_eff ? lower_eff : upper_eff;
+        }
         let dec_num = getDecNum(QID, lower_eff, sp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_r1", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_main_r1", lower_bound_eff);

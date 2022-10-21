@@ -506,7 +506,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
-        lower_eff = lower_eff ? lower_eff : upper_eff;
+        if (Number(sp) !== 3) {
+            lower_eff = lower_eff ? lower_eff : upper_eff;
+        }
         let dec_num = getDecNum(QID, lower_eff, sp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_fmpl_decno_r1", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r1", upper_bound_eff);
