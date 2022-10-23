@@ -77,7 +77,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         nextbutton.onclick = function() {
             //alert("next button was clicked");
             findSwitchPoint(qid);
-            calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr);
+            calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
         };
     }
 
@@ -167,7 +167,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let upper_bound_eff;
         let upper_bound_trad;
 
-        let main_sp = parseInt("${e://Field/switchpoint_main_r3}");
+        let main_sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
 
         eff_incr = findIncr(main_sp)["incr_e"];
         trad_incr = findIncr(main_sp)["incr_t"];
