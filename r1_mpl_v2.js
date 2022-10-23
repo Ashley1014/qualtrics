@@ -332,11 +332,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let trad_incr;
 
         if (iseffLeft()) {
-            eff_incr = parseInt("${e://Field/mpl_eff_incr}");
-            trad_incr = parseInt("${e://Field/mpl_trad_incr}");
+            eff_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}");
+            trad_incr = parseFloat("${e://Field/fmpl_trad_incr_swi}");
         } else {
-            eff_incr = parseInt("${e://Field/mpl_trad_incr}");
-            trad_incr = parseInt("${e://Field/mpl_eff_incr}");
+            eff_incr = parseFloat("${e://Field/fmpl_trad_incr_swi}");
+            trad_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}");
         }
 
         let lower_eff;

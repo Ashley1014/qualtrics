@@ -252,8 +252,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
      *
      * @param QID
      * @param row
+     * @param sp
      */
-    function getDecNum(QID, row) {
+    function getDecNum(QID, row, sp) {
+        sp = Number(sp);
         const rows = question.getElementsByClassName("ChoiceRow");
         const row_ele = rows[row];
         const header = row_ele.getElementsByClassName("c1")[0];
@@ -263,9 +265,17 @@ Qualtrics.SurveyEngine.addOnReady(function()
         if (matches) {
             dec_num = matches[0];
         }
-        console.log("dec_num is ", dec_num);
+        //all a selected
+        if ((sp === 1 && islgLeft()) || (sp === 2 && !islgLeft())) {
+            dec_num = parseInt("${e://Field/num_totaldecisions_pads}") + 1;
+        }
+        //all b selected
+        if ((sp === 1 && !islgLeft()) || (sp === 2 && islgLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
         return Number(dec_num);
     }
+
 
     /***
      *
@@ -273,48 +283,123 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param value the value of lg choices
      */
     function calculate_wtp(QID, value) {
-        //const rows = document.getElementsByClassName("ChoiceRow");
+        let lg_incr;
+        let sm_incr;
+
+        if (islgLeft()) {
+            lg_incr = parseFloat("${e://Field/pads_lg_fmpl_incr_swi}");
+            sm_incr = parseFloat("${e://Field/pads_sm_fmpl_incr_swi}");
+        } else {
+            lg_incr = parseInt("${e://Field/pads_sm_fmpl_incr_swi}");
+            sm_incr = parseInt("${e://Field/pads_lg_fmpl_incr_swi}");
+        }
 
         let lower_lg;
         let lower_sm;
+        let upper_lg;
+        let upper_sm;
 
-        //console.log("sp is ", sp.type);
+        let lower_bound_lg;
+        let lower_bound_sm;
+        let upper_bound_lg;
+        let upper_bound_sm;
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
             lower_lg = switch_row;
             lower_sm = switch_row;
+            upper_lg = switch_row + 1;
+            upper_sm = switch_row + 1;
+            lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+            lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+            upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+            upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
         } else if (Number(sp) === 1) {
             if (islgLeft()) {
                 //console.log("all lg chosen, lg is left.");
                 lower_lg = len - 1;
                 lower_sm = len - 1;
+                lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+                lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+                upper_bound_lg = Number(lower_bound_lg) + lg_incr;
+                upper_bound_sm = Number(lower_bound_sm) + sm_incr;
                 //console.log("lower lg bound is ", lower_lg);
             } else {
                 //console.log("all lg chosen, lg is right.");
-                lower_lg = 0;
-                lower_sm = 0;
+                upper_lg = 0;
+                upper_sm = 0;
+                upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+                upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
+                lower_bound_lg = Number(upper_bound_lg) - lg_incr;
+                lower_bound_sm = Number(upper_bound_sm) - sm_incr;
                 //console.log("lower lg bound is ", lower_lg);
             }
         } else {
             //console.log("inside else");
             if (islgLeft()) {
-                lower_lg = 0;
-                lower_sm = 0;
+                upper_lg = 0;
+                upper_sm = 0;
+                upper_bound_lg = getBoundByRow(QID, upper_lg, value);
+                upper_bound_sm = getBoundByRow(QID, upper_sm, 3-value);
+                lower_bound_lg = Number(upper_bound_lg) - lg_incr;
+                lower_bound_sm = Number(upper_bound_sm) - sm_incr;
             } else {
                 lower_lg = len - 1;
                 lower_sm = len - 1;
+                lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+                lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+                upper_bound_lg = Number(lower_bound_lg) + lg_incr;
+                upper_bound_sm = Number(lower_bound_sm) + sm_incr;
             }
         }
-        let lower_bound_lg = getBoundByRow(QID, lower_lg, value);
-        let lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
-        let dec_num = getDecNum(QID, lower_lg);
+        // lower_bound_lg = getBoundByRow(QID, lower_lg, value);
+        // let lower_bound_sm = getBoundByRow(QID, lower_sm, 3-value);
+        if (Number(sp) !== 3) {
+            lower_lg = lower_lg ? lower_lg : upper_lg;
+        }
+        let dec_num = getDecNum(QID, lower_lg, sp);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_main_decno_pads", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg_main", Number(lower_bound_lg));
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm_main", Number(lower_bound_sm));
         console.log("testing pads_mpl");
         console.log("lower bound lg is ", lower_bound_lg);
         console.log("lower bound sm is ", lower_bound_sm);
+        console.log("upper bound lg is ", upper_bound_lg);
+        console.log("upper bound sm is ", upper_bound_sm);
+        if (Number(sp) !== 3) {
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg", lower_bound_lg);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_lg", upper_bound_lg);
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sm", lower_bound_sm);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sm", upper_bound_sm);
+            let lower_bound = Number(lower_bound_lg - lower_bound_sm);
+            let upper_bound = Number(upper_bound_lg - upper_bound_sm);
+            let lower_bound_cp = transNum(Math.min(lower_bound, upper_bound));
+            let upper_bound_cp = transNum(Math.max(lower_bound, upper_bound));
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads", lower_bound_cp);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads", upper_bound_cp);
+            let lower_bound_num = Math.min(lower_bound, upper_bound);
+            let upper_bound_num = Math.max(lower_bound, upper_bound);
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_pads_num", lower_bound_num);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_pads_num", upper_bound_num);
+            console.log("lower bound wtp is ", lower_bound_num);
+            console.log("upper bound wtp is ", upper_bound_num);
+        }
+    }
+
+    /**
+     * turns a number into a string with dollar sign.
+     * @param num a number
+     */
+    function transNum(num){
+        let str;
+        if (num < 0) {
+            num = Math.abs(num);
+            str = "-$" + num.toString();
+        }
+        else {
+            str = "$" + num.toString();
+        }
+        return str;
     }
 });
 

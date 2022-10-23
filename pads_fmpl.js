@@ -419,6 +419,31 @@ Qualtrics.SurveyEngine.addOnReady(function()
         return text.substring(text.lastIndexOf('$') + 1);
     }
 
+    /**
+     *
+     * @param QID
+     * @param row
+     * @param sp
+     */
+    function getDecNum(QID, row, sp) {
+        sp = Number(sp);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        //all b selected
+        if ((sp === 1 && !islgLeft()) || (sp === 2 && islgLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
+
     /***
      *
      * @param QID
@@ -490,6 +515,11 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 upper_bound_sm = Number(lower_bound_sm) + sm_incr;
             }
         }
+        if (Number(sp) !== 3) {
+            lower_lg = lower_lg ? lower_lg : upper_lg;
+        }
+        let dec_num = getDecNum(QID, lower_lg, sp);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_fmpl_decno_pads", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_lg", upper_bound_lg);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sm", upper_bound_sm);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_lg", lower_bound_lg);

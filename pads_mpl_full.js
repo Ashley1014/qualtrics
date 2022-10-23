@@ -10,8 +10,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing pads_mpl_full");
-    this.hidePreviousButton();
-    this.disablePreviousButton();
+    // this.hidePreviousButton();
+    // this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
 
@@ -159,6 +159,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayWTP() {
+        const dec_num_main = parseInt("${e://Field/lower_bound_main_decno_pads}");
+        console.log("The main sp dec_num is ", dec_num_main);
+        const dec_num_fmpl = parseInt("${e://Field/lower_bound_fmpl_decno_pads}");
+        console.log("The fmpl sp dec_num is ", dec_num_fmpl);
         const lower_bound_lg = parseFloat("${e://Field/lower_bound_lg}");
         const lower_bound_sm = parseFloat("${e://Field/lower_bound_sm}");
         const upper_bound_lg = parseFloat("${e://Field/upper_bound_lg}");
