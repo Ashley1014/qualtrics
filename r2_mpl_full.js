@@ -158,14 +158,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayWTP() {
-        const lower_bound_cost = parseFloat("${e://Field/lower_bound_wtp_cost}");
-        const lower_bound_emissions = parseFloat("${e://Field/lower_bound_wtp_emissions}");
-        const upper_bound_cost = parseFloat("${e://Field/upper_bound_wtp_cost}");
-        const upper_bound_emissions = parseFloat("${e://Field/upper_bound_wtp_emissions}");
-        console.log("lower bound cost wtp is ", lower_bound_cost);
-        console.log("lower bound emissions wtp is ", lower_bound_emissions);
-        console.log("upper bound cost wtp is ", upper_bound_cost);
-        console.log("upper bound emissions wtp is ", upper_bound_emissions);
+        const dec_num_main = parseInt("${e://Field/lower_bound_main_decno_r2}");
+        console.log("The main sp dec_num is ", dec_num_main);
+        const dec_num_fmpl = parseInt("${e://Field/lower_bound_fmpl_decno_r2}");
+        console.log("The fmpl sp dec_num is ", dec_num_fmpl);
+        const lower_bound_eff = parseFloat("${e://Field/lower_bound_eff_r2}");
+        const lower_bound_trad = parseFloat("${e://Field/lower_bound_trad_r2}");
+        const upper_bound_eff = parseFloat("${e://Field/upper_bound_eff_r2}");
+        const upper_bound_trad = parseFloat("${e://Field/upper_bound_trad_r2}");
+        const lower_bound_wtp = parseFloat("${e://Field/lower_bound_wtp_r2_num}");
+        const upper_bound_wtp = parseFloat("${e://Field/upper_bound_wtp_r2_num}");
+        console.log("lower bound eff is ", lower_bound_eff);
+        console.log("lower bound trad is ", lower_bound_trad);
+        console.log("upper bound eff is ", upper_bound_eff);
+        console.log("upper bound trad is ", upper_bound_trad);
+        console.log("upper bound wtp is ", upper_bound_wtp);
+        console.log("lower bound wtp is ", lower_bound_wtp);
     }
 });
 

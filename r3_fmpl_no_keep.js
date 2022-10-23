@@ -371,6 +371,31 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         return text.substring(text.lastIndexOf('$') + 1);
     }
 
+    /**
+     *
+     * @param QID
+     * @param row
+     * @param sp
+     */
+    function getDecNum(QID, row, sp) {
+        sp = Number(sp);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        //all b selected
+        if ((sp === 1 && !iseffLeft()) || (sp === 2 && iseffLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
+
     /***
      *
      * @param QID
@@ -443,6 +468,11 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
+        if (Number(sp) !== 3) {
+            lower_eff = lower_eff ? lower_eff : upper_eff;
+        }
+        let dec_num = getDecNum(QID, lower_eff, sp);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_fmpl_decno_r3", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r3", upper_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad_r3", upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_r3", lower_bound_eff);

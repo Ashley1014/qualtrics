@@ -128,15 +128,40 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         }
     }
 
+    /**
+     *
+     * @param QID
+     * @param row
+     * @param sp
+     */
+    function getDecNum(QID, row, sp) {
+        sp = Number(sp);
+        const rows = question.getElementsByClassName("ChoiceRow");
+        const row_ele = rows[row];
+        const header = row_ele.getElementsByClassName("c1")[0];
+        const label = header.getElementsByTagName("label")[0].textContent;
+        const matches = label.match(/(\d+)/);
+        let dec_num;
+        if (matches) {
+            dec_num = matches[0];
+        }
+        //all b selected
+        if ((sp === 1 && !iseffLeft()) || (sp === 2 && iseffLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
+        console.log("dec_num is ", dec_num);
+        return Number(dec_num);
+    }
+
     /***
      *
      * @param QID
+     * @param basenum
      * @param value the value of eff choices
      * @param eff_incr the increment of price list
      * @param trad_incr
-     * @param basenum
      */
-    function calculate_wtp(QID, value, eff_incr, trad_incr, basenum) {
+    function calculate_wtp(QID, basenum, value, eff_incr, trad_incr) {
         let lower_eff;
         let lower_trad;
         let upper_eff;
@@ -147,7 +172,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let upper_bound_eff;
         let upper_bound_trad;
 
-        let main_sp = parseInt("${e://Field/switchpoint_main_r3_yes}");
+        let main_sp = parseInt("${e://Field/switchpoint_main_r3}");
 
         eff_incr = findIncr(main_sp)["incr_e"];
         trad_incr = findIncr(main_sp)["incr_t"];
@@ -200,6 +225,11 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 upper_bound_trad = Number(lower_bound_trad) + trad_incr;
             }
         }
+        if (Number(sp) !== 3) {
+            lower_eff = lower_eff ? lower_eff : upper_eff;
+        }
+        let dec_num = getDecNum(QID, lower_eff, sp);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_fmpl_decno_r3", dec_num);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_eff_r3", upper_bound_eff);
         Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_trad_r3", upper_bound_trad);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_eff_r3", lower_bound_eff);

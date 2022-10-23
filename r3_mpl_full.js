@@ -12,8 +12,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     /*ANJALI HAS INSERTED THIS HERE*/
     /*ANJALI HAS INSERTED THIS HERE*/
-    this.hidePreviousButton();
-    this.disablePreviousButton()
+    // this.hidePreviousButton();
+    // this.disablePreviousButton()
     /*ANJALI HAS INSERTED THIS HERE*/
     /*ANJALI HAS INSERTED THIS HERE*/
 
@@ -165,6 +165,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
     }
 
     function displayWTP() {
+        const dec_num_main = parseInt("${e://Field/lower_bound_main_decno_r3}");
+        console.log("The main sp dec_num is ", dec_num_main);
+        const dec_num_fmpl = parseInt("${e://Field/lower_bound_fmpl_decno_r3}");
+        console.log("The fmpl sp dec_num is ", dec_num_fmpl);
         const lower_bound_eff = parseFloat("${e://Field/lower_bound_eff_r3}");
         const lower_bound_trad = parseFloat("${e://Field/lower_bound_trad_r3}");
         const upper_bound_eff = parseFloat("${e://Field/upper_bound_eff_r3}");
