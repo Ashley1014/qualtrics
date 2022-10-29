@@ -179,26 +179,42 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param QID
      */
     function calculate_wtp(QID) {
-        let index;
+        let lower_idx;
+        let upper_idx;
+
+        let lower_bound;
+        let upper_bound;
+
+        let incr = parseFloat("${e://Field/cost_mpl_incr}");
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
-            index = Number(switch_row);
+            lower_idx = Number(switch_row);
+            upper_idx = lower_idx + 1;
+            lower_bound = getBoundByRow(QID, lower_idx);
+            upper_bound = getBoundByRow(QID, upper_idx);
         } else if (Number(sp) === 1) {
-            index = len - 1;
-            //console.log("lower led bound is ", index);
+            lower_idx = len - 1;
+            lower_bound = getBoundByRow(QID, lower_idx);
+            upper_bound = Number(lower_bound) + incr;
         } else {
             //console.log("inside else");
-            index = 0;
+            upper_idx = 0;
+            upper_bound = getBoundByRow(QID, upper_idx);
+            lower_bound = Number(upper_bound) - incr;
         }
-        // const id_lower = "header~"+QID+"~"+(index+basenum).toString()+"~mobile";
-        // //console.log("lower bound for yes is ", id_lower);
-        // let lower_bound;
-        // const text = document.getElementById(id_lower).textContent;
-        let lower_bound = getBoundByRow(QID, index);
         console.log("testing cost mpl");
+        lower_bound = Number(lower_bound);
+        upper_bound = Number(upper_bound);
         console.log("lower bound cost is ", lower_bound);
+        console.log("upper bound cost is ", upper_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_cost", lower_bound);
+        if (Number(sp) !== 3) {
+            console.log("lower bound wtp is ", lower_bound);
+            console.log("upper bound wtp is ", upper_bound);
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_cost", lower_bound);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_cost", upper_bound);
+        }
     }
 });
 

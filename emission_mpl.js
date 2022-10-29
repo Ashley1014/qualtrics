@@ -181,22 +181,42 @@ Qualtrics.SurveyEngine.addOnReady(function()
      * @param QID
      */
     function calculate_wtp(QID) {
-        let index;
+        let lower_idx;
+        let upper_idx;
+
+        let lower_bound;
+        let upper_bound;
+
+        let incr = parseFloat("${e://Field/emissions_mpl_incr}");
 
         if (Number(sp) === 3) {
             //console.log("there is a switch point");
-            index = Number(switch_row);
+            lower_idx = Number(switch_row);
+            upper_idx = lower_idx + 1;
+            lower_bound = getBoundByRow(QID, lower_idx);
+            upper_bound = getBoundByRow(QID, upper_idx);
         } else if (Number(sp) === 1) {
-            index = len - 1;
-            //console.log("lower led bound is ", index);
+            lower_idx = len - 1;
+            lower_bound = getBoundByRow(QID, lower_idx);
+            upper_bound = Number(lower_bound) + incr;
         } else {
             //console.log("inside else");
-            index = 0;
+            upper_idx = 0;
+            upper_bound = getBoundByRow(QID, upper_idx);
+            lower_bound = Number(upper_bound) - incr;
         }
-        let lower_bound = getBoundByRow(QID, index);
-        console.log("testing emissions main");
+        console.log("testing emissions mpl");
+        lower_bound = Number(lower_bound);
+        upper_bound = Number(upper_bound);
         console.log("lower bound emissions is ", lower_bound);
+        console.log("upper bound emissions is ", upper_bound);
         Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_emissions", lower_bound);
+        if (Number(sp) !== 3) {
+            console.log("lower bound wtp is ", lower_bound);
+            console.log("upper bound wtp is ", upper_bound);
+            Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_wtp_emissions", lower_bound);
+            Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_wtp_emissions", upper_bound);
+        }
     }
 });
 

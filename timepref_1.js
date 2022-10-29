@@ -220,10 +220,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
         console.log("lower bound later is ", lower_bound_trad);
         console.log("upper bound sooner is ", upper_bound_eff);
         console.log("upper bound later is ", upper_bound_trad);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sooner_timepref1", lower_bound_eff);
-        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_later_timepref1", lower_bound_trad);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sooner_timepref1", upper_bound_eff);
-        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_later_timepref1", upper_bound_trad);
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_sooner_timepref1", Number(lower_bound_eff));
+        Qualtrics.SurveyEngine.setEmbeddedData("lower_bound_later_timepref1", Number(lower_bound_trad));
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_sooner_timepref1", Number(upper_bound_eff));
+        Qualtrics.SurveyEngine.setEmbeddedData("upper_bound_later_timepref1", Number(upper_bound_trad));
     }
 
 });
