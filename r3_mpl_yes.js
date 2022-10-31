@@ -95,13 +95,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function prepopulate() {
         let wtp_upper;
-        let assignment = parseInt("${e://Field/condition_no}");
-        if (assignment === 10) {
-            wtp_upper = parseInt("${q://QID1087/ChoiceTextEntryValue}");
+        let wtp_lower;
+        let wtp_incr;
+        //let assignment = parseInt("${e://Field/condition_no}");
+        // if (assignment === 10) {
+        //     wtp_lower = parseInt("${q://QID1087/ChoiceTextEntryValue}");
+        // } else {
+        //     wtp_lower = parseInt("${q://QID763/ChoiceTextEntryValue}");
+        // }
+        wtp_lower = parseInt("${e://Field/wtp_revise}");
+        wtp_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}") * 2;
+        if (wtp_lower < 0) {
+            wtp_upper = wtp_lower;
+            wtp_lower = wtp_upper - wtp_incr;
         } else {
-            wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
+            wtp_upper = wtp_lower + wtp_incr;
         }
-        let wtp_lower = wtp_upper - 1;
 
         let row_num = -1;
         const rows = question.getElementsByClassName("ChoiceRow");

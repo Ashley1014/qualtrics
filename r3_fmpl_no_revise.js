@@ -9,6 +9,8 @@ Qualtrics.SurveyEngine.addOnload(function()
 Qualtrics.SurveyEngine.addOnReady(function() {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing r3_fmpl_no_revise");
+    const revised = parseInt("${e://Field/revised}");
+    console.log("revised is ", revised);
     const order = parseInt("${e://Field/display_order}");
     const qid = this.questionId;
     const question = document.getElementById(qid);

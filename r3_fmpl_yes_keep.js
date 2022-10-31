@@ -597,13 +597,16 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
     function displayRevised(qid, basenum) {
         let wtp_upper;
+        let wtp_lower;
+        let wtp_incr;
         let assignment = parseInt("${e://Field/condition_no}");
         if (assignment === 10) {
-            wtp_upper = parseInt("${q://QID1087/ChoiceTextEntryValue}");
+            wtp_lower = parseInt("${q://QID1087/ChoiceTextEntryValue}");
         } else {
-            wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
+            wtp_lower = parseInt("${q://QID763/ChoiceTextEntryValue}");
         }
-        let wtp_lower = wtp_upper - 1;
+        wtp_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}") * 2;
+        wtp_upper = wtp_lower + wtp_incr;
 
         let row_num = -1;
         const rows = question.getElementsByClassName("ChoiceRow");

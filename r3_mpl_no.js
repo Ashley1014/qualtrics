@@ -38,7 +38,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         editLabels(qid, price_init, price_incr);
     }
 
-    populateChoices();
+    initializeChoice();
     add_button_events();
 
     let nextbutton = document.getElementById("NextButton");
@@ -51,7 +51,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
         } else {
             value = 2;
         }
-        checkRevised();
+        setRevised();
         calculate_wtp(qid, value);
     };
 
@@ -59,39 +59,50 @@ Qualtrics.SurveyEngine.addOnReady(function()
     /**
      *
      * checks whether the page has been initialized for the first time,
-     * if not, check whether the round3 choices have been revised.
+     * if so, populate the options based on round 2 switchpoint.
+     * if not, populate the options based on what was selected last time.
      */
-    function checkRevised() {
+    function initializeChoice() {
+        let sp_main = parseInt("${e://Field/switchpoint_main_r2}");
+        let row_main = parseInt("${e://Field/switch_row_main_r2}");
         let r3_main = "${e://Field/switchpoint_main_r3}";
         let r3_row = "${e://Field/switch_row_main_r3}";
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
-            let r3_main = parseInt("${e://Field/switchpoint_main_r2}");
-            let r3_row = parseInt("${e://Field/switch_row_main_r2}");
-            sp_main = parseInt(r3_main);
-            row_main = parseInt(r3_row);
-            let r3_no_revised = (r3_main!==sp_main) || (r3_main===sp_main && r3_row!==row_main);
-            if (r3_no_revised) {
-                //console.log("round 3 has been revised");
-            } else {
-                //console.log("round 3 has not been revised");
-            }
-            Qualtrics.SurveyEngine.setEmbeddedData("r3_no_revised", r3_no_revised);
+            r3_main = parseInt(r3_main);
+            r3_row = parseInt(r3_row);
+            populateChoices(r3_main, r3_row);
         } else {
-            sp_main = parseInt("${e://Field/switchpoint_main_r2}");
-            row_main = parseInt("${e://Field/switch_row_main_r2}");
+            populateChoices(sp_main, row_main);
         }
     }
 
-    function populateChoices() {
-        //let wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
-        //let wtp_lower = wtp_upper-1;
+    /**
+     * keep track of whether the selection has changed compared to round 2 selection.
+     */
+    function setRevised() {
+        let revised;
+        let sp_main = parseInt("${e://Field/switchpoint_main_r2}");
+        let row_main = parseInt("${e://Field/switch_row_main_r2}");
+        if (sp !== sp_main) {
+            revised = 1;
+        }
+        else {
+            if (sp === 3) {
+                if (row_main === switch_row) {
+                    revised = 0;
+                } else {
+                    revised = 1;
+                }
+            } else {
+                revised = 0;
+            }
+        }
+        Qualtrics.SurveyEngine.setEmbeddedData("revised", revised);
+    }
 
-        checkRevised();
-
-        //console.log("wtp_lower is", wtp_lower);
-        //console.log("wtp_upper is", wtp_upper);
+    function populateChoices(sp, sr) {
 
         //let radios = document.getElementsByTagName("input");
         let row;
@@ -100,9 +111,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let order = parseInt("${e://Field/display_order}");
 
-        if (sp_main === 3) {
-            row = row_main;
-        } else if (sp_main === 1) {
+        if (sp === 3) {
+            row = sr;
+        } else if (sp === 1) {
             if (order === 0) {
                 row = len - 1;
             } else {
