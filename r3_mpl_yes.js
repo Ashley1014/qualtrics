@@ -97,19 +97,29 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let wtp_upper;
         let wtp_lower;
         let wtp_incr;
-        //let assignment = parseInt("${e://Field/condition_no}");
-        // if (assignment === 10) {
-        //     wtp_lower = parseInt("${q://QID1087/ChoiceTextEntryValue}");
-        // } else {
-        //     wtp_lower = parseInt("${q://QID763/ChoiceTextEntryValue}");
-        // }
+
         wtp_lower = parseInt("${e://Field/wtp_revise}");
         wtp_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}") * 2;
-        if (wtp_lower < 0) {
-            wtp_upper = wtp_lower;
-            wtp_lower = wtp_upper - wtp_incr;
-        } else {
-            wtp_upper = wtp_lower + wtp_incr;
+
+        findWTPbounds();
+
+        function findWTPbounds() {
+            if (wtp_lower < 0) {
+                wtp_upper = wtp_lower;
+                wtp_lower = wtp_upper - wtp_incr;
+            } else if (wtp_lower > 0) {
+                wtp_upper = wtp_lower + wtp_incr;
+            } else {
+                const r2_wtp_upper = parseFloat("${e://Field/upper_bound_wtp_r2_num}");
+                const r2_wtp_lower = parseFloat("${e://Field/lower_bound_wtp_r2_num}");
+                const r2_wtp_avg = (r2_wtp_upper + r2_wtp_lower) / 2;
+                if (r2_wtp_avg < 0) {
+                    wtp_upper = wtp_lower;
+                    wtp_lower = wtp_upper - wtp_incr;
+                } else if (r2_wtp_avg > 0) {
+                    wtp_upper = wtp_lower + wtp_incr;
+                } // FOR FUTURE REFERENCE: RANDOMIZE IF R2_WTP_AVG === 0!
+            }
         }
 
         let row_num = -1;
@@ -118,30 +128,34 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let lower_bound;
         let upper_bound;
 
-        for (let i = 0; i < len - 1; i++) {
-            let num_eff_lower = Number(getBoundByRow(qid, i, eff_value));
-            let num_trad_lower = Number(getBoundByRow(qid, i, trad_value));
-            let num_eff_upper = Number(getBoundByRow(qid, i+1, eff_value));
-            let num_trad_upper = Number(getBoundByRow(qid, i+1, trad_value));
-            lower_bound = Math.min((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
-            upper_bound = Math.max((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
-            if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
-                row_num = i;
-                break;
+        let upper_bound_wtp_min = parseFloat("${e://Field/upper_bound_wtp_min}");
+        let lower_bound_wtp_max = parseFloat("${e://Field/lower_bound_wtp_max}")
+
+        if (wtp_lower >= lower_bound_wtp_max) {
+            if (iseffLeft()) {
+                row_num = len - 1;
+            } else {
+                row_num = -1;
+            }
+        } else if (wtp_upper <= upper_bound_wtp_min) {
+            if (iseffLeft()) {
+                row_num = -1;
+            } else {
+                row_num = len - 1;
             }
         }
 
-        if (row_num === -1) {
-            if (iseffLeft()) {
-                row_num = len - 1;
-            }
-
-            else if (!iseffLeft()) {
-                let min_eff = Number(getBoundByRow(qid, len - 1, eff_value));
-                let min_trad = Number(getBoundByRow(qid, len - 1, trad_value));
-                let min_wtp = min_eff - min_trad;
-                if (wtp_lower < min_wtp) {
-                    row_num = len - 1;
+        else {
+            for (let i = 0; i < len - 1; i++) {
+                let num_eff_lower = Number(getBoundByRow(qid, i, eff_value));
+                let num_trad_lower = Number(getBoundByRow(qid, i, trad_value));
+                let num_eff_upper = Number(getBoundByRow(qid, i+1, eff_value));
+                let num_trad_upper = Number(getBoundByRow(qid, i+1, trad_value));
+                lower_bound = Math.min((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
+                upper_bound = Math.max((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
+                if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
+                    row_num = i;
+                    break;
                 }
             }
         }
