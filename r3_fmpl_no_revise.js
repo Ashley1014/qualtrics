@@ -40,21 +40,16 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
 
-    if (notRevised()) {
-        //console.log("has not been revised!");
-        question.style.display = "none";
-    } else {
-        //let qid = arr[1];
-        editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-        add_button_events();
-        //displayRevised(qid, basenum);
-        let nextbutton = document.getElementById("NextButton");
+    //let qid = arr[1];
+    editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
+    add_button_events();
+    //displayRevised(qid, basenum);
+    let nextbutton = document.getElementById("NextButton");
 
-        nextbutton.onclick = function() {
-            //alert("next button was clicked");
-            findSwitchPoint(qid);
-            calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
-        };
+    nextbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
     }
 
     function notRevised() {

@@ -27,32 +27,27 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         value = 2;
     }
 
-    if (!notRevised()) {
-        //console.log("has been revised!");
-        question.style.display = "none";
-    } else {
-        let radio1 = question.getElementsByTagName("input");
-        const first_id = radio1[0].id;
-        //console.log("first button id is ", first_id);
-        const arr = first_id.split("~");
-        let basenum = Number(arr[arr.length - 2]);
-        //let qid = arr[1];
+    let radio1 = question.getElementsByTagName("input");
+    const first_id = radio1[0].id;
+    //console.log("first button id is ", first_id);
+    const arr = first_id.split("~");
+    let basenum = Number(arr[arr.length - 2]);
+    //let qid = arr[1];
 
-        let price_init = parseInt("${e://Field/price_init}");
-        let price_incr = parseInt("${e://Field/price_incr}");
+    let price_init = parseInt("${e://Field/price_init}");
+    let price_incr = parseInt("${e://Field/price_incr}");
 
-        editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-        displayRevised(qid, basenum);
-        add_button_events(basenum);
+    editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
+    displayRevised(qid, basenum);
+    add_button_events(basenum);
 
-        let nextbutton = document.getElementById("NextButton");
+    let nextbutton = document.getElementById("NextButton");
 
-        nextbutton.onclick = function() {
-            //alert("next button was clicked");
-            findSwitchPoint(qid);
-            calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
-        };
-    }
+    nextbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
+    };
 
     function notRevised() {
         // eff is on the left

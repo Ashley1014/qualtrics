@@ -52,39 +52,24 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
-    if (assignment === 7) {
-        not_revised = notRevised_v2();
-    }
-    else {
-        not_revised = notRevised_v1(price_incr, 5, price_init);
-    }
+    let radio1 = question.getElementsByTagName("input");
+    const first_id = radio1[0].id;
+    //console.log("first button id is ", first_id);
+    const arr = first_id.split("~");
+    let basenum = Number(arr[arr.length - 2]);
+    //let qid = arr[1];
 
-    if (!not_revised) {
-        //if (r3_yes_revised === 1) {
-        //console.log("has been revised!");
-        question.style.display = "none";
-        //fmpls[0].style.display = "none";
-    } else {
-        //fmpls[1].style.display = "none";
-        let radio1 = question.getElementsByTagName("input");
-        const first_id = radio1[0].id;
-        //console.log("first button id is ", first_id);
-        const arr = first_id.split("~");
-        let basenum = Number(arr[arr.length - 2]);
-        //let qid = arr[1];
+    editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
+    displayRevised(qid, basenum);
+    add_button_events();
 
-        editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-        displayRevised(qid, basenum);
-        add_button_events();
+    let nextbutton = document.getElementById("NextButton");
 
-        let nextbutton = document.getElementById("NextButton");
-
-        nextbutton.onclick = function() {
-            //alert("next button was clicked");
-            findSwitchPoint(qid);
-            calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
-        };
-    }
+    nextbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
+    };
 
     /**
      * turns a number into a string with dollar sign.

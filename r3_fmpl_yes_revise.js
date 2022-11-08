@@ -54,32 +54,17 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
-    if (assignment === 7) {
-        not_revised = notRevised_v2();
-    }
-    else {
-        not_revised = notRevised_v1(price_incr, 5, price_init);
-    }
-    if (not_revised) {
-        //if (r3_yes_revised === 0) {
-        //console.log("has not been revised!");
-        question.style.display = "none";
-        // fmpls[1].style.display = "none";
-    } else {
-        // fmpls[0].style.display = "none";
-        //let qid = arr[1];
-        editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-        add_button_events();
-        //displayRevised(qid, basenum);
+    editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
+    add_button_events();
+    //displayRevised(qid, basenum);
 
-        let nextbutton = document.getElementById("NextButton");
+    let nextbutton = document.getElementById("NextButton");
 
-        nextbutton.onclick = function() {
-            //alert("next button was clicked");
-            findSwitchPoint(qid);
-            calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
-        };
-    }
+    nextbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
+    };
 
     /**
      * turns a number into a string with dollar sign.

@@ -3,16 +3,20 @@ Qualtrics.SurveyEngine.addOnload(function()
 {
     /*Place your JavaScript here to run when the page loads*/
 
-
 });
 
 Qualtrics.SurveyEngine.addOnReady(function()
 {
     console.log("testing r2_fmpl");
+
     /*Place your JavaScript here to run when the page is fully displayed*/
     const qid = this.questionId;
+    var qid2 = this.questionId;
+    Qualtrics.SurveyEngine.registry[qid2].setChoiceValue(1, 1, false);
+    Qualtrics.SurveyEngine.registry[qid2].setChoiceValue(1, 2, false)
     let question = document.getElementById(qid);
     //console.log(qid);
+
     const switchpoint = parseInt("${e://Field/switchpoint_main_r2}");
     let price_init = parseInt("${e://Field/price_init}");
     let price_incr = parseInt("${e://Field/price_incr}");
@@ -30,7 +34,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
     //console.log("eff price is ", eff);
     //console.log("trad price is ", trad);
     editLabels(qid, switchpoint, eff, trad, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
+
     add_button_events();
+    clearSelection();
 
     let len;
     let sp;
@@ -48,6 +54,25 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         calculate_wtp(qid, value, fmpl_eff_incr, fmpl_trad_incr);
     };
+
+    function clearSelection() {
+        //debugger;
+        const back_revise = parseInt("${e://Field/back_revise_r2}");
+        console.log("back_revise is ", back_revise);
+        if (back_revise === 1) {
+            console.log("clear respondents' selections!");
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoices is ", Qualtrics.SurveyEngine.registry[qid].getChoices())
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496))
+            //Qualtrics.SurveyEngine.registry[qid].setChoiceValue(496, 2, false);
+            Qualtrics.SurveyEngine.registry[qid].getChoices().map(function(rowId) {
+                //console.log('setting rowId to false: ', rowId)
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 1, false);
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 2, false);
+            })
+        }
+    }
 
     function add_button_events(){
         const rows = question.getElementsByClassName("ChoiceRow");
@@ -297,12 +322,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
         let init_trad;
         let incr_eff;
         let incr_trad;
-        
+
         init_eff = findInit(sp)["init_e"];
         init_trad = findInit(sp)["init_t"];
         incr_eff = findIncr(sp)["incr_e"];
         incr_trad = findIncr(sp)["incr_t"];
-        
+
         let assignment = parseInt("${e://Field/condition_no}");
         if (assignment === 5 || assignment === 6) {
             let disc_rate = parseFloat("${e://Field/disc_rate}");
