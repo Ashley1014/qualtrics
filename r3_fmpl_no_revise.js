@@ -43,6 +43,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     //let qid = arr[1];
     editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
     add_button_events();
+    clearSelection();
     //displayRevised(qid, basenum);
     let nextbutton = document.getElementById("NextButton");
 
@@ -50,6 +51,25 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         //alert("next button was clicked");
         findSwitchPoint(qid);
         calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
+    }
+
+    function clearSelection() {
+        //debugger;
+        const back_revise = parseInt("${e://Field/back_revise_r3}");
+        console.log("back_revise is ", back_revise);
+        if (back_revise === 1) {
+            console.log("clear respondents' selections!");
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoices is ", Qualtrics.SurveyEngine.registry[qid].getChoices())
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496))
+            //Qualtrics.SurveyEngine.registry[qid].setChoiceValue(496, 2, false);
+            Qualtrics.SurveyEngine.registry[qid].getChoices().map(function(rowId) {
+                console.log('setting rowId to false: ', rowId)
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 1, false);
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 2, false);
+            })
+        }
     }
 
     function notRevised() {

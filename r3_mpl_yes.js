@@ -32,6 +32,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     let assignment = parseInt("${e://Field/condition_no}");
 
+    let prepopulated_switch_row;
+
     if (assignment === 7) {
         editLabels_v2(qid);
     } else {
@@ -52,7 +54,63 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         //checkRevised();
         calculate_wtp(qid, value);
+        setBackRevise();
+        setNotRevise();
     };
+
+    /**
+     *
+     */
+    function setNotRevise() {
+        let not_revised;
+        if (sp === 3) {
+            not_revised = switch_row === prepopulated_switch_row ? 1 : 0;
+        } else if (sp === 1) {
+            if (iseffLeft()) {
+                not_revised = prepopulated_switch_row === len - 1 ? 1 : 0;
+            } else {
+                not_revised = prepopulated_switch_row === -1 ? 1 : 0;
+            }
+        } else {
+            if (iseffLeft()) {
+                not_revised = prepopulated_switch_row === -1 ? 1 : 0;
+            } else {
+                not_revised = prepopulated_switch_row === len - 1 ? 1 : 0;
+            }
+        }
+        Qualtrics.SurveyEngine.setEmbeddedData("r3_yes_keep", not_revised);
+    }
+
+    function setBackRevise() {
+        console.log("testing setBackRevise...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_main_r3_yes}";
+        let stored_sr = "${e://Field/switch_row_main_r3_yes}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_r3", back_rvise);
+    }
 
     /**
      *
@@ -62,20 +120,22 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function checkRevised() {
         let r3_main = "${e://Field/switchpoint_main_r3_yes}";
         let r3_row = "${e://Field/switch_row_main_r3_yes}";
+        let row_num;
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
             // let r1_main = parseInt("${e://Field/switchpoint}");
             // let r1_row = parseInt("${e://Field/switch_row_main}");
-            sp = Number(r3_main);
+            sp = parseInt(r3_main);
             if (sp === 3) {
-                switch_row = Number(r3_row);
-            } if (sp === 2) {
-                switch_row = len - 1;
+                row_num = parseInt(r3_row);
+            } else if (sp === 2) {
+                row_num = len - 1;
             } else {
-                switch_row = -1;
+                row_num = -1;
             }
-            fill_in_table(qid, switch_row, value);
+            prepopulated_switch_row = row_num;
+            fill_in_table(qid, row_num, value);
         } else {
             prepopulate();
         }
@@ -159,6 +219,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 }
             }
         }
+
+        prepopulated_switch_row = row_num;
 
         populateChoices_h(rows, row_num);
     }

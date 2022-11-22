@@ -38,16 +38,88 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     let price_incr = parseInt("${e://Field/price_incr}");
 
     editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-    displayRevised(qid, basenum);
-    add_button_events(basenum);
+
+    const back_revise_fmpl = "${e://Field/back_revise_fmpl_r3}";
+    if (back_revise_fmpl === "" || parseInt(back_revise_fmpl) === 0) {
+        displayRevised(qid, basenum);
+    }
+    add_button_events();
+    clearSelection();
 
     let nextbutton = document.getElementById("NextButton");
+
+    let backbutton = document.getElementById("PreviousButton");
+
+    backbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        setBackRevise();
+        console.log("executed backbutton.onclick");
+    };
 
     nextbutton.onclick = function() {
         //alert("next button was clicked");
         findSwitchPoint(qid);
         calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
+        console.log("executed nextbutton.onclick");
     };
+
+    function setBackRevise() {
+        console.log("testing setBackRevise for fmpl...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_fmpl_r2}";
+        let stored_sr = "${e://Field/switch_row_fmpl_r2}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_fmpl_r3", back_rvise);
+    }
+
+    function clearSelection() {
+        //debugger;
+        const back_revise = parseInt("${e://Field/back_revise_r3}");
+        // const back_revise_fmpl = parseInt("${e://Field/back_revise_fmpl_r3}");
+        console.log("back_revise is ", back_revise);
+        if (back_revise === 1) {
+            console.log("clear respondents' selections!");
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoices is ", Qualtrics.SurveyEngine.registry[qid].getChoices())
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496))
+            //Qualtrics.SurveyEngine.registry[qid].setChoiceValue(496, 2, false);
+            Qualtrics.SurveyEngine.registry[qid].getChoices().map(function(rowId) {
+                console.log('setting rowId to false: ', rowId)
+                console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 1) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 1))
+                console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 2) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 2))
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 1, false);
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 2, false);
+                console.log('done setting rowId to false')
+                console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 1) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 1))
+                console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 2) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(rowId, 2))
+
+            })
+        }
+    }
 
     function notRevised() {
         // eff is on the left
@@ -72,6 +144,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
     function add_button_events(){
         const rows = question.getElementsByClassName("ChoiceRow");
+        console.log("rows are ", rows);
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const row_header = row.getElementsByClassName("c1")[0];
@@ -82,11 +155,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             const inputs = row.getElementsByTagName("input");
             for(let radio of inputs) {
                 radio.onclick = function () {
-                    //console.log("button pressed");
+                    console.log("button pressed");
                     update_table(this.value, this.id, id_num);
                 }
             }
         }
+        console.log("executed add_button_events");
     }
 
     function update_table(button_value, button_id, row_num) {
@@ -101,6 +175,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         }
         fill_in_table(qid, row_num, value);
         //calculate_wtp(qid, row);
+        console.log("executed update_table");
     }
 
     function fill_in_table(QID, row_number, value) {
@@ -119,6 +194,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 choice_b.checked = false;
             }
         }
+        console.log("executed fill_in_table");
     }
 
     function getInputByValue(inputs, value) {
@@ -129,6 +205,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 return input;
             }
         }
+        console.log("executed getInputByValue");
     }
 
     function addHeader(QID) {
@@ -140,6 +217,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         let label_b = "<u>Choice B</u>:<br /><strong>" + b_header + "</strong><br /><img alt='option_b' height=\"80\" src=\"" + b_img + "\"/><br /> <br />";
         let row_html = "<thead> <th scope=\"row\" class=\"c1\" tabindex=\"-1\" role=\"rowheader\">  <span class=\"LabelWrapper \">  <label>  <span></span> </label>   </span>  </th>  <td class=\"c2 BorderColor\"></td> <td class=\"c3 BorderColor\"></td>     <th class=\"c4   \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + label_a +"</label>  <label aria-hidden=\"true\" ></label> </th>   <th class=\"c5 last  \">    <label style=\"display: block; padding-top: 0px; padding-bottom: 0px;\" >" + label_b + "</label> <label aria-hidden=\"true\"></label> </th>  </thead>";
         jQuery("#"+QID+" table:first").prepend(row_html);
+        console.log("executed addHeader");
     }
 
     function displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad) {
@@ -162,6 +240,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 label_b.innerHTML = "<strong>$" + eff + "</strong>";
             }
         }
+        console.log("executed displayLabels_v1");
     }
 
     function displayLabels_v2(QID, init_eff, incr_eff, init_trad, incr_trad, disc_rate, basenum) {
@@ -184,6 +263,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
             label_eff.innerHTML = "<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
             label_trad.innerHTML = "<strong>$"+trad+"</strong>";
         }
+        console.log("executed displayLabels_v2");
     }
 
 
@@ -329,6 +409,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         } else {
             displayLabels_v1(QID, init_eff, incr_eff, init_trad, incr_trad, basenum);
         }
+        console.log("executed editLabels");
     }
 
     function iseffLeft() {
@@ -366,6 +447,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         const input =  getInputByValue(inputs, value);
         const text = input.labels[0].textContent;
         return text.substring(text.lastIndexOf('$') + 1);
+        console.log("executed getBoundByRow");
     }
 
     /**
@@ -510,6 +592,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         }
 
         populateChoices_h(rows, row);
+        console.log("executed displayRevised");
     }
 
     function populateChoices_h(rows, row_num) {
@@ -526,6 +609,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
                 choice_b.checked = true;
             }
         }
+        console.log("executed populateChoices_h");
     }
 
     function findSwitchPoint(qid) {
@@ -563,6 +647,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_fmpl_r3", switch_point);
         Qualtrics.SurveyEngine.setEmbeddedData("switch_row_fmpl_r3", switch_row);
         //return switch_row;
+        console.log("executed findSwitchPoint");
     }
 
     function findCheckedValue(index) {

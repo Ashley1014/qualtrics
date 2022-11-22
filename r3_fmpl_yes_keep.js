@@ -60,8 +60,23 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     //let qid = arr[1];
 
     editLabels(qid, basenum, price_init, price_incr, fmpl_eff_incr, fmpl_trad_incr);
-    displayRevised(qid, basenum);
+
+    const back_revise_fmpl = "${e://Field/back_revise_fmpl_r3}";
+    if (back_revise_fmpl === "" || parseInt(back_revise_fmpl) === 0) {
+        displayRevised(qid, basenum);
+    }
+
     add_button_events();
+    clearSelection();
+
+    let backbutton = document.getElementById("PreviousButton");
+
+    backbutton.onclick = function() {
+        //alert("next button was clicked");
+        findSwitchPoint(qid);
+        setBackRevise();
+        console.log("executed backbutton.onclick");
+    };
 
     let nextbutton = document.getElementById("NextButton");
 
@@ -70,6 +85,58 @@ Qualtrics.SurveyEngine.addOnReady(function() {
         findSwitchPoint(qid);
         calculate_wtp(qid, basenum, value, fmpl_eff_incr, fmpl_trad_incr);
     };
+
+
+    function setBackRevise() {
+        console.log("testing setBackRevise for fmpl...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_fmpl_r3}";
+        let stored_sr = "${e://Field/switch_row_fmpl_r3}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_fmpl_r3", back_rvise);
+    }
+
+
+    function clearSelection() {
+        //debugger;
+        const back_revise = parseInt("${e://Field/back_revise_r3}");
+        console.log("back_revise is ", back_revise);
+        if (back_revise === 1) {
+            console.log("clear respondents' selections!");
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoices is ", Qualtrics.SurveyEngine.registry[qid].getChoices())
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(495))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceValue(496))
+            // console.log("Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496) is ", Qualtrics.SurveyEngine.registry[qid].getChoiceAnswerValue(496))
+            //Qualtrics.SurveyEngine.registry[qid].setChoiceValue(496, 2, false);
+            Qualtrics.SurveyEngine.registry[qid].getChoices().map(function(rowId) {
+                //console.log('setting rowId to false: ', rowId)
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 1, false);
+                Qualtrics.SurveyEngine.registry[qid].setChoiceValue(rowId, 2, false);
+            })
+        }
+    }
 
     /**
      * turns a number into a string with dollar sign.
