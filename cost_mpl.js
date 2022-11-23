@@ -31,11 +31,43 @@ Qualtrics.SurveyEngine.addOnReady(function()
             value = 2;
         }
         calculate_wtp(qid);
+        setBackRevise();
     };
 
     function isLedLeft() {
         let num = parseInt("${e://Field/display_order}");
         return num === 0;
+    }
+
+    function setBackRevise() {
+        console.log("testing setBackRevise...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_cost_main}";
+        let stored_sr = "${e://Field/switch_row_cost_main}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_cost", back_rvise);
     }
 
     function add_button_events(){
