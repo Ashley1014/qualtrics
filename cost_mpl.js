@@ -176,6 +176,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
         Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_cost_main", switch_point);
+        if (Number(sp) === 3) {
+            Qualtrics.SurveyEngine.setEmbeddedData("switch_row_cost_main", switch_row);
+        }
         //return switch_row;
     }
 

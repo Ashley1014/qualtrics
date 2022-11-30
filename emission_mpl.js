@@ -35,10 +35,12 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function setBackRevise() {
+        debugger;
         console.log("testing setBackRevise...");
         console.log("the current sp is ", sp);
         let back_rvise;
         const stored_sp = "${e://Field/switchpoint_emissions_main}";
+        console.log("stored_sp is ", stored_sp);
         let stored_sr = "${e://Field/switch_row_emissions_main}";
         let stored_sp_num;
         let stored_sr_num;
@@ -172,6 +174,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
         sp = switch_point;
         //console.log("your switch row is ", switch_row);
         Qualtrics.SurveyEngine.setEmbeddedData("switchpoint_emissions_main", switch_point);
+        if (Number(sp) === 3) {
+            Qualtrics.SurveyEngine.setEmbeddedData("switch_row_emissions_main", switch_row);
+        }
         //return switch_row;
     }
 
