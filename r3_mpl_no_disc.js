@@ -346,8 +346,10 @@ Qualtrics.SurveyEngine.addOnReady(function()
      *
      * @param QID
      * @param row
+     * @param sp
      */
-    function getDecNum(QID, row) {
+    function getDecNum(QID, row, sp) {
+        sp = Number(sp);
         const rows = question.getElementsByClassName("ChoiceRow");
         const row_ele = rows[row];
         const header = row_ele.getElementsByClassName("c1")[0];
@@ -357,7 +359,14 @@ Qualtrics.SurveyEngine.addOnReady(function()
         if (matches) {
             dec_num = matches[0];
         }
-        console.log("dec_num is ", dec_num);
+        //all a selected
+        if ((sp === 1 && iseffLeft()) || (sp === 2 && !iseffLeft())) {
+            dec_num = parseInt("${e://Field/num_totaldecisions_1r}") + 1;
+        }
+        //all b selected
+        if ((sp === 1 && !iseffLeft()) || (sp === 2 && iseffLeft())) {
+            dec_num = Number(dec_num) - 1;
+        }
         return Number(dec_num);
     }
 

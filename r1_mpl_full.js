@@ -43,14 +43,40 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
     function editLabels(QID) {
         addHeader(QID);
+        let init_eff;
+        let incr_eff;
+        let init_trad;
+        let incr_trad;
         let inita = parseInt("${e://Field/mpl_eff_init}");
         let initb = parseInt("${e://Field/mpl_trad_init}");
         let incra = parseFloat("${e://Field/fmpl_eff_incr_swi}");
         let incrb = -parseFloat("${e://Field/fmpl_eff_incr_swi}");
+        if (iseffLeft()) {
+            init_eff = inita;
+            incr_eff = incra;
+            init_trad = initb;
+            incr_trad = incrb;
+        } else {
+            init_eff = initb;
+            incr_eff = incrb;
+            init_trad = inita;
+            incr_trad = incra;
+        }
+        let assignment = parseInt("${e://Field/condition_no}");
+        if (assignment === 5 || assignment === 6) {
+            let disc_rate = parseFloat("${e://Field/disc_rate}");
+            displayLabels_v2(init_eff, incr_eff, init_trad, incr_trad, disc_rate);
+        } else {
+            displayLabels_v1(init_eff, incr_eff, init_trad, incr_trad);
+        }
+    }
+
+
+    function displayLabels_v1(init_eff, incr_eff, init_trad, incr_trad) {
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            let choice_a = (inita + i * incra).toFixed(2).replace(/\.00$/, '');
-            let choice_b = (initb + i * incrb).toFixed(2).replace(/\.00$/, '');
+            let choice_a = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            let choice_b = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
             const input_a = getInputByValue(inputs, 1);
@@ -62,65 +88,43 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
+    function displayLabels_v2(init_eff, incr_eff, init_trad, incr_trad, disc_rate) {
+        let eff_value = (iseffLeft()) ? 1 : 2;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        //console.log(num);
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const inputs = row.getElementsByTagName("input");
+            const input_eff = getInputByValue(inputs, eff_value);
+            const input_trad = getInputByValue(inputs, 3-eff_value);
+            const label_eff = input_eff.labels[0];
+            const label_trad = input_trad.labels[0];
+
+            const eff_disc = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
+            const eff_original = (eff_disc / disc_rate).toFixed(2).replace(/\.00$/, '');
+            let trad = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
+
+            label_eff.innerHTML = "<strong><s>$"+eff_original+"</s><span style=\"color:red\"> $" + eff_disc +"</span></strong>";
+            label_trad.innerHTML = "<strong>$"+trad+"</strong>";
+        }
+    }
+
+
     function prepopulate() {
-        let wtp_upper = toNumber("${e://Field/upper_bound_wtp_r1}");
-        let wtp_lower = toNumber("${e://Field/lower_bound_wtp_r1}");
-        let main_sp = parseInt("${e://Field/switchpoint_main_r1}");
-
-        console.log("main_sp is ", main_sp);
-
-        let row_num = -1;
         const rows = question.getElementsByClassName("ChoiceRow");
         let len = rows.length;
-        let lower_bound;
-        let upper_bound;
-        let eff_lower;
-        let eff_upper;
-        let trad_lower;
-        let trad_upper;
-
-        if (main_sp === 3) {
-            for (let i = 0; i < len - 1; i++) {
-                const row_lower = rows[i];
-                const row_upper = rows[i+1];
-                const inputs_lower = row_lower.getElementsByTagName("input");
-                const inputs_upper = row_upper.getElementsByTagName("input");
-                const input_a_lower = getInputByValue(inputs_lower, 1);
-                const input_b_lower = getInputByValue(inputs_lower, 2);
-                const input_a_upper = getInputByValue(inputs_upper, 1);
-                const input_b_upper = getInputByValue(inputs_upper, 2);
-                const label_a_lower = input_a_lower.labels[0].textContent;
-                const label_b_lower = input_b_lower.labels[0].textContent;
-                const label_a_upper = input_a_upper.labels[0].textContent;
-                const label_b_upper = input_b_upper.labels[0].textContent;
-                let num_a_lower = Number(label_a_lower.substring(label_a_lower.indexOf("$")+1));
-                let num_b_lower = Number(label_b_lower.substring(label_b_lower.indexOf("$")+1));
-                let num_a_upper = Number(label_a_upper.substring(label_a_upper.indexOf("$")+1));
-                let num_b_upper = Number(label_b_upper.substring(label_b_upper.indexOf("$")+1));
-                if (iseffLeft()) {
-                    eff_lower = num_a_lower;
-                    eff_upper = num_a_upper;
-                    trad_lower = num_b_lower;
-                    trad_upper = num_b_upper;
-                } else {
-                    eff_lower = num_b_lower;
-                    eff_upper = num_b_upper;
-                    trad_lower = num_a_lower;
-                    trad_upper = num_a_upper;
-                }
-                lower_bound = Math.min((eff_lower - trad_lower), (eff_upper - trad_upper));
-                upper_bound = Math.max((eff_lower - trad_lower), (eff_upper - trad_upper));
-                if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
-                    row_num = i;
-                    break;
-                }
-            }
-        }
-
-        if ((iseffLeft() && main_sp === 1) || (!iseffLeft() && main_sp === 2) ) {
+        let main_dec_num = parseInt("${e://Field/lower_bound_main_decno_r1}");
+        console.log("prepopulated main_dec_num is ", main_dec_num);
+        let row_num;
+        if (main_dec_num === (parseInt("${e://Field/num_totaldecisions_1r}") + 1)) {
+            // all a selected
             row_num = len - 1;
+        } else if (main_dec_num === 0) {
+            // all b selected
+            row_num = -1;
+        } else {
+            row_num = parseInt("${e://Field/lower_bound_fmpl_decno_r1}") - 1;
         }
-
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
