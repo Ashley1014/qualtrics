@@ -35,6 +35,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let eff_init_ori = parseInt("${e://Field/eff_init_ori}");
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
+    let prepopulated_switch_row;
+
     editLabels(qid, eff_init_ori, eff_incr_ori, trad_init, trad_incr, disc_rate);
     checkRevised();
     add_button_events();
@@ -51,7 +53,64 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
         //checkRevised();
         calculate_wtp(qid, value);
+        setBackRevise();
+        setNotRevise();
     };
+
+    /**
+     *
+     */
+    function setNotRevise() {
+        debugger;
+        let not_revised;
+        if (sp === 3) {
+            not_revised = switch_row === prepopulated_switch_row ? 1 : 0;
+        } else if (sp === 1) {
+            if (iseffLeft()) {
+                not_revised = prepopulated_switch_row === len - 1 ? 1 : 0;
+            } else {
+                not_revised = prepopulated_switch_row === -1 ? 1 : 0;
+            }
+        } else {
+            if (iseffLeft()) {
+                not_revised = prepopulated_switch_row === -1 ? 1 : 0;
+            } else {
+                not_revised = prepopulated_switch_row === len - 1 ? 1 : 0;
+            }
+        }
+        Qualtrics.SurveyEngine.setEmbeddedData("r3_yes_keep", not_revised);
+    }
+
+    function setBackRevise() {
+        console.log("testing setBackRevise...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_main_r3_yes}";
+        let stored_sr = "${e://Field/switch_row_main_r3_yes}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_r3", back_rvise);
+    }
 
     /**
      *
@@ -61,21 +120,97 @@ Qualtrics.SurveyEngine.addOnReady(function()
     function checkRevised() {
         let r3_main = "${e://Field/switchpoint_main_r3_yes}";
         let r3_row = "${e://Field/switch_row_main_r3_yes}";
+        let row_num;
         //console.log("r3_main is ", r3_main);
         //console.log("r3_row is ", r3_row);
         if (r3_main !== "") {
-            sp = Number(r3_main);
+            // let r1_main = parseInt("${e://Field/switchpoint}");
+            // let r1_row = parseInt("${e://Field/switch_row_main}");
+            sp = parseInt(r3_main);
             if (sp === 3) {
-                switch_row = Number(r3_row);
-            } if (sp === 2) {
-                switch_row = len - 1;
+                row_num = parseInt(r3_row);
+            } else if (sp === 2) {
+                row_num = len - 1;
             } else {
-                switch_row = -1;
+                row_num = -1;
             }
-            fill_in_table(qid, switch_row, value);
+            prepopulated_switch_row = row_num;
+            fill_in_table(qid, row_num, value);
         } else {
-            displayRevised(qid, basenum);
+            prepopulate();
         }
+    }
+
+    function prepopulate() {
+        let wtp_upper;
+        let wtp_lower;
+        let wtp_incr;
+
+        wtp_lower = parseInt("${e://Field/wtp_revise}");
+        wtp_incr = parseFloat("${e://Field/fmpl_eff_incr_swi}") * 2;
+
+        findWTPbounds();
+
+        function findWTPbounds() {
+            if (wtp_lower < 0) {
+                wtp_upper = wtp_lower;
+                wtp_lower = wtp_upper - wtp_incr;
+            } else if (wtp_lower > 0) {
+                wtp_upper = wtp_lower + wtp_incr;
+            } else {
+                const r2_wtp_upper = parseFloat("${e://Field/upper_bound_wtp_r2_num}");
+                const r2_wtp_lower = parseFloat("${e://Field/lower_bound_wtp_r2_num}");
+                const r2_wtp_avg = (r2_wtp_upper + r2_wtp_lower) / 2;
+                if (r2_wtp_avg < 0) {
+                    wtp_upper = wtp_lower;
+                    wtp_lower = wtp_upper - wtp_incr;
+                } else if (r2_wtp_avg > 0) {
+                    wtp_upper = wtp_lower + wtp_incr;
+                } // FOR FUTURE REFERENCE: RANDOMIZE IF R2_WTP_AVG === 0!
+            }
+        }
+
+        let row_num = -1;
+        const rows = question.getElementsByClassName("ChoiceRow");
+        let len = rows.length;
+        let lower_bound;
+        let upper_bound;
+
+        let upper_bound_wtp_min = parseFloat("${e://Field/upper_bound_wtp_min}");
+        let lower_bound_wtp_max = parseFloat("${e://Field/lower_bound_wtp_max}")
+
+        if (wtp_lower >= lower_bound_wtp_max) {
+            if (iseffLeft()) {
+                row_num = len - 1;
+            } else {
+                row_num = -1;
+            }
+        } else if (wtp_upper <= upper_bound_wtp_min) {
+            if (iseffLeft()) {
+                row_num = -1;
+            } else {
+                row_num = len - 1;
+            }
+        }
+
+        else {
+            for (let i = 0; i < len - 1; i++) {
+                let num_eff_lower = Number(getBoundByRow(qid, i, eff_value));
+                let num_trad_lower = Number(getBoundByRow(qid, i, trad_value));
+                let num_eff_upper = Number(getBoundByRow(qid, i+1, eff_value));
+                let num_trad_upper = Number(getBoundByRow(qid, i+1, trad_value));
+                lower_bound = Math.min((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
+                upper_bound = Math.max((num_eff_lower - num_trad_lower), (num_eff_upper - num_trad_upper));
+                if (wtp_upper <= upper_bound && wtp_lower >= lower_bound) {
+                    row_num = i;
+                    break;
+                }
+            }
+        }
+
+        prepopulated_switch_row = row_num;
+
+        populateChoices_h(rows, row_num);
     }
 
     function displayRevised(qid, basenum) {

@@ -38,7 +38,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
     let eff_incr_ori = parseInt("${e://Field/eff_incr_ori}");
 
     editLabels(qid, eff_init_ori, eff_incr_ori, trad_init, trad_incr, disc_rate);
-    populateChoices();
+    //populateChoices();
+    initializeChoice();
     add_button_events();
 
     let nextbutton = document.getElementById("NextButton");
@@ -51,10 +52,65 @@ Qualtrics.SurveyEngine.addOnReady(function()
         } else {
             value = 2;
         }
-        checkRevised();
+        setRevised();
         calculate_wtp(qid, value);
+        setBackRevise();
     };
 
+    function setBackRevise() {
+        console.log("testing setBackRevise...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_main_r3}";
+        let stored_sr = "${e://Field/switch_row_main_r3}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_r3", back_rvise);
+    }
+
+    /**
+     * keep track of whether the selection has changed compared to round 2 selection.
+     */
+    function setRevised() {
+        let revised;
+        let sp_main = parseInt("${e://Field/switchpoint_main_r2}");
+        let row_main = parseInt("${e://Field/switch_row_main_r2}");
+        if (sp !== sp_main) {
+            revised = 1;
+        }
+        else {
+            if (sp === 3) {
+                if (row_main === switch_row) {
+                    revised = 0;
+                } else {
+                    revised = 1;
+                }
+            } else {
+                revised = 0;
+            }
+        }
+        Qualtrics.SurveyEngine.setEmbeddedData("revised", revised);
+    }
 
     /**
      *
@@ -84,14 +140,29 @@ Qualtrics.SurveyEngine.addOnReady(function()
         }
     }
 
-    function populateChoices() {
-        //let wtp_upper = parseInt("${q://QID763/ChoiceTextEntryValue}");
-        //let wtp_lower = wtp_upper-1;
+    /**
+     *
+     * checks whether the page has been initialized for the first time,
+     * if so, populate the options based on round 2 switchpoint.
+     * if not, populate the options based on what was selected last time.
+     */
+    function initializeChoice() {
+        let sp_main = parseInt("${e://Field/switchpoint_main_r2}");
+        let row_main = parseInt("${e://Field/switch_row_main_r2}");
+        let r3_main = "${e://Field/switchpoint_main_r3}";
+        let r3_row = "${e://Field/switch_row_main_r3}";
+        //console.log("r3_main is ", r3_main);
+        //console.log("r3_row is ", r3_row);
+        if (r3_main !== "") {
+            r3_main = parseInt(r3_main);
+            r3_row = parseInt(r3_row);
+            populateChoices(r3_main, r3_row);
+        } else {
+            populateChoices(sp_main, row_main);
+        }
+    }
 
-        checkRevised();
-
-        //console.log("wtp_lower is", wtp_lower);
-        //console.log("wtp_upper is", wtp_upper);
+    function populateChoices(sp, sr) {
 
         //let radios = document.getElementsByTagName("input");
         let row;
@@ -100,9 +171,9 @@ Qualtrics.SurveyEngine.addOnReady(function()
 
         let order = parseInt("${e://Field/display_order}");
 
-        if (sp_main === 3) {
-            row = row_main;
-        } else if (sp_main === 1) {
+        if (sp === 3) {
+            row = sr;
+        } else if (sp === 1) {
             if (order === 0) {
                 row = len - 1;
             } else {
@@ -115,7 +186,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
                 row = len - 1;
             }
         }
-        populateChoices_h(rows, row);
+        populateChoices_h(rows, row)
     }
 
     function getInputByValue(inputs, value) {

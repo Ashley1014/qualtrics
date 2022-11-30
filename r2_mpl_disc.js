@@ -50,7 +50,39 @@ Qualtrics.SurveyEngine.addOnReady(function()
             value = 2;
         }
         calculate_wtp(qid, value);
+        setBackRevise();
     };
+
+    function setBackRevise() {
+        console.log("testing setBackRevise...");
+        console.log("the current sp is ", sp);
+        let back_rvise;
+        const stored_sp = "${e://Field/switchpoint_main_r2}";
+        let stored_sr = "${e://Field/switch_row_main_r2}";
+        let stored_sp_num;
+        let stored_sr_num;
+        if (stored_sp === "") {
+            back_rvise = 0;
+        } else {
+            stored_sp_num = parseInt(stored_sp);
+            if (sp !== stored_sp_num) {
+                back_rvise = 1;
+            } else {
+                if (sp === 3) {
+                    stored_sr_num = parseInt(stored_sr);
+                    if (switch_row === stored_sr_num) {
+                        back_rvise = 0;
+                    } else {
+                        back_rvise = 1;
+                    }
+                } else {
+                    back_rvise = 0;
+                }
+            }
+        }
+        console.log("back_revise is ", back_rvise);
+        Qualtrics.SurveyEngine.setEmbeddedData("back_revise_r2", back_rvise);
+    }
 
     function add_button_events(){
         const rows = question.getElementsByClassName("ChoiceRow");
