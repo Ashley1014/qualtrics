@@ -10,8 +10,8 @@ Qualtrics.SurveyEngine.addOnReady(function()
 {
     /*Place your JavaScript here to run when the page is fully displayed*/
     console.log("testing r1_mpl_full");
-    this.hidePreviousButton();
-    this.disablePreviousButton();
+    // this.hidePreviousButton();
+    // this.disablePreviousButton();
     const qid = this.questionId;
     const question = document.getElementById(qid);
 
