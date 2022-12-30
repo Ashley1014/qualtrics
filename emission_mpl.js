@@ -35,7 +35,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
     };
 
     function setBackRevise() {
-        debugger;
+        //debugger;
         console.log("testing setBackRevise...");
         console.log("the current sp is ", sp);
         let back_rvise;

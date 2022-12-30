@@ -61,7 +61,7 @@ Qualtrics.SurveyEngine.addOnReady(function()
      *
      */
     function setNotRevise() {
-        debugger;
+        //debugger;
         let not_revised;
         if (sp === 3) {
             not_revised = switch_row === prepopulated_switch_row ? 1 : 0;
