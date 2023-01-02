@@ -76,15 +76,16 @@ Qualtrics.SurveyEngine.addOnReady(function()
             let disc_rate = parseFloat("${e://Field/disc_rate}");
             displayLabels_v2(init_eff, incr_eff, init_trad, incr_trad, disc_rate);
         } else {
-            displayLabels_v1(init_eff, incr_eff, init_trad, incr_trad);
+            displayLabels_v1(inita, incra, initb, incrb);
         }
     }
 
-    function displayLabels_v1(init_eff, incr_eff, init_trad, incr_trad) {
+
+    function displayLabels_v1(inita, incra, initb, incrb) {
         const rows = question.getElementsByClassName("ChoiceRow");
         for (let i = 0; i < rows.length; i++) {
-            let choice_a = (init_eff + i * incr_eff).toFixed(2).replace(/\.00$/, '');
-            let choice_b = (init_trad + i * incr_trad).toFixed(2).replace(/\.00$/, '');
+            let choice_a = (inita + i * incra).toFixed(2).replace(/\.00$/, '');
+            let choice_b = (initb + i * incrb).toFixed(2).replace(/\.00$/, '');
             const row = rows[i];
             const inputs = row.getElementsByTagName("input");
             const input_a = getInputByValue(inputs, 1);
